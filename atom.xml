@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://woshibwt.github.io/"/>
-  <updated>2020-05-21T03:27:37.454Z</updated>
+  <updated>2020-06-04T15:08:06.617Z</updated>
   <id>http://woshibwt.github.io/</id>
   
   <author>
@@ -15,6 +15,25 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CS224N笔记-三-Word Window Classification,Nerual Networks,Matrix Calculus</title>
+    <link href="http://woshibwt.github.io/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/"/>
+    <id>http://woshibwt.github.io/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/</id>
+    <published>2020-06-04T15:07:00.000Z</published>
+    <updated>2020-06-04T15:08:06.617Z</updated>
+    
+    <summary type="html">
+    
+    </summary>
+    
+    
+      <category term="CS224N" scheme="http://woshibwt.github.io/categories/CS224N/"/>
+    
+    
+      <category term="nlp 机器学习" scheme="http://woshibwt.github.io/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>hexo 常用命令小记</title>
