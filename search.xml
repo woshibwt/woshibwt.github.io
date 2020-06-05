@@ -1,108 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CS224N笔记(一):word vector</title>
-    <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
-    <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
-<ul>
-<li>nlp研究的对象</li>
-<li>我们如何表示单词的含义（meaning of a word）</li>
-<li>Word2Vec方法的基本原理</li>
-</ul>
-<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
-<ul>
-<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
-<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
-<li>定义的主观性</li>
-<li>词库资料需要大量人力收集整理； </li>
-<li>无法计算出准确的单词相似度</li>
-</ul>
-<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
-<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
-<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
-<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
-</ul>
-<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
-<blockquote>
-<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
-<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
-<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
-<ul>
-<li>$v_w$当$w$是中心词时</li>
-<li>$u_w$当$w$是上下文词时</li>
-<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
-<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
-<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
-</li>
-<li>取幂使任何数都为正</li>
-<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
-<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
-</ul>
-<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
-<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
-<ul>
-<li><strong>max</strong>:因为放大了最大的概率</li>
-<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
-<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
-&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
-\\
-&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
-&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
-\end{aligned}</script></li>
-</ul>
-<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{v_c}}\log P(o|c) 
-&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
-&=u_o - \sum_{w\in V} P(w|c)u_w
-\end{aligned}</script><p>在$\sum_{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u_{w=0}$的缩写，故可知  </p>
-<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
-<p>因此：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{u_o}}\log P(o|c) 
-&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
-\\
-&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
-&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
-&=v_c - P(o|c)v_c\\
-&=(1-P(o|c))v_c  
-\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
+    <title>敏捷生活宣言</title>
+    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
+    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
+<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
+<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
+<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
+<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
+<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
+<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
+<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
+<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
+<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
+<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
+<p>可见的实物是进度的首要度量标准。</p>
+<p>Visible objects are the primary measure of progress.</p>
+<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
+<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
+<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
+<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
+<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
+<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
+<p>最好的生活方式来源于自我管理。</p>
+<p>The best life style comes from self-organizing individuals.</p>
+<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
+<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
 ]]></content>
+      <categories>
+        <category>生活方式</category>
+      </categories>
+      <tags>
+        <tag>自我提升</tag>
+        <tag>敏捷生活</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记-（三，四）-Word Window Classification,Nerual Networks,Matrix Calculus</title>
+    <url>/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%EF%BC%88%E4%B8%89%EF%BC%8C%E5%9B%9B%EF%BC%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/</url>
+    <content><![CDATA[<p>&emsp;&emsp;本次课程主要介绍了神经网络的基础知识并以<strong>命名实体识别Named Entity Recognition(NER)</strong>来介绍DNN在NLP领域内的应用。  </p>
+<h2 id="分类的设置与符号"><a href="#分类的设置与符号" class="headerlink" title="分类的设置与符号"></a>分类的设置与符号</h2><p>&emsp;&emsp;通常我们有由样本组成的训练数据集</p>
+<script type="math/tex; mode=display">\{x_i,y_i\}^{N}_{i=1}</script><p>&emsp;&emsp;其中$x_i$是输入，例如单词，句子，文档，维度为$d$<br>&emsp;&emsp;而$y_i$是我们尝试预测的标签（C种类别中的其中一种）  </p>
+<h3 id="直观分类"><a href="#直观分类" class="headerlink" title="直观分类"></a>直观分类</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_ClassificationIntuition.PNG" alt></p>
+<ul>
+<li>固定的二维单词分类</li>
+<li>使用softmax/logistic回归</li>
+<li>线性决策边界</li>
+</ul>
+<p><strong>传统的机器学习、统计学方法</strong>：假设$x_i$是固定的，训练softmax/logistic回归的权重$W \in \mathbb{R}^{C\times d}$来决定边界（超平面）<br><strong>方法</strong>：对每个$x$,预测</p>
+<script type="math/tex; mode=display">p(y|x) = \frac{\exp(W_y\cdot x)}{\sum_{c=1}^C\exp(W_c \cdot x)}</script><p>&emsp;&emsp;将预测函数分为两个步骤：<br>&emsp;&emsp;1.将$W$的$y^{th}$行和$x$中的对应行相乘得到分数</p>
+<script type="math/tex; mode=display">W_y \cdot x = \sum_{i=1}^dW_{yi}x_i = f_y</script><p>&emsp;&emsp;计算所有的$f_c,for \ c =1,…,C$<br>&emsp;&emsp;2.使用softmax函数获得归一化的概率</p>
+<script type="math/tex; mode=display">p(y|x) = \frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)} = softmax(f_y)</script><h3 id="使用softmax与交叉熵训练"><a href="#使用softmax与交叉熵训练" class="headerlink" title="使用softmax与交叉熵训练"></a>使用softmax与交叉熵训练</h3><p>&emsp;&emsp;对于每个训练样本$(x,y)$,我们的目标是最大化正确类$y$的概率，或者最小化该类的负对数概率：</p>
+<script type="math/tex; mode=display">-\log p(y|x) = - \log\left(\frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="什么是交叉熵"><a href="#什么是交叉熵" class="headerlink" title="什么是交叉熵"></a>什么是交叉熵</h3><ul>
+<li>其概念来源于信息论，用于衡量两个分布之间的差异</li>
+<li>令真实分布为$p$</li>
+<li>令我们计算的模型概率为$q$</li>
+<li>交叉熵即为：<script type="math/tex; mode=display">H(p,q) = -\sum_{c=1}^Cp(c)\log q(c)</script><h3 id="整个数据集上的分类"><a href="#整个数据集上的分类" class="headerlink" title="整个数据集上的分类"></a>整个数据集上的分类</h3>&emsp;&emsp;在整个数据集${\{x_i,y_i\}}_{i=1}^N$上的交叉熵损失函数，是所有样本的交叉熵的均值：<script type="math/tex; mode=display">J(\theta) = \frac{1}{N}\sum_{i=1}^N-log\left(\frac{\exp(f_{yi})}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="传统的机器学习优化"><a href="#传统的机器学习优化" class="headerlink" title="传统的机器学习优化"></a>传统的机器学习优化</h3>&emsp;&emsp;一般机器学习的参数$\theta$通常只由$W$的列组成：<br>$$\theta =\begin{bmatrix}<br>W_1 \\<br>.   \\<br>.   \\<br>.   \\<br>W_d</li>
+</ul>
+<p>\end{bmatrix}  = W(:)\in \mathbb{R}^{Cd}$$<br>&emsp;&emsp;因此，我们通过以下方式更新决策边界：</p>
+<script type="math/tex; mode=display">\nabla_\theta J(\theta) = \begin{bmatrix}
+\nabla_{W_1} \\
+.            \\
+.            \\
+.            \\
+\nabla_{W_d}
+
+\end{bmatrix} \in \mathbb{R}^{Cd}</script><h3 id="神经网络分类器"><a href="#神经网络分类器" class="headerlink" title="神经网络分类器"></a>神经网络分类器</h3>]]></content>
       <categories>
         <category>CS224N</category>
       </categories>
       <tags>
         <tag>nlp 机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo 常用命令小记</title>
-    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
-<p>&emsp;</p>
-<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
-<p>&emsp;</p>
-<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
-<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
-<p>&emsp; </p>
-<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
-]]></content>
-      <categories>
-        <category>web前端</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -248,6 +216,91 @@
       </tags>
   </entry>
   <entry>
+    <title>CS224N笔记(一):word vector</title>
+    <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
+    <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
+<ul>
+<li>nlp研究的对象</li>
+<li>我们如何表示单词的含义（meaning of a word）</li>
+<li>Word2Vec方法的基本原理</li>
+</ul>
+<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
+<ul>
+<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
+<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
+<li>定义的主观性</li>
+<li>词库资料需要大量人力收集整理； </li>
+<li>无法计算出准确的单词相似度</li>
+</ul>
+<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
+<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
+<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
+<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
+</ul>
+<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
+<blockquote>
+<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
+<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
+<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
+<ul>
+<li>$v_w$当$w$是中心词时</li>
+<li>$u_w$当$w$是上下文词时</li>
+<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
+<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
+<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
+</li>
+<li>取幂使任何数都为正</li>
+<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
+<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
+</ul>
+<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
+<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
+<ul>
+<li><strong>max</strong>:因为放大了最大的概率</li>
+<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
+<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
+&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
+\end{aligned}</script></li>
+</ul>
+<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) 
+&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
+&=u_o - \sum_{w\in V} P(w|c)u_w
+\end{aligned}</script><p>在$\sum_{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u_{w=0}$的缩写，故可知  </p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
+<p>因此：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{u_o}}\log P(o|c) 
+&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
+&=v_c - P(o|c)v_c\\
+&=(1-P(o|c))v_c  
+\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
     <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
     <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
@@ -312,76 +365,23 @@
       </tags>
   </entry>
   <entry>
-    <title>CS224N笔记-（三，四）-Word Window Classification,Nerual Networks,Matrix Calculus</title>
-    <url>/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%EF%BC%88%E4%B8%89%EF%BC%8C%E5%9B%9B%EF%BC%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/</url>
-    <content><![CDATA[<p>&emsp;&emsp;本次课程主要介绍了神经网络的基础知识并以<strong>命名实体识别Named Entity Recognition(NER)</strong>来介绍DNN在NLP领域内的应用。  </p>
-<h2 id="分类的设置与符号"><a href="#分类的设置与符号" class="headerlink" title="分类的设置与符号"></a>分类的设置与符号</h2><p>&emsp;&emsp;通常我们有由样本组成的训练数据集</p>
-<script type="math/tex; mode=display">\{x_i,y_i\}^{N}_{i=1}</script><p>&emsp;&emsp;其中$x_i$是输入，例如单词，句子，文档，维度为$d$<br>&emsp;&emsp;而$y_i$是我们尝试预测的标签（C种类别中的其中一种）  </p>
-<h3 id="直观分类"><a href="#直观分类" class="headerlink" title="直观分类"></a>直观分类</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_ClassificationIntuition.PNG" alt></p>
-<ul>
-<li>固定的二维单词分类</li>
-<li>使用softmax/logistic回归</li>
-<li>线性决策边界</li>
-</ul>
-<p><strong>传统的机器学习、统计学方法</strong>：假设$x_i$是固定的，训练softmax/logistic回归的权重$W \in \mathbb{R}^{C\times d}$来决定边界（超平面）<br><strong>方法</strong>：对每个$x$,预测</p>
-<script type="math/tex; mode=display">p(y|x) = \frac{\exp(W_y\cdot x)}{\sum_{c=1}^C\exp(W_c \cdot x)}</script><p>&emsp;&emsp;将预测函数分为两个步骤：<br>&emsp;&emsp;1.将$W$的$y^{th}$行和$x$中的对应行相乘得到分数</p>
-<script type="math/tex; mode=display">W_y \cdot x = \sum_{i=1}^dW_{yi}x_i = f_y</script><p>&emsp;&emsp;计算所有的$f_c,for \ c =1,…,C$<br>&emsp;&emsp;2.使用softmax函数获得归一化的概率</p>
-<script type="math/tex; mode=display">p(y|x) = \frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)} = softmax(f_y)</script><h3 id="使用softmax与交叉熵训练"><a href="#使用softmax与交叉熵训练" class="headerlink" title="使用softmax与交叉熵训练"></a>使用softmax与交叉熵训练</h3><p>&emsp;&emsp;对于每个训练样本$(x,y)$,我们的目标是最大化正确类$y$的概率，或者最小化该类的负对数概率：</p>
-<script type="math/tex; mode=display">-\log p(y|x) = - \log\left(\frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="什么是交叉熵"><a href="#什么是交叉熵" class="headerlink" title="什么是交叉熵"></a>什么是交叉熵</h3><ul>
-<li>其概念来源于信息论，用于衡量两个分布之间的差异</li>
-<li>令真实分布为$p$</li>
-<li>令我们计算的模型概率为$q$</li>
-<li>交叉熵即为：<script type="math/tex; mode=display">H(p,q) = -\sum_{c=1}^Cp(c)\log q(c)</script><h3 id="整个数据集上的分类"><a href="#整个数据集上的分类" class="headerlink" title="整个数据集上的分类"></a>整个数据集上的分类</h3>&emsp;&emsp;在整个数据集${\{x_i,y_i\}}_{i=1}^N$上的交叉熵损失函数，是所有样本的交叉熵的均值：<script type="math/tex; mode=display">J(\theta) = \frac{1}{N}\sum_{i=1}^N-log\left(\frac{\exp(f_{yi})}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="传统的机器学习优化"><a href="#传统的机器学习优化" class="headerlink" title="传统的机器学习优化"></a>传统的机器学习优化</h3>&emsp;&emsp;一般机器学习的参数$\theta$通常只由$W$的列组成：<br>$$\theta =\begin{bmatrix}<br>W_1 \\<br>.   \\<br>.   \\<br>.    \\<br>W_d</li>
-</ul>
-<p>\end{bmatrix}  = W(:)\in\mathbb{R}^{Cd}$$<br>&emsp;&emsp;因此，我们通过以下方式更新决策边界：</p>
-<script type="math/tex; mode=display">\nabla_\theta J(\theta) = \begin{bmatrix}
-\nabla_{W_1} \\
-.            \\
-.            \\
-.            \\
-\nabla_{W_d}
-
-\end{bmatrix} \in \mathbb{R}^{Cd}</script><h3 id="神经网络分类器"><a href="#神经网络分类器" class="headerlink" title="神经网络分类器"></a>神经网络分类器</h3>]]></content>
-      <categories>
-        <category>CS224N</category>
-      </categories>
-      <tags>
-        <tag>nlp 机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>敏捷生活宣言</title>
-    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
-    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
-<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
-<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
-<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
-<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
-<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
-<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
-<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
-<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
-<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
-<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
-<p>可见的实物是进度的首要度量标准。</p>
-<p>Visible objects are the primary measure of progress.</p>
-<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
-<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
-<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
-<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
-<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
-<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
-<p>最好的生活方式来源于自我管理。</p>
-<p>The best life style comes from self-organizing individuals.</p>
-<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
-<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+    <title>hexo 常用命令小记</title>
+    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
+<p>&emsp;</p>
+<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
+<p>&emsp;</p>
+<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
+<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
+<p>&emsp; </p>
+<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
 ]]></content>
       <categories>
-        <category>生活方式</category>
+        <category>web前端</category>
       </categories>
       <tags>
-        <tag>自我提升</tag>
-        <tag>敏捷生活</tag>
+        <tag>博客</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
 </search>
