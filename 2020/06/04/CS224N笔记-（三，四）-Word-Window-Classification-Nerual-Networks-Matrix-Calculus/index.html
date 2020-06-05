@@ -96,7 +96,7 @@
 <meta property="og:description" content="&amp;emsp;&amp;emsp;本次课程主要介绍了神经网络的基础知识并以命名实体识别Named Entity Recognition(NER)来介绍DNN在NLP领域内的应用。   分类的设置与符号&amp;emsp;&amp;emsp;通常我们有由样本组成的训练数据集 \{x_i,y_i\}^{N}_{i&#x3D;1}&amp;emsp;&amp;emsp;其中$x_i$是输入，例如单词，句子，文档，维度为$d$&amp;emsp;&amp;emsp;而$y">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_ClassificationIntuition.PNG">
 <meta property="article:published_time" content="2020-06-04T15:07:00.000Z">
-<meta property="article:modified_time" content="2020-06-05T08:04:46.485Z">
+<meta property="article:modified_time" content="2020-06-05T08:06:58.771Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="nlp 机器学习">
 <meta name="twitter:card" content="summary">
@@ -416,17 +416,15 @@
 <li>令我们计算的模型概率为$q$</li>
 <li>交叉熵即为：<script type="math/tex; mode=display">H(p,q) = -\sum_{c=1}^Cp(c)\log q(c)</script><h3 id="整个数据集上的分类"><a href="#整个数据集上的分类" class="headerlink" title="整个数据集上的分类"></a>整个数据集上的分类</h3>&emsp;&emsp;在整个数据集${\{x_i,y_i\}}_{i=1}^N$上的交叉熵损失函数，是所有样本的交叉熵的均值：<script type="math/tex; mode=display">J(\theta) = \frac{1}{N}\sum_{i=1}^N-log\left(\frac{\exp(f_{yi})}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="传统的机器学习优化"><a href="#传统的机器学习优化" class="headerlink" title="传统的机器学习优化"></a>传统的机器学习优化</h3>&emsp;&emsp;一般机器学习的参数$\theta$通常只由$W$的列组成：<br>$$\theta =\begin{bmatrix}<br>W_1 \\<br>.   \\<br>.   \\<br>.    \\<br>W_d</li>
 </ul>
-<p>\end{bmatrix}  = W(:)\in\mathbb{R}^{Cd}</p>
-<script type="math/tex; mode=display">
-&emsp;&emsp;因此，我们通过以下方式更新决策边界：
-$$\nabla_\theta J(\theta) = \begin{bmatrix}
+<p>\end{bmatrix}  = W(:)\in\mathbb{R}^{Cd}$$<br>&emsp;&emsp;因此，我们通过以下方式更新决策边界：</p>
+<script type="math/tex; mode=display">\nabla_\theta J(\theta) = \begin{bmatrix}
 \nabla_{W_1} \\
 .            \\
 .            \\
 .            \\
 \nabla_{W_d}
 
-\end{bmatrix} \in \math器b{R}^{Cd}</script><h3 id="神经网络分类器"><a href="#神经网络分类器" class="headerlink" title="神经网络分类器"></a>神经网络分类器</h3>
+\end{bmatrix} \in \mathbb{R}^{Cd}</script><h3 id="神经网络分类器"><a href="#神经网络分类器" class="headerlink" title="神经网络分类器"></a>神经网络分类器</h3>
       
     </div>
     
