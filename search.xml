@@ -140,90 +140,6 @@ W_d
       </tags>
   </entry>
   <entry>
-    <title>hexo 常用命令小记</title>
-    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
-<p>&emsp;</p>
-<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
-<p>&emsp;</p>
-<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
-<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
-<p>&emsp; </p>
-<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
-]]></content>
-      <categories>
-        <category>web前端</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
-    <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
-    <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
-<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
-<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
-<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
-<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
-<li>它适用于不同的分辨率和来自不同设备的图像</li>
-<li>不局限于某一种图像格式</li>
-<li>能够产生良好的预测以及一个小数据集</li>
-<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
-</ul>
-<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
-<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
-<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
-<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
-<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
-<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
-<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
-<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
-<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
-    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
-     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
-     \qquad...\\
-     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
-<p>&emsp;</p>
-<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
-<li>vh:Patch Reinterpretation的直方图</li>
-<li>距离信息:patch与它邻居的欧式距离</li>
-<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
-</ul>
-<p>&emsp;</p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
-<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
-<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
-<p>&emsp;</p>
-<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
-<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
-<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
-<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
-<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
-<li>不同参数的设置会较大影响特征提取的速度。</li>
-<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
-</ul>
-<p>&emsp;</p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
-<p>&emsp;</p>
-<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
-<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
-<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
-</ul>
-<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
-]]></content>
-      <categories>
-        <category>篡改检测</category>
-      </categories>
-      <tags>
-        <tag>科学图像篡改检测</tag>
-        <tag>论文简述</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CS224N笔记 (二):Glove</title>
     <url>/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/</url>
     <content><![CDATA[<p>&emsp;&emsp;上一篇笔记<a href="https://woshibwt.com/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/#more" target="_blank" rel="noopener">CS224N笔记(一):word vector</a>中教授主要讲课重点是基于local context window的<strong>Word2Vec</strong>模型，它是一种direct prediction模型。那么对于word vector是否还存在其他模型呢，答案当然是有，本次介绍的就是另一类count based global matrix factorization模型以及Manning教授结合这两种模型的优点提出的<strong>Glove</strong>模型。<br>&emsp;</p>
@@ -366,6 +282,26 @@ W_d
       </tags>
   </entry>
   <entry>
+    <title>hexo 常用命令小记</title>
+    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
+<p>&emsp;</p>
+<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
+<p>&emsp;</p>
+<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
+<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
+<p>&emsp; </p>
+<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
+]]></content>
+      <categories>
+        <category>web前端</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>敏捷生活宣言</title>
     <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
     <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
@@ -398,6 +334,70 @@ W_d
       <tags>
         <tag>自我提升</tag>
         <tag>敏捷生活</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
+    <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
+<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
+<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
+<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
+<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
+<li>它适用于不同的分辨率和来自不同设备的图像</li>
+<li>不局限于某一种图像格式</li>
+<li>能够产生良好的预测以及一个小数据集</li>
+<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
+</ul>
+<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
+<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
+<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
+<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
+<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
+<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
+<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
+<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
+<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
+    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
+     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
+     \qquad...\\
+     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
+<p>&emsp;</p>
+<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
+<li>vh:Patch Reinterpretation的直方图</li>
+<li>距离信息:patch与它邻居的欧式距离</li>
+<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
+</ul>
+<p>&emsp;</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
+<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
+<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
+<p>&emsp;</p>
+<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
+<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
+<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
+<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
+<li>不同参数的设置会较大影响特征提取的速度。</li>
+<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
+</ul>
+<p>&emsp;</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
+<p>&emsp;</p>
+<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
+<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
+<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
+</ul>
+<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
+]]></content>
+      <categories>
+        <category>篡改检测</category>
+      </categories>
+      <tags>
+        <tag>科学图像篡改检测</tag>
+        <tag>论文简述</tag>
       </tags>
   </entry>
 </search>
