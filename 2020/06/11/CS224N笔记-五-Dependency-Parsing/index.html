@@ -100,8 +100,16 @@
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E5%8D%8F%E8%B0%83%E8%8C%83%E5%9B%B4%E6%A8%A1%E7%B3%8A.png">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E5%8A%A8%E8%AF%8D%E7%9F%AD%E8%AF%AD%E6%AD%A7%E4%B9%89.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E7%AE%AD%E5%A4%B4%E7%AC%A6%E5%8F%B7.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E6%A0%91%E7%8A%B6%E5%9B%BE.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E5%88%9D%E5%A7%8B%E7%8A%B6%E6%80%81.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E4%B8%AD%E6%AD%A2%E7%8A%B6%E6%80%81.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E6%B5%81%E7%A8%8B.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E4%B8%89%E7%B1%BB%E8%BE%93%E5%85%A5.jpg">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E6%B5%81%E7%A8%8B.jpg">
 <meta property="article:published_time" content="2020-06-11T07:13:51.000Z">
-<meta property="article:modified_time" content="2020-06-11T09:23:15.335Z">
+<meta property="article:modified_time" content="2020-06-11T13:39:20.548Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="nlp 机器学习">
 <meta name="twitter:card" content="summary">
@@ -421,7 +429,16 @@
 <li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
 <li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
 <li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
-<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong>作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script></li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
+</ul>
+<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
+<ul>
+<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
+<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
+<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
+<li>stack和buffer中的单词及其dependent word。</li>
+<li>单词的Part-of-Speech tag。</li>
+<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
 </ul>
 
       
@@ -451,7 +468,7 @@
   <p><span>本文标题:</span><a href="/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/">CS224N笔记(五)-Dependency Parsing</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年06月11日 - 15:06</p>
-  <p><span>最后更新:</span>2020年06月11日 - 17:06</p>
+  <p><span>最后更新:</span>2020年06月11日 - 21:06</p>
   <p><span>原始链接:</span><a href="/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/" title="CS224N笔记(五)-Dependency Parsing">http://woshibwt.github.io/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/"  aria-label="复制成功！"></i></span>
   </p>
@@ -669,7 +686,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linguistic-Structure-Dependency-Parsing"><span class="nav-number">1.</span> <span class="nav-text">Linguistic Structure:Dependency Parsing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Constituency-Parsing"><span class="nav-number">1.1.</span> <span class="nav-text">Constituency Parsing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dependency-Parsing"><span class="nav-number">1.2.</span> <span class="nav-text">Dependency Parsing</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linguistic-Structure-Dependency-Parsing"><span class="nav-number">1.</span> <span class="nav-text">Linguistic Structure:Dependency Parsing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Constituency-Parsing"><span class="nav-number">1.1.</span> <span class="nav-text">Constituency Parsing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dependency-Parsing"><span class="nav-number">1.2.</span> <span class="nav-text">Dependency Parsing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transition-based-Dependency-Parsing"><span class="nav-number">1.2.1.</span> <span class="nav-text">Transition-based Dependency Parsing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluation"><span class="nav-number">1.2.2.</span> <span class="nav-text">Evaluation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Neural-Dependency-Parsing"><span class="nav-number">1.2.3.</span> <span class="nav-text">Neural Dependency Parsing</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
