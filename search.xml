@@ -8,9 +8,21 @@
       <link href="/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/"/>
       <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p><h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p><ul><li>短语结构将单词组织成嵌套的成分</li><li>单词被赋予了一个词性</li><li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li></ul><h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p><p>&emsp;&emsp;为什么我们需要句子结构</p><ul><li>为了能够正确地解释语言，我们需要理解句子结构</li><li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li><li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li></ul><p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p><ul><li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li><li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li><li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li><li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong>作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script></li></ul>]]></content>
       
       
+      <categories>
+          
+          <category> CS224N </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> nlp 机器学习 </tag>
+            
+        </tags>
       
     </entry>
     

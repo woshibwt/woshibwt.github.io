@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="nlp 机器学习," />
 
 
 
@@ -88,16 +88,24 @@
 
 
 
-<meta name="description" content="“emmm.....”">
+<meta name="description" content="Linguistic Structure:Dependency Parsing&amp;emsp;&amp;emsp;对于句法结构（syntactic structure）而言,教授提到主要有两种方式：Constituency Parsing与Dependency Parsing Constituency Parsing&amp;emsp;&amp;emsp;Constituency Parsing主要使用短语语法来不断地将词语">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CS224N笔记-五-Dependency Parsing">
 <meta property="og:url" content="http://woshibwt.github.io/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/index.html">
 <meta property="og:site_name" content="Bi Wentao">
-<meta property="og:description" content="“emmm.....”">
+<meta property="og:description" content="Linguistic Structure:Dependency Parsing&amp;emsp;&amp;emsp;对于句法结构（syntactic structure）而言,教授提到主要有两种方式：Constituency Parsing与Dependency Parsing Constituency Parsing&amp;emsp;&amp;emsp;Constituency Parsing主要使用短语语法来不断地将词语">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E4%BB%8B%E8%AF%8D%E7%9F%AD%E8%AF%AD%E4%BE%9D%E9%99%84%E6%AD%A7%E4%B9%89.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E5%8D%8F%E8%B0%83%E8%8C%83%E5%9B%B4%E6%A8%A1%E7%B3%8A.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E5%8A%A8%E8%AF%8D%E7%9F%AD%E8%AF%AD%E6%AD%A7%E4%B9%89.png">
 <meta property="article:published_time" content="2020-06-11T07:13:51.000Z">
-<meta property="article:modified_time" content="2020-06-11T07:13:52.010Z">
+<meta property="article:modified_time" content="2020-06-11T09:15:08.296Z">
 <meta property="article:author" content="Bi Wentao">
+<meta property="article:tag" content="nlp 机器学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG">
 
 
 
@@ -345,6 +353,28 @@
           </span>
 
           
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CS224N/" itemprop="url" rel="index">
+                    <span itemprop="name">CS224N</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
 
           
             
@@ -372,7 +402,28 @@
       
 
       
-        
+        <h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
+<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
+<ul>
+<li>短语结构将单词组织成嵌套的成分</li>
+<li>单词被赋予了一个词性</li>
+<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
+</ul>
+<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
+<p>&emsp;&emsp;为什么我们需要句子结构</p>
+<ul>
+<li>为了能够正确地解释语言，我们需要理解句子结构</li>
+<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
+<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
+</ul>
+<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
+<ul>
+<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
+<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
+<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong>作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script></li>
+</ul>
+
       
     </div>
     
@@ -391,6 +442,35 @@
    <div>
       
         
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/">CS224N笔记-五-Dependency Parsing</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
+  <p><span>发布时间:</span>2020年06月11日 - 15:06</p>
+  <p><span>最后更新:</span>2020年06月11日 - 17:06</p>
+  <p><span>原始链接:</span><a href="/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/" title="CS224N笔记-五-Dependency Parsing">http://woshibwt.github.io/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
 
       
   </div>
@@ -402,6 +482,12 @@
     
 
     <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> nlp 机器学习</a>
+          
+        </div>
       
 
       
@@ -472,8 +558,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -564,6 +659,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linguistic-Structure-Dependency-Parsing"><span class="nav-number">1.</span> <span class="nav-text">Linguistic Structure:Dependency Parsing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Constituency-Parsing"><span class="nav-number">1.1.</span> <span class="nav-text">Constituency Parsing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dependency-Parsing"><span class="nav-number">1.2.</span> <span class="nav-text">Dependency Parsing</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -1098,6 +1209,26 @@
   
 
   
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
   
 
 
