@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://woshibwt.github.io/"/>
-  <updated>2020-06-11T13:39:20.548Z</updated>
+  <updated>2020-06-13T08:21:23.066Z</updated>
   <id>http://woshibwt.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CS224N笔记-六-Language Modeling And RNN</title>
+    <link href="http://woshibwt.github.io/2020/06/12/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AD-Language-Modeling-And-RNN/"/>
+    <id>http://woshibwt.github.io/2020/06/12/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AD-Language-Modeling-And-RNN/</id>
+    <published>2020-06-12T08:55:40.000Z</published>
+    <updated>2020-06-13T08:21:23.066Z</updated>
+    
+    <content type="html"><![CDATA[<p>本次课程助教小姐姐主要介绍的是<strong>Language Modeling</strong>与<strong>Recurrent Neural Network(RNN)</strong></p><h2 id="Language-Modeling"><a href="#Language-Modeling" class="headerlink" title="Language Modeling"></a>Language Modeling</h2><p>&emsp;&emsp;语言模型研究的是根据已知的序列来推测下一个单词的问题，也就是假设给定一个单词序列$x^{(1)},x^{(2)},…,x^{(t)}$，计算下一个单词$x^{(t+1)}$的概率分布</p><script type="math/tex; mode=display">P(x^{(t+1)}|x^{(t)},...,x^{(1)})</script><p>&emsp;&emsp;根据条件概率的链式法则，我们也可以将其看作一系列词出现的概率问题：</p><script type="math/tex; mode=display">P(x^{(t)},...,x^{(1)}) = \prod_{t=1}^{T} P\left(x^{(t)}|x^{(t-1)},...,x^{(1)}\right)</script><h2 id="n-gram-Language-Models"><a href="#n-gram-Language-Models" class="headerlink" title="n-gram Language Models"></a>n-gram Language Models</h2><p>&emsp;&emsp;n-gram模型的定义就是连续的n个单词组成的块，例如对于“the students opened their __”这句话：</p><ul><li>unigrams:”the”,”student”,”opened”,”their”</li><li>biagrams:”the students”,”students opened”,”opend their”</li><li>trigrams:”the students opened”,”students opened their”</li><li>4-grams:”the students opened their”<br>&emsp;&emsp;该模型的核心思想是n-gram的概率应正比于器出现的频率，所以可以用此模型预测下一个单词。<br>&emsp;&emsp;假设$P(x^{(t+1)})$仅依赖它之前的n-1个单词，即<script type="math/tex; mode=display">P(x^{(t+1)}|x^{(t)},...,x^{(1)}) = P(x^{(t+1)}|x^{(t)},...,x^{(t-n+2)}) = \\\frac{ P(x^{(t+1)},x^{(t)},...,x^{(t-n+2)})}{P(x^{(t)},...,x^{(t-n+2)})}\approx \frac{ count(x^{(t+1)},x^{(t)},...,x^{(t-n+2)})}{count (x^{(t)},...,x^{(t-n+2)})}</script>&emsp;&emsp;其中count是通过处理大量文本相对应的n-gram出现次数得到的。</li></ul><p>&emsp;&emsp;假设在学习一个<strong>4-gram</strong>的语言模型：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/4-gram-model.png" alt><br>&emsp;&emsp;在语料库中：</p><ul><li>“students opened their”出现了1000次</li><li>“students opened their books”出现了400次<script type="math/tex; mode=display">P(books|students\ opened\ their) = 0.4</script></li><li>“students opened their exams”出现了100次<script type="math/tex; mode=display">P(exams|students\ opened\ their) = 0.1</script></li><li>由于上下文出现了“proctor”,所以在这里exams的概率应当比book更大</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;本次课程助教小姐姐主要介绍的是&lt;strong&gt;Language Modeling&lt;/strong&gt;与&lt;strong&gt;Recurrent Neural Network(RNN)&lt;/strong&gt;&lt;/p&gt;
+&lt;h2 id=&quot;Language-Modeling&quot;&gt;&lt;a href=&quot;
+      
+    
+    </summary>
+    
+    
+      <category term="CS224N" scheme="http://woshibwt.github.io/categories/CS224N/"/>
+    
+    
+      <category term="nlp 机器学习" scheme="http://woshibwt.github.io/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>CS224N笔记(五)-Dependency Parsing</title>
