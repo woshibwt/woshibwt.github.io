@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://woshibwt.github.io/"/>
-  <updated>2020-06-14T09:43:08.470Z</updated>
+  <updated>2020-06-14T11:59:22.423Z</updated>
   <id>http://woshibwt.github.io/</id>
   
   <author>
@@ -21,9 +21,9 @@
     <link href="http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/"/>
     <id>http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</id>
     <published>2020-06-14T09:37:00.000Z</published>
-    <updated>2020-06-14T09:43:08.470Z</updated>
+    <updated>2020-06-14T11:59:22.423Z</updated>
     
-    <content type="html"><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p><h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2>]]></content>
+    <content type="html"><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p><h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2><p>&emsp;&emsp;RNN理论上可与捕捉较早的历史信息，但是由于梯度消失的原因会导致远程信息无法被有效的被捕捉到。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_gradient_intuition.PNG" alt><br>&emsp;&emsp;当图上这些梯度很小时，反向传播得越深入，梯度信号就会越来越小。<br>&emsp;&emsp;上节课提到，t 时间步下的hidden state表达式为：</p><script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)</script>]]></content>
     
     <summary type="html">
     

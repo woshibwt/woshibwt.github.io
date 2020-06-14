@@ -1,124 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CS224N笔记(一):word vector</title>
-    <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
-    <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
-<ul>
-<li>nlp研究的对象</li>
-<li>我们如何表示单词的含义（meaning of a word）</li>
-<li>Word2Vec方法的基本原理</li>
-</ul>
-<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
-<ul>
-<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
-<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
-<li>定义的主观性</li>
-<li>词库资料需要大量人力收集整理； </li>
-<li>无法计算出准确的单词相似度</li>
-</ul>
-<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
-<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
-<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
-<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
-</ul>
-<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
-<blockquote>
-<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
-<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
-<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
-<ul>
-<li>$v_w$当$w$是中心词时</li>
-<li>$u_w$当$w$是上下文词时</li>
-<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
-<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
-<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
-</li>
-<li>取幂使任何数都为正</li>
-<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
-<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
-</ul>
-<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
-<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
-<ul>
-<li><strong>max</strong>:因为放大了最大的概率</li>
-<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
-<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
-&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
-\\
-&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
-&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
-\end{aligned}</script></li>
-</ul>
-<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{v_c}}\log P(o|c) 
-&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
-&=u_o - \sum_{w\in V} P(w|c)u_w
-\end{aligned}</script><p>在$\sum_{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u_{w=0}$的缩写，故可知  </p>
-<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
-<p>因此：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\frac{\partial}{\partial{u_o}}\log P(o|c) 
-&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
-\\
-&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
-&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
-&=v_c - P(o|c)v_c\\
-&=(1-P(o|c))v_c  
-\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
+    <title>敏捷生活宣言</title>
+    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
+    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
+<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
+<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
+<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
+<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
+<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
+<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
+<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
+<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
+<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
+<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
+<p>可见的实物是进度的首要度量标准。</p>
+<p>Visible objects are the primary measure of progress.</p>
+<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
+<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
+<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
+<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
+<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
+<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
+<p>最好的生活方式来源于自我管理。</p>
+<p>The best life style comes from self-organizing individuals.</p>
+<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
+<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
 ]]></content>
       <categories>
-        <category>CS224N</category>
+        <category>生活方式</category>
       </categories>
       <tags>
-        <tag>nlp 机器学习</tag>
+        <tag>自我提升</tag>
+        <tag>敏捷生活</tag>
       </tags>
   </entry>
   <entry>
-    <title>CS224N笔记(五)-Dependency Parsing</title>
-    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
-    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
-<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
-<ul>
-<li>短语结构将单词组织成嵌套的成分</li>
-<li>单词被赋予了一个词性</li>
-<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
-</ul>
-<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
-<p>&emsp;&emsp;为什么我们需要句子结构</p>
-<ul>
-<li>为了能够正确地解释语言，我们需要理解句子结构</li>
-<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
-<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
-</ul>
-<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
-<ul>
-<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
-<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
-<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
-<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
-</ul>
-<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
-<ul>
-<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
-<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
-<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
-<li>stack和buffer中的单词及其dependent word。</li>
-<li>单词的Part-of-Speech tag。</li>
-<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
-</ul>
-]]></content>
+    <title>CS224N笔记-七-Vanishing Gradient and Fancy RNNs</title>
+    <url>/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</url>
+    <content><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p>
+<h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2><p>&emsp;&emsp;RNN理论上可与捕捉较早的历史信息，但是由于梯度消失的原因会导致远程信息无法被有效的被捕捉到。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_gradient_intuition.PNG" alt><br>&emsp;&emsp;当图上这些梯度很小时，反向传播得越深入，梯度信号就会越来越小。<br>&emsp;&emsp;上节课提到，t 时间步下的hidden state表达式为：</p>
+<script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)</script>]]></content>
       <categories>
         <category>CS224N</category>
       </categories>
@@ -415,58 +337,129 @@ W_d
       </tags>
   </entry>
   <entry>
-    <title>敏捷生活宣言</title>
-    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
-    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
-<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
-<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
-<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
-<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
-<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
-<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
-<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
-<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
-<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
-<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
-<p>可见的实物是进度的首要度量标准。</p>
-<p>Visible objects are the primary measure of progress.</p>
-<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
-<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
-<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
-<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
-<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
-<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
-<p>最好的生活方式来源于自我管理。</p>
-<p>The best life style comes from self-organizing individuals.</p>
-<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
-<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+    <title>CS224N笔记(一):word vector</title>
+    <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
+    <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
+<ul>
+<li>nlp研究的对象</li>
+<li>我们如何表示单词的含义（meaning of a word）</li>
+<li>Word2Vec方法的基本原理</li>
+</ul>
+<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
+<ul>
+<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
+<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
+<li>定义的主观性</li>
+<li>词库资料需要大量人力收集整理； </li>
+<li>无法计算出准确的单词相似度</li>
+</ul>
+<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
+<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
+<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
+<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
+</ul>
+<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
+<blockquote>
+<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
+<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
+<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
+<ul>
+<li>$v_w$当$w$是中心词时</li>
+<li>$u_w$当$w$是上下文词时</li>
+<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
+<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
+<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
+</li>
+<li>取幂使任何数都为正</li>
+<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
+<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
+</ul>
+<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
+<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
+<ul>
+<li><strong>max</strong>:因为放大了最大的概率</li>
+<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
+<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
+&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
+\end{aligned}</script></li>
+</ul>
+<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) 
+&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
+&=u_o - \sum_{w\in V} P(w|c)u_w
+\end{aligned}</script><p>在$\sum_{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u_{w=0}$的缩写，故可知  </p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
+<p>因此：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{u_o}}\log P(o|c) 
+&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
+&=v_c - P(o|c)v_c\\
+&=(1-P(o|c))v_c  
+\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
 ]]></content>
       <categories>
-        <category>生活方式</category>
+        <category>CS224N</category>
       </categories>
       <tags>
-        <tag>自我提升</tag>
-        <tag>敏捷生活</tag>
+        <tag>nlp 机器学习</tag>
       </tags>
   </entry>
   <entry>
-    <title>hexo 常用命令小记</title>
-    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
-<p>&emsp;</p>
-<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
-<p>&emsp;</p>
-<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
-<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
-<p>&emsp; </p>
-<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
+    <title>CS224N笔记(五)-Dependency Parsing</title>
+    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
+    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
+<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
+<ul>
+<li>短语结构将单词组织成嵌套的成分</li>
+<li>单词被赋予了一个词性</li>
+<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
+</ul>
+<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
+<p>&emsp;&emsp;为什么我们需要句子结构</p>
+<ul>
+<li>为了能够正确地解释语言，我们需要理解句子结构</li>
+<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
+<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
+</ul>
+<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
+<ul>
+<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
+<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
+<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
+</ul>
+<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
+<ul>
+<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
+<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
+<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
+<li>stack和buffer中的单词及其dependent word。</li>
+<li>单词的Part-of-Speech tag。</li>
+<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
+</ul>
 ]]></content>
       <categories>
-        <category>web前端</category>
+        <category>CS224N</category>
       </categories>
       <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
+        <tag>nlp 机器学习</tag>
       </tags>
   </entry>
   <entry>
@@ -534,15 +527,23 @@ W_d
       </tags>
   </entry>
   <entry>
-    <title>CS224N笔记-七-Vanishing Gradient and Fancy RNNs</title>
-    <url>/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</url>
-    <content><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p>
-<h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2>]]></content>
+    <title>hexo 常用命令小记</title>
+    <url>/2020/06/02/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
+<p>&emsp;</p>
+<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
+<p>&emsp;</p>
+<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
+<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
+<p>&emsp; </p>
+<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
+]]></content>
       <categories>
-        <category>CS224N</category>
+        <category>web前端</category>
       </categories>
       <tags>
-        <tag>nlp 机器学习</tag>
+        <tag>博客</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
 </search>
