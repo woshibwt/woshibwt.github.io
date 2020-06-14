@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://woshibwt.github.io/"/>
-  <updated>2020-06-13T11:57:56.404Z</updated>
+  <updated>2020-06-14T09:43:08.470Z</updated>
   <id>http://woshibwt.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CS224N笔记-七-Vanishing Gradient and Fancy RNNs</title>
+    <link href="http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/"/>
+    <id>http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</id>
+    <published>2020-06-14T09:37:00.000Z</published>
+    <updated>2020-06-14T09:43:08.470Z</updated>
+    
+    <content type="html"><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p><h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&amp;emsp;&amp;emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体&lt;/p&gt;
+&lt;h2 id=&quot;Vanishing-gradient-intuition&quot;&gt;&lt;a href=&quot;#Vanishing-gradient-intuitio
+      
+    
+    </summary>
+    
+    
+      <category term="CS224N" scheme="http://woshibwt.github.io/categories/CS224N/"/>
+    
+    
+      <category term="nlp 机器学习" scheme="http://woshibwt.github.io/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>CS224N笔记-六-Language Modeling And RNN</title>
