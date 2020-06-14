@@ -1,47 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CS224N笔记(五)-Dependency Parsing</title>
-    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
-    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
-<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
-<ul>
-<li>短语结构将单词组织成嵌套的成分</li>
-<li>单词被赋予了一个词性</li>
-<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
-</ul>
-<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
-<p>&emsp;&emsp;为什么我们需要句子结构</p>
-<ul>
-<li>为了能够正确地解释语言，我们需要理解句子结构</li>
-<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
-<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
-</ul>
-<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
-<ul>
-<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
-<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
-<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
-<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
-</ul>
-<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
-<ul>
-<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
-<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
-<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
-<li>stack和buffer中的单词及其dependent word。</li>
-<li>单词的Part-of-Speech tag。</li>
-<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CS224N</category>
-      </categories>
-      <tags>
-        <tag>nlp 机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CS224N笔记(一):word vector</title>
     <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
     <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
@@ -127,6 +86,47 @@
       </tags>
   </entry>
   <entry>
+    <title>CS224N笔记(五)-Dependency Parsing</title>
+    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
+    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
+<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
+<ul>
+<li>短语结构将单词组织成嵌套的成分</li>
+<li>单词被赋予了一个词性</li>
+<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
+</ul>
+<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
+<p>&emsp;&emsp;为什么我们需要句子结构</p>
+<ul>
+<li>为了能够正确地解释语言，我们需要理解句子结构</li>
+<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
+<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
+</ul>
+<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
+<ul>
+<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
+<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
+<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
+</ul>
+<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
+<ul>
+<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
+<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
+<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
+<li>stack和buffer中的单词及其dependent word。</li>
+<li>单词的Part-of-Speech tag。</li>
+<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS224N笔记-六-Language Modeling And RNN</title>
     <url>/2020/06/12/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AD-Language-Modeling-And-RNN/</url>
     <content><![CDATA[<p>本次课程助教小姐姐主要介绍的是<strong>Language Modeling</strong>与<strong>Recurrent Neural Network(RNN)</strong></p>
@@ -172,7 +172,21 @@
 <li>更多后续课程中会提到</li>
 </ul>
 <p>&emsp;&emsp;RNN的训练过程依赖于大量文本，在每个时刻t会计算模型预测的输出$y^{(t)}$与真实值$\hat{y}^{(t)}$(即$x^{(t+1)}$的one-hot向量)的交叉熵：</p>
-<script type="math/tex; mode=display">J^{(t)}(\theta) = CE(y^{(t)},\hat{y}^{(t)}) = -\sum_{w\in V} y^{(t)}_w \log \hat{y}^{(t)}_w \\ = -\log\hat{y}^{(t)}_{x_{t+1}}</script>]]></content>
+<script type="math/tex; mode=display">\begin{aligned}
+J^{(t)}(\theta) = CE(y^{(t)},\hat{y}^{(t)}) &= -\sum_{w\in V} y^{(t)}_w \log \hat{y}^{(t)}_w \\ &= -\log\hat{y}^{(t)}_{x_{t+1}}
+\end{aligned}</script><p>&emsp;&emsp;将其平均，得到整个训练集的overall loss</p>
+<script type="math/tex; mode=display">J(\theta) = \frac{1}{T}\sum^T_{t=1}J^{(t)}(\theta) = \frac{1}{T}-\log\hat{y}^{(t)}_{x_{t+1}}</script><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/loss.png" alt></p>
+<script type="math/tex; mode=display">\begin{aligned}
+J^{(1)}(\theta)+J^{(2)}(\theta)+J^{(3)}(\theta)+... &= J(\theta) \\ &=  \frac{1}{T}\sum^T_{t=1}J^{(t)}(\theta)
+\end{aligned}</script><p>&emsp;&emsp;然而，计算<strong>整个</strong>语料库$x^{(1)},…,x^{(T)}$的损失和梯度成本太过昂贵了，在实践中，我们将$x^{(1)},…,x^{(T)}$看作一个<strong>句子</strong>或<strong>文档</strong>，应用<strong>随机梯度下降算法</strong>计算小块数据的损失和梯度，并进行更新</p>
+<h3 id="Backpropagation-for-RNNs"><a href="#Backpropagation-for-RNNs" class="headerlink" title="Backpropagation for RNNs"></a>Backpropagation for RNNs</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BackPropagation.png" alt><br>&emsp;&emsp;重复权重的梯度是每次其出现时的梯度总和</p>
+<script type="math/tex; mode=display">\frac{\partial J^{(t)}}{\partial W_h}=  \sum_{i=1}^t \frac{\partial J^{(t)}}{\partial W_h} \bigg|_{(i)}</script><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/caluclate_gradient.png" alt></p>
+<h3 id="Evaluating-Language-Models"><a href="#Evaluating-Language-Models" class="headerlink" title="Evaluating Language Models"></a>Evaluating Language Models</h3><p>&emsp;&emsp;标准语言模型评估指标是perplexity 困惑度<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/perplexity-困惑度.png" alt><br>&emsp;&emsp;等于交叉熵损失$J(\theta)$的指数</p>
+<script type="math/tex; mode=display">\begin{aligned}
+=\prod_{t=1}^T \left( {\frac{1}{\hat y ^ {(t)}_{x_{t+1}}}} \right)^{1/T} &= \exp \left( \frac{1}{T}\sum_{t=1}^T-\log \hat y ^ {(t)}_{x_{t+1}} \right) \\ &= \exp(J(\theta))  
+\end{aligned}</script><p>&emsp;&emsp;低困惑度是好的</p>
+<h3 id="Why-should-we-care-about-Language-Modeling"><a href="#Why-should-we-care-about-Language-Modeling" class="headerlink" title="Why should we care about Language Modeling?"></a>Why should we care about Language Modeling?</h3><p>&emsp;&emsp;语言模型是一项<strong>基准测试</strong>任务，它帮助我们<strong>衡量</strong>我们在理解语言方面的<strong>进展</strong><br>&emsp;&emsp;语言建模是许多NLP任务的<strong>子组件</strong>，尤其是那些涉及<strong>生成文本</strong> 或<strong>估计文本概率</strong>的任务</p>
+]]></content>
       <categories>
         <category>CS224N</category>
       </categories>
@@ -421,41 +435,6 @@ W_d
       </tags>
   </entry>
   <entry>
-    <title>敏捷生活宣言</title>
-    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
-    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
-<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
-<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
-<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
-<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
-<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
-<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
-<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
-<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
-<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
-<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
-<p>可见的实物是进度的首要度量标准。</p>
-<p>Visible objects are the primary measure of progress.</p>
-<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
-<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
-<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
-<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
-<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
-<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
-<p>最好的生活方式来源于自我管理。</p>
-<p>The best life style comes from self-organizing individuals.</p>
-<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
-<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
-]]></content>
-      <categories>
-        <category>生活方式</category>
-      </categories>
-      <tags>
-        <tag>自我提升</tag>
-        <tag>敏捷生活</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
     <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
     <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
@@ -517,6 +496,41 @@ W_d
       <tags>
         <tag>科学图像篡改检测</tag>
         <tag>论文简述</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>敏捷生活宣言</title>
+    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
+    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
+<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
+<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
+<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
+<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
+<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
+<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
+<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
+<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
+<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
+<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
+<p>可见的实物是进度的首要度量标准。</p>
+<p>Visible objects are the primary measure of progress.</p>
+<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
+<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
+<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
+<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
+<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
+<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
+<p>最好的生活方式来源于自我管理。</p>
+<p>The best life style comes from self-organizing individuals.</p>
+<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
+<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+]]></content>
+      <categories>
+        <category>生活方式</category>
+      </categories>
+      <tags>
+        <tag>自我提升</tag>
+        <tag>敏捷生活</tag>
       </tags>
   </entry>
 </search>
