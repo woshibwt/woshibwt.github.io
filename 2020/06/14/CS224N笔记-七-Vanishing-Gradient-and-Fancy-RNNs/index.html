@@ -95,8 +95,12 @@
 <meta property="og:site_name" content="Bi Wentao">
 <meta property="og:description" content="&amp;emsp;&amp;emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体 Vanishing gradient intuition&amp;emsp;&amp;emsp;RNN理论上可与捕捉较早的历史信息，但是由于梯度消失的原因会导致远程信息无法被有效的被捕捉到。&amp;emsp;&amp;emsp;当图上这些梯度很小时，反向传播得越深入，梯度信号就会越来越小。&amp;emsp;&amp;emsp;">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_gradient_intuition.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/chainrule.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/why_vanishing_gradient.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/language_task.png">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_problem.PNG">
 <meta property="article:published_time" content="2020-06-14T09:37:00.000Z">
-<meta property="article:modified_time" content="2020-06-14T11:59:22.423Z">
+<meta property="article:modified_time" content="2020-07-02T02:48:29.659Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="nlp 机器学习">
 <meta name="twitter:card" content="summary">
@@ -410,7 +414,12 @@
       
         <p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不只在RNN上出现）并且介绍了几种更复杂的RNN变体</p>
 <h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2><p>&emsp;&emsp;RNN理论上可与捕捉较早的历史信息，但是由于梯度消失的原因会导致远程信息无法被有效的被捕捉到。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_gradient_intuition.PNG" alt><br>&emsp;&emsp;当图上这些梯度很小时，反向传播得越深入，梯度信号就会越来越小。<br>&emsp;&emsp;上节课提到，t 时间步下的hidden state表达式为：</p>
-<script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)</script>
+<script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)</script><p>&emsp;&emsp;由链式法则可得：</p>
+<script type="math/tex; mode=display">\frac{\partial \boldsymbol{h}^{(t)}}{\partial \boldsymbol{h}^{(t-1)}} = diag\left(\sigma^{'}\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)\boldsymbol{W}_{h}        \right)</script><p>&emsp;&emsp;考虑一下第$i$步上的损失梯度$J^{(i)}(\theta)$,以及第$j$步上的隐藏状态$h^{(j)}$<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/chainrule.png" alt><br>&emsp;&emsp;由此可见，如果权重矩阵$W_h$很小，那么这一项会随着$i$和$j$的距离越来越大而变得越来越小。  </p>
+<h3 id="why-is-vanishing-gradient-a-problem"><a href="#why-is-vanishing-gradient-a-problem" class="headerlink" title="why is vanishing gradient a problem?"></a>why is vanishing gradient a problem?</h3><p>&emsp;&emsp;<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/why_vanishing_gradient.png" alt><br>&emsp;&emsp;&emsp;&emsp;来自远处的梯度信号会丢失，因为它比邻近的梯度信号小很多，模型权重只会根据近期效应而不是长期效应进行更新。</p>
+<h3 id="Effect-of-vanishing-gradient-on-RNN-LM"><a href="#Effect-of-vanishing-gradient-on-RNN-LM" class="headerlink" title="Effect of vanishing gradient on RNN-LM"></a>Effect of vanishing gradient on RNN-LM</h3><p>例如以下这个语言任务：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/language_task.png" alt><br>&emsp;&emsp;为了从这个例子中学习，RNN-LM需要对第七步的“tickets”和最后的目标“tickets”之间的依赖关系建模，但是如果梯度很小，模型就不能学习这种依赖关系。<br>&emsp;&emsp;再如下面这个例子：</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_problem.PNG" alt><br>&emsp;&emsp;由于梯度的消失，RNN-LMs更善于从顺序近因（sequential recency）学习而不是语法近因（sybtactic recency）。</p>
+
       
     </div>
     
@@ -438,7 +447,7 @@
   <p><span>本文标题:</span><a href="/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/">CS224N笔记-七-Vanishing Gradient and Fancy RNNs</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年06月14日 - 17:06</p>
-  <p><span>最后更新:</span>2020年06月14日 - 19:06</p>
+  <p><span>最后更新:</span>2020年07月02日 - 10:07</p>
   <p><span>原始链接:</span><a href="/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/" title="CS224N笔记-七-Vanishing Gradient and Fancy RNNs">http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/"  aria-label="复制成功！"></i></span>
   </p>
@@ -666,7 +675,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vanishing-gradient-intuition"><span class="nav-number">1.</span> <span class="nav-text">Vanishing gradient intuition</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Vanishing-gradient-intuition"><span class="nav-number">1.</span> <span class="nav-text">Vanishing gradient intuition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#why-is-vanishing-gradient-a-problem"><span class="nav-number">1.1.</span> <span class="nav-text">why is vanishing gradient a problem?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Effect-of-vanishing-gradient-on-RNN-LM"><span class="nav-number">1.2.</span> <span class="nav-text">Effect of vanishing gradient on RNN-LM</span></a></li></ol></li></ol></div>
             
 
           </div>
