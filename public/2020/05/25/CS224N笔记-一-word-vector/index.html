@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-mac-osx.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/soccer-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/soccer-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp 机器学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Bi Wentao" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是Nature Language Processing with Deep Learning，即基于神经网络的自然语言处理,第一节上课的教授是Christopher Manning。老爷子精神很好，也很活泼。&amp;emsp;&amp;emsp;这一节的主要内容是   nlp研究的对象 我们如何表示">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS224N笔记(一):word vector">
+<meta property="og:url" content="http://woshibwt.github.io/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/index.html">
+<meta property="og:site_name" content="Bi Wentao">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是Nature Language Processing with Deep Learning，即基于神经网络的自然语言处理,第一节上课的教授是Christopher Manning。老爷子精神很好，也很活泼。&amp;emsp;&amp;emsp;这一节的主要内容是   nlp研究的对象 我们如何表示">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG">
+<meta property="article:published_time" content="2020-05-25T02:16:03.000Z">
+<meta property="article:modified_time" content="2020-06-11T09:23:16.743Z">
+<meta property="article:author" content="Bi Wentao">
+<meta property="article:tag" content="nlp 机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woshibwt.github.io/2020/05/25/CS224N笔记-一-word-vector/"/>
+
+
+
+
+
+  <title>CS224N笔记(一):word vector | Bi Wentao</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/woshibwt" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Bi Wentao</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woshibwt.github.io/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bi Wentao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bi Wentao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CS224N笔记(一):word vector</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-25T10:16:03+08:00">
+                2020-05-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CS224N/" itemprop="url" rel="index">
+                    <span itemprop="name">CS224N</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/05/25/CS224N笔记-一-word-vector/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
+<ul>
+<li>nlp研究的对象</li>
+<li>我们如何表示单词的含义（meaning of a word）</li>
+<li>Word2Vec方法的基本原理</li>
+</ul>
+<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
+<ul>
+<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
+<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
+<li>定义的主观性</li>
+<li>词库资料需要大量人力收集整理； </li>
+<li>无法计算出准确的单词相似度</li>
+</ul>
+<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
+<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
+<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
+<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
+</ul>
+<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
+<blockquote>
+<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
+<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
+<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
+<ul>
+<li>$v_w$当$w$是中心词时</li>
+<li>$u_w$当$w$是上下文词时</li>
+<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
+<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
+<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
+</li>
+<li>取幂使任何数都为正</li>
+<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
+<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
+</ul>
+<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
+<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
+<ul>
+<li><strong>max</strong>:因为放大了最大的概率</li>
+<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
+<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
+&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
+\end{aligned}</script></li>
+</ul>
+<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) 
+&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
+&=u_o - \sum_{w\in V} P(w|c)u_w
+\end{aligned}</script><p>在$\sum_{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u_{w=0}$的缩写，故可知  </p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
+<p>因此：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{u_o}}\log P(o|c) 
+&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
+&=v_c - P(o|c)v_c\\
+&=(1-P(o|c))v_c  
+\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
+
+      
+    </div>
+    
+    
+    
+	<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 感谢您的阅读-------------</div>
+    
+</div>
+
+  
+	</div>
+   <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/">CS224N笔记(一):word vector</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
+  <p><span>发布时间:</span>2020年05月25日 - 10:05</p>
+  <p><span>最后更新:</span>2020年06月11日 - 17:06</p>
+  <p><span>原始链接:</span><a href="/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/" title="CS224N笔记(一):word vector">http://woshibwt.github.io/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+
+      
+  </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> nlp 机器学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/" rel="next" title="基于噪声不一致性的科学图像篡改检测——论文简述">
+                <i class="fa fa-chevron-left"></i> 基于噪声不一致性的科学图像篡改检测——论文简述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/" rel="prev" title="CS224N笔记 (二):Glove">
+                CS224N笔记 (二):Glove <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/">
+              <img class="site-author-image" itemprop="image"
+                src="/images/header.jpg"
+                alt="Bi Wentao" />
+			</a>
+            
+              <p class="site-author-name" itemprop="name">Bi Wentao</p>
+              <p class="site-description motion-element" itemprop="description">“emmm.....”</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/swift/" title="Swift 4" target="_blank">Swift 4</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/documentation/objectivec" title="Objective-C" target="_blank">Objective-C</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+			
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Word2vec-prediction-function"><span class="nav-number">1.</span> <span class="nav-text">Word2vec prediction function</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Bi Wentao</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://comment-5atsimliz7.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://woshibwt.github.io/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/';
+          this.page.identifier = '2020/05/25/CS224N笔记-一-word-vector/';
+          this.page.title = 'CS224N笔记(一):word vector';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://comment-5atsimliz7.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+    <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>
