@@ -88,14 +88,14 @@
 
 
 
-<meta name="description" content="“emmm.....”">
+<meta name="description" content="最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。在每次到新电脑上时，首先需要完成node&#x2F;npm&#x2F;hexo&#x2F;git等环境的搭建和配置。然后使用 git clone从私密仓库中将hexo源文件拉取下来。尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：千万不要使用hexo init命令。  千万">
 <meta property="og:type" content="article">
 <meta property="og:title" content="hexo 双仓库">
 <meta property="og:url" content="http://woshibwt.github.io/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/index.html">
 <meta property="og:site_name" content="Bi Wentao">
-<meta property="og:description" content="“emmm.....”">
+<meta property="og:description" content="最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。在每次到新电脑上时，首先需要完成node&#x2F;npm&#x2F;hexo&#x2F;git等环境的搭建和配置。然后使用 git clone从私密仓库中将hexo源文件拉取下来。尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：千万不要使用hexo init命令。  千万">
 <meta property="article:published_time" content="2020-07-06T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-07-07T02:16:11.180Z">
+<meta property="article:modified_time" content="2020-07-07T05:19:22.849Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="博客">
 <meta property="article:tag" content="hexo">
@@ -407,7 +407,12 @@
       
 
       
-        
+        <p>最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。<br>在每次到新电脑上时，首先需要完成<code>node/npm/hexo/git</code>等环境的搭建和配置。然后使用 <code>git clone</code>从私密仓库中将hexo源文件拉取下来。<br>尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：<br><strong>千万不要使用hexo init命令</strong>。  <strong>千万不要使用hexo init命令</strong>。<strong>千万不要使用hexo init命令</strong>。<br>原因是当前目录已经建立了git仓库环境, hexo init会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。<br>正确做法是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure><br>因为package.json里面已经保存了hexo的必备资源包信息，npm install后Hexo环境就建立起来了。<br>接下来就进行正常的编写和发布就好。<br>本地预览发布的命令还是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure><br>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
+<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<pre><code>git fetch --all #将git上所有文件拉取到本地
+git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容
+</code></pre><p>reset 对所拉取的文件不做任何处理，此处不用 pull 是因为本地尚有许多文件，使用 pull 会有一些版本冲突，解决起来也麻烦，而本地的文件都是初始化生成的文件，较拉取的库里面的文件而言基本无用，所以直接丢弃。</p>
+
       
     </div>
     
@@ -435,7 +440,7 @@
   <p><span>本文标题:</span><a href="/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/">hexo 双仓库</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年07月07日 - 00:07</p>
-  <p><span>最后更新:</span>2020年07月07日 - 10:07</p>
+  <p><span>最后更新:</span>2020年07月07日 - 13:07</p>
   <p><span>原始链接:</span><a href="/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/" title="hexo 双仓库">http://woshibwt.github.io/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/"  aria-label="复制成功！"></i></span>
   </p>
@@ -554,8 +559,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -646,6 +660,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hexo仓库更新"><span class="nav-number">1.</span> <span class="nav-text">Hexo仓库更新</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

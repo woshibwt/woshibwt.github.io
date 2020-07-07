@@ -23,7 +23,14 @@
     <published>{{ post.date.toISOString() }}</published>
     <updated>{{ post.updated.toISOString() }}</updated>
     
+    <content type="html"><![CDATA[{{ post.content | noControlChars | safe }}]]></content>
+    
     <summary type="html">
+    
+      
+      
+        {{ short_content }}
+      
     
     </summary>
     
