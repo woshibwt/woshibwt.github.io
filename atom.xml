@@ -68,8 +68,6 @@
     
       <category term="{{ tag.name }}" scheme="{{ url + tag.path | uriencode }}"/>
     
-      <category term="{{ tag.name }}" scheme="{{ url + tag.path | uriencode }}"/>
-    
   </entry>
   
   <entry>
@@ -93,6 +91,8 @@
     
       <category term="{{ category.name }}" scheme="{{ url + category.path | uriencode }}"/>
     
+    
+      <category term="{{ tag.name }}" scheme="{{ url + tag.path | uriencode }}"/>
     
       <category term="{{ tag.name }}" scheme="{{ url + tag.path | uriencode }}"/>
     
