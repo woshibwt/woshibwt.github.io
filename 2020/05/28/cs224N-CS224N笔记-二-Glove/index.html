@@ -509,7 +509,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="Glove算法"><a href="#Glove算法" class="headerlink" title="Glove算法"></a>Glove算法</h2><p> &emsp;&emsp;Manning教授团队希望采取一种方法可与结合上述两种方法的优势，并将这种算法命名为<strong>GloVe</strong>(Global vectors的缩写)，该算法可以有效地利用全局地统计信息。<br> &emsp;&emsp;如何使用word-word co-occurance count来学习词语背后的含义呢？<br> &emsp;&emsp;首先定义一些符号：对于矩阵$X$,$X<em>{ij}$代表了单词$j$出现在单词$i$的上下文中的单词次数，则$X_i=\sum</em>{k}X<em>{ik}$,即代表了所有出现在单词$i$的上下文中的单词个数，我们用$P</em>{ij}=P(j|i)=X_{ij}/X_i$来代表单词$j$出现在单词$i$上下文中的概率。</p>
+<h2 id="Glove算法"><a href="#Glove算法" class="headerlink" title="Glove算法"></a>Glove算法</h2><p> &emsp;&emsp;Manning教授团队希望采取一种方法可与结合上述两种方法的优势，并将这种算法命名为<strong>GloVe</strong>(Global vectors的缩写)，该算法可以有效地利用全局地统计信息。<br> &emsp;&emsp;如何使用word-word co-occurance count来学习词语背后的含义呢？<br> &emsp;&emsp;首先定义一些符号：对于矩阵$X$,$X_{ij}$代表了单词$j$出现在单词$i$的上下文中的单词次数，则$X_i=\sum_{k}X_{ik}$,即代表了所有出现在单词$i$的上下文中的单词个数，我们用$P_{ij}=P(j|i)=X_{ij}/X_i$来代表单词$j$出现在单词$i$上下文中的概率。</p>
 <blockquote>
 <p>算法关键思想：共现概率的<strong>比值</strong>(而不是概率单一大小)可以对meaning component进行编码  </p>
 </blockquote>
@@ -521,10 +521,10 @@
 <script type="math/tex; mode=display">F((w_i-w_j),\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>等式右边为标量形式，为了将左边矢量也转化为标量形式，使用矢量的点乘:</p>
 <script type="math/tex; mode=display">F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;在此，作者又进行了对称性分析，即对于word-word co-occurrence,将一个vector划分为center word还是context word是不重要的，即在交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$的时候仍然成立，如何满足这种对称性呢？<br>&emsp;&emsp;接下来分成两部来进行<br>&emsp;&emsp;首先要求满足$F((w_i-w_j)^T \widetilde{w}_k)=\frac{F(w_i^T\widetilde{w}_k)}{F(w_j^T\widetilde{w}_k)}$,显然该方程的解为$F=\exp$，同时也由此找对应项  </p>
 </blockquote>
-<p>&emsp;$F((w<em>i-w_j)^T\widetilde{w}_k) = \frac{P</em>{ik}}{P<em>{jk}} \\Rightarrow F(w_i^T\widetilde{w}) = P</em>{ik} = \frac{X<em>{ik}}{X_i}\\Rightarrow w_i^T\widetilde{w}_k = \log(P</em>{ik})=\log(X_{ik}) - \log(X_i)$  </p>
+<p>&emsp;$F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}} \\\Rightarrow F(w_i^T\widetilde{w}) = P_{ik} = \frac{X_{ik}}{X_i}\\\Rightarrow w_i^T\widetilde{w}_k = \log(P_{ik})=\log(X_{ik}) - \log(X_i)$  </p>
 <blockquote>
 <p>&emsp;&emsp;注意其中$\log(X_i)$破坏了交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$时的对称性，但是这一项与$k$无关，所以我们通过将其融入关于$w_i$的bias项$b_i$来解决。</p>
-<p>&emsp;&emsp;第二步为了平衡对称性，我们对应的再加入一个关于$\widetilde{w}<em>k$的bias项$\widetilde{b}_k$,然后我们可以得到$w_i^T\widetilde{w}_k+b_i+\widetilde{b}_k = \log(X</em>{ik})$</p>
+<p>&emsp;&emsp;第二步为了平衡对称性，我们对应的再加入一个关于$\widetilde{w}_k$的bias项$\widetilde{b}_k$,然后我们可以得到$w_i^T\widetilde{w}_k+b_i+\widetilde{b}_k = \log(X_{ik})$</p>
 <p>&emsp;&emsp;另一方面作者注意到模型的一个缺点是对于所有的co-occurrence的权重是一样的，所以他加入了前面的$f(X_{ij})$项来做weighted least squares regression模型，即为</p>
 <script type="math/tex; mode=display">J = \sum_{i,j=1}^V {f(X_{ij})(w_i^T\widetilde{w}_j+b_i+\widetilde{b}_j-\log X_{ij})}^2</script><p>其中权重项$f$需满足以下条件</p>
 <ul>
