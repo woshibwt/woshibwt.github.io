@@ -95,7 +95,7 @@
 <meta property="og:site_name" content="Bi Wentao">
 <meta property="og:description" content="Question A Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that -\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) &#x3D; -\log(\hat{y}_o)Ans">
 <meta property="article:published_time" content="2020-07-09T02:57:21.000Z">
-<meta property="article:modified_time" content="2020-07-09T12:55:25.246Z">
+<meta property="article:modified_time" content="2020-07-11T08:53:04.676Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="CS224n">
 <meta name="twitter:card" content="summary">
@@ -453,9 +453,27 @@
 &= diag(\sigma '(x_d))
 \end{aligned}</script><h2 id="Question-E"><a href="#Question-E" class="headerlink" title="Question E"></a>Question E</h2><blockquote>
 <p>Now we shall consider the Negative Sampling loss, which is an alternative to the Naive Softmax loss. Assume that $K$ negative samples (words) are drawn from the vocabulary.For simplicity of notation we shall refer to them as $w_1,w_2,\cdots,w_K$ and their outside vectors as $u_1,\cdots,u_K$.Note that $o \notin {w_1,\cdots,w_K}$. For a center word $c$ and an outside word $o$, the negative sampling loss function is<br>given by:</p>
-<script type="math/tex; mode=display">\boldsymbol{J}_{neg-sample}(v_c,o,U) = -\log(\sigma (u_o^Tv_c))- \sum_{k=1}^K \log(\sigma(-u_k^Tv_c))</script><p>for a sample $w_1,\cdots,w_K$, where $\sigma(\cdot)$is the sigmoid function</p>
+<script type="math/tex; mode=display">\boldsymbol{J}_{neg-sample}(v_c,o,U) = -\log(\sigma (u_o^Tv_c))- \sum_{k=1}^K \log(\sigma(-u_k^Tv_c))</script><p>for a sample $w<em>1,\cdots,w_K$, where $\sigma(\cdot)$is the sigmoid function。<br>Please repeat parts (b) and (c), computing the partial derivatives of $\boldsymbol{J}</em>{neg-sample}$ with respect to $v_c$, with respect to $u_o$, and with respect to a negative sample $u_k$. Please write your answers in terms of the<br>vectors $u_o$, $v_c$, and $u_k$, where k ∈ [1, K]. After you’ve done this, describe with one sentence why this loss function is much more efficient to compute than the naive-softmax loss. Note, you should be able to use your solution to part (d) to help compute the necessary gradients here.</p>
 </blockquote>
+<h2 id="Answer-E"><a href="#Answer-E" class="headerlink" title="Answer E"></a>Answer E</h2><p>For $v_c$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J_{neg-sample}}{\partial v_c} &= (\sigma(u_o^Tv_c)-1)u_o + \sum_{k=1}^{K}(1-\sigma(-u_k^Tv_c))u_k \\
+&= (\sigma(u_o^T)-1)u_o + \sum_{k=1}^{K}\sigma(u_k^Tv_c)u_k
 
+\end{aligned}</script><p>For $u_o$,Remember:$o\notin {w1,\cdots,w_k}$</p>
+<script type="math/tex; mode=display">\frac{\partial J_{neg-sample}}{\partial u_o} =   (\sigma(u_o^Tv_c)-1)v_c</script><p>For $u_k$:</p>
+<script type="math/tex; mode=display">\frac{\partial J}{\partial u_k} = (1-\sigma(-u_k^Tv_c))v_c = \sigma(u_k^Tv_c)v_c,for\ k = 1,2,\cdots,K</script><p><strong>Why this loss function is much more efficient to compute than the naive-softmax loss?</strong><br>从求得的偏导数中我们可以看出，原始的softmax函数每次对$v_c$进行反向传播时，需要与 output vector matrix 进行大量且复杂的矩阵运算，而负采样中的计算复杂度则不再与词表大小$V$有关，而是与采样数量$K$有关。</p>
+<h2 id="Question-F"><a href="#Question-F" class="headerlink" title="Question F"></a>Question F</h2><blockquote>
+<p>Suppose the center word is $c=w<em>t$ and the context window is $[w</em>{t-m},\cdots,w<em>{t-1},w_t,w</em>[t+1],\cdots,w_{t+m}]$,where $m$ is the context window size.Recall that for the skip-gram version of $word2vec$,the total loss for the context window is :</p>
+<script type="math/tex; mode=display">\begin{aligned}
+  \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},U) = \sum_{-m\le j \le m \atop j\neq 0} \boldsymbol{J}(v_c,w_{t+j},U)
+\end{aligned}</script><p>Here,$\boldsymbol{J}(v<em>c,w</em>{t+j},U)$  represents an arbitrary loss term for the center word $c=w<em>t$ and outside word $w</em>{t+j}$. $\boldsymbol{J}(v<em>c,w</em>{t+j},U)$ could be $\boldsymbol{J}<em>{naive-softmax}(v_c,w</em>{t+j},U)$ or $\boldsymbol{J}<em>{neg-sample}(v_c,w</em>{t+j},U)$ , depending on your implementation.<br>Write down three partial derivatives:<br>(1) $\partial \boldsymbol{J}<em>{skip-gram}(v_c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{U}$<br>(2)$\partial \boldsymbol{J}</em>{skip-gram}(v<em>c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_c$<br>(3)$\partial \boldsymbol{J}</em>{skip-gram}(v<em>c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_w$ when $w \neq c$<br>Write your answers in terms of $\partial\boldsymbol{J}(v_c,w</em>{t+j},U)/\partial \boldsymbol{U}$ and $\partial\boldsymbol{J}(v<em>c,w</em>{t+j},U)/\partial \boldsymbol{v}_c$ </p>
+<h2 id="Answer-F"><a href="#Answer-F" class="headerlink" title="Answer F"></a>Answer F</h2></blockquote>
+<script type="math/tex; mode=display">\begin{aligned}\frac{\partial J_{skip-gram}}{\partial U} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial U}\\
+\frac{\partial J_{skip-gram}}{\partial v_c} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial v_c}\\
+\frac{\partial J_{skip-gram}}{\partial v_w} &= 0(when \ w \neq c)
+
+\end{aligned}</script>
       
     </div>
     
@@ -483,7 +501,7 @@
   <p><span>本文标题:</span><a href="/2020/07/09/CS224n-assign2/">CS224N Assignment2</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年07月09日 - 10:07</p>
-  <p><span>最后更新:</span>2020年07月09日 - 20:07</p>
+  <p><span>最后更新:</span>2020年07月11日 - 16:07</p>
   <p><span>原始链接:</span><a href="/2020/07/09/CS224n-assign2/" title="CS224N Assignment2">http://woshibwt.github.io/2020/07/09/CS224n-assign2/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/07/09/CS224n-assign2/"  aria-label="复制成功！"></i></span>
   </p>
@@ -711,7 +729,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-A"><span class="nav-number">1.</span> <span class="nav-text">Question A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-A"><span class="nav-number">2.</span> <span class="nav-text">Answer A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-B"><span class="nav-number">3.</span> <span class="nav-text">Question B</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-B"><span class="nav-number">4.</span> <span class="nav-text">Answer B</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-C"><span class="nav-number">5.</span> <span class="nav-text">Question C</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-C"><span class="nav-number">6.</span> <span class="nav-text">Answer C</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-D"><span class="nav-number">7.</span> <span class="nav-text">Question D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-D"><span class="nav-number">8.</span> <span class="nav-text">Answer D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-E"><span class="nav-number">9.</span> <span class="nav-text">Question E</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-A"><span class="nav-number">1.</span> <span class="nav-text">Question A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-A"><span class="nav-number">2.</span> <span class="nav-text">Answer A</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-B"><span class="nav-number">3.</span> <span class="nav-text">Question B</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-B"><span class="nav-number">4.</span> <span class="nav-text">Answer B</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-C"><span class="nav-number">5.</span> <span class="nav-text">Question C</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-C"><span class="nav-number">6.</span> <span class="nav-text">Answer C</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-D"><span class="nav-number">7.</span> <span class="nav-text">Question D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-D"><span class="nav-number">8.</span> <span class="nav-text">Answer D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-E"><span class="nav-number">9.</span> <span class="nav-text">Question E</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-E"><span class="nav-number">10.</span> <span class="nav-text">Answer E</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Question-F"><span class="nav-number">11.</span> <span class="nav-text">Question F</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Answer-F"><span class="nav-number">12.</span> <span class="nav-text">Answer F</span></a></li></ol></div>
             
 
           </div>
