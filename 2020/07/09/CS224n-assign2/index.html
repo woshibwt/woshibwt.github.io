@@ -88,14 +88,14 @@
 
 
 
-<meta name="description" content="Question A Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that -\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) &#x3D; -\log(\hat{y}_o)Ans">
+<meta name="description" content="Question A Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that -\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) &#x3D; -\log(\hat{y}_o) An">
 <meta property="og:type" content="article">
 <meta property="og:title" content="CS224N Assignment2">
 <meta property="og:url" content="http://woshibwt.github.io/2020/07/09/CS224n-assign2/index.html">
 <meta property="og:site_name" content="Bi Wentao">
-<meta property="og:description" content="Question A Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that -\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) &#x3D; -\log(\hat{y}_o)Ans">
+<meta property="og:description" content="Question A Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that -\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) &#x3D; -\log(\hat{y}_o) An">
 <meta property="article:published_time" content="2020-07-09T02:57:21.000Z">
-<meta property="article:modified_time" content="2020-07-11T08:53:04.676Z">
+<meta property="article:modified_time" content="2020-07-25T02:28:56.240Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="CS224n">
 <meta name="twitter:card" content="summary">
@@ -408,9 +408,9 @@
       
         <h2 id="Question-A"><a href="#Question-A" class="headerlink" title="Question A"></a>Question A</h2><blockquote>
 <p>Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that</p>
-<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -\log(\hat{y}_o)</script><h2 id="Answer-A"><a href="#Answer-A" class="headerlink" title="Answer A"></a>Answer A</h2><p>&emsp;因为$y$是one-hot向量，所以：</p>
-<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -y_o\log(\hat{y}_o) - {\sum_{w\in{Vocab},w\neq o} y_w\log(\hat{y}_w)}  = -y_o\log(\hat{y}_o)</script></blockquote>
-<h2 id="Question-B"><a href="#Question-B" class="headerlink" title="Question B"></a>Question B</h2><blockquote>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -\log(\hat{y}_o)</script></blockquote>
+<h2 id="Answer-A"><a href="#Answer-A" class="headerlink" title="Answer A"></a>Answer A</h2><p>&emsp;因为$y$是one-hot向量，所以：</p>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -y_o\log(\hat{y}_o) - {\sum_{w\in{Vocab},w\neq o} y_w\log(\hat{y}_w)}  = -\log(\hat{y}_o)</script><h2 id="Question-B"><a href="#Question-B" class="headerlink" title="Question B"></a>Question B</h2><blockquote>
 <p>Compute the partial derivative of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to $\boldsymbol{v_c}$, Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
 </blockquote>
 <h2 id="Answer-B"><a href="#Answer-B" class="headerlink" title="Answer B"></a>Answer B</h2><script type="math/tex; mode=display">\begin{aligned}
@@ -501,7 +501,7 @@
   <p><span>本文标题:</span><a href="/2020/07/09/CS224n-assign2/">CS224N Assignment2</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年07月09日 - 10:07</p>
-  <p><span>最后更新:</span>2020年07月11日 - 16:07</p>
+  <p><span>最后更新:</span>2020年07月25日 - 10:07</p>
   <p><span>原始链接:</span><a href="/2020/07/09/CS224n-assign2/" title="CS224N Assignment2">http://woshibwt.github.io/2020/07/09/CS224n-assign2/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/07/09/CS224n-assign2/"  aria-label="复制成功！"></i></span>
   </p>
