@@ -120,18 +120,4 @@
     
   </url>
   
-  <url>
-    <loc>{{ post.permalink | uriencode }}</loc>
-    
-    <lastmod>{{ post.updated.toISOString() }}</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>{{ post.permalink | uriencode }}</loc>
-    
-    <lastmod>{{ post.updated.toISOString() }}</lastmod>
-    
-  </url>
-  
 </urlset>
