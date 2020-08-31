@@ -75,7 +75,7 @@
 
 
 
-  <meta name="keywords" content="CS224N," />
+  <meta name="keywords" content="nlp 机器学习," />
 
 
 
@@ -103,9 +103,9 @@
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_RatiosOfCo-occurence.PNG">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_WeightedLeastSquaresRegression.PNG">
 <meta property="article:published_time" content="2020-05-28T02:43:21.000Z">
-<meta property="article:modified_time" content="2020-07-06T12:20:06.754Z">
+<meta property="article:modified_time" content="2020-08-27T08:06:01.603Z">
 <meta property="article:author" content="Bi Wentao">
-<meta property="article:tag" content="CS224N">
+<meta property="article:tag" content="nlp 机器学习">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG">
 
@@ -513,15 +513,15 @@
 <blockquote>
 <p>算法关键思想：共现概率的<strong>比值</strong>(而不是概率单一大小)可以对meaning component进行编码  </p>
 </blockquote>
-<p> &emsp;&emsp;来参考课上给出的例子：<br> <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_RatiosOfCo-occurence.PNG" alt><br>&emsp;&emsp;例如我们想区分热力学上两种不同状态ice与steam,它们之间的关系可通过与不同单词$x$的co-occurrence probablity的<strong>比值</strong>来描述，例如对于solid,虽然$P(solid|ice)$与$P(solid|steam)$本身很小，不能透露有效的信息，但是它们的<strong>比值</strong>$\frac{P(solid|ice)}{P(solid|steam)}$较大，因为solid更多用来描述ice的状态而不是steam的状态，因此在ice的上下文中出现几率较大，对于gas情况则恰恰相反。而对于water这种描述ice与steam皆可或者fashion这种与两者都没什么联系的单词，比值接近于1.所以实际上co-occurence probablity的相对比值更有意义。<br>&emsp;&emsp;基于这些观察，课堂上直接给出了GloVe的损失函数形式：</p>
+<p> &emsp;&emsp;来参考课上给出的例子：<br> <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_RatiosOfCo-occurence.PNG" alt><br>&emsp;&emsp;例如我们想区分热力学上两种不同状态ice与steam,它们之间的关系可通过与不同单词$x$的co-occurrence probablity的<strong>比值</strong>来描述，例如对于solid,虽然$P(solid|ice)$与$P(solid|steam)$本身都很小，不能透露有效的信息，但是它们的<strong>比值</strong>$\frac{P(solid|ice)}{P(solid|steam)}$较大，因为solid更多用来描述ice的状态而不是steam的状态，因此在ice的上下文中出现几率较大，对于gas情况则恰恰相反。而对于water这种描述ice与steam皆可或者fashion这种与两者都没什么联系的单词，比值接近于1.所以实际上co-occurence probablity的相对比值更有意义。<br>&emsp;&emsp;基于这些观察，课堂上直接给出了GloVe的损失函数形式：</p>
 <script type="math/tex; mode=display">w_j \cdot w_j = \log P(i|j)</script><script type="math/tex; mode=display">J = \sum_{i,j=1}^V {f(X_{ij})(w_i^T\widetilde{w}_j+b_i+\widetilde{b}_j-\log X_{ij})}^2</script><p>&emsp;&emsp;基于对以上概率比值的观察，我们假设模型的函数有如下形式：</p>
 <script type="math/tex; mode=display">F(w_i,w_j,\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;其中$\widetilde{w}$代表了上下文向量，如上文的solid,gas,water,fashion。$w_i,w_j$则是我们要比较的两个词汇，如上文的ice,steam。</p>
 <blockquote>
 <p>&emsp;&emsp;F可选的形式很多，由于希望$F$能在单词向量空间内表示概率比值，有意向量空间是线性空间，一个自然假设是$F$是关于向量$w_i,w_j$的差的形式：</p>
 <script type="math/tex; mode=display">F((w_i-w_j),\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>等式右边为标量形式，为了将左边矢量也转化为标量形式，使用矢量的点乘:</p>
-<script type="math/tex; mode=display">F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;在此，作者又进行了对称性分析，即对于word-word co-occurrence,将一个vector划分为center word还是context word是不重要的，即在交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$的时候仍然成立，如何满足这种对称性呢？<br>&emsp;&emsp;接下来分成两部来进行<br>&emsp;&emsp;首先要求满足$F((w_i-w_j)^T \widetilde{w}_k)=\frac{F(w_i^T\widetilde{w}_k)}{F(w_j^T\widetilde{w}_k)}$,显然该方程的解为$F=\exp$，同时也由此找对应项  </p>
+<script type="math/tex; mode=display">F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;在此，作者又进行了对称性分析，即对于word-word co-occurrence,将一个vector划分为center word还是context word是不重要的，即在交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$的时候仍然成立，如何满足这种对称性呢？<br>&emsp;&emsp;接下来分成两步来进行<br>&emsp;&emsp;首先要求满足$F((w_i-w_j)^T \widetilde{w}_k)=\frac{F(w_i^T\widetilde{w}_k)}{F(w_j^T\widetilde{w}_k)}$,显然该方程的解为$F=\exp$，同时也由此找<strong>对应项</strong> (两边分子分母对应) </p>
 </blockquote>
-<p>&emsp;$F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}} \\\Rightarrow F(w_i^T\widetilde{w}) = P_{ik} = \frac{X_{ik}}{X_i}\\\Rightarrow w_i^T\widetilde{w}_k = \log(P_{ik})=\log(X_{ik}) - \log(X_i)$  </p>
+<p>&emsp;$F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}} \\\Rightarrow F(w_i^T\widetilde{w}_k) = P_{ik} = \frac{X_{ik}}{X_i}\\\Rightarrow w_i^T\widetilde{w}_k = \log(P_{ik})=\log(X_{ik}) - \log(X_i)$  </p>
 <blockquote>
 <p>&emsp;&emsp;注意其中$\log(X_i)$破坏了交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$时的对称性，但是这一项与$k$无关，所以我们通过将其融入关于$w_i$的bias项$b_i$来解决。</p>
 <p>&emsp;&emsp;第二步为了平衡对称性，我们对应的再加入一个关于$\widetilde{w}_k$的bias项$\widetilde{b}_k$,然后我们可以得到$w_i^T\widetilde{w}_k+b_i+\widetilde{b}_k = \log(X_{ik})$</p>
@@ -574,7 +574,7 @@
   <p><span>本文标题:</span><a href="/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/">CS224N笔记 (二):Glove</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年05月28日 - 10:05</p>
-  <p><span>最后更新:</span>2020年07月06日 - 20:07</p>
+  <p><span>最后更新:</span>2020年08月27日 - 16:08</p>
   <p><span>原始链接:</span><a href="/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/" title="CS224N笔记 (二):Glove">http://woshibwt.github.io/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/"  aria-label="复制成功！"></i></span>
   </p>
@@ -608,7 +608,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/CS224N/" rel="tag"><i class="fa fa-tag"></i> CS224N</a>
+            <a href="/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> nlp 机器学习</a>
           
         </div>
       
@@ -726,7 +726,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -748,7 +748,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -98,8 +98,9 @@
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/FlappyBird%E9%A1%B9%E7%9B%AE%E7%BB%93%E6%9E%84.PNG">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/super.PNG">
 <meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/%E6%9D%83%E9%99%90%E4%BF%AE%E9%A5%B0%E7%AC%A6.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Object.PNG">
 <meta property="article:published_time" content="2020-07-09T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-08-21T04:09:32.860Z">
+<meta property="article:modified_time" content="2020-08-28T08:06:59.905Z">
 <meta property="article:author" content="Bi Wentao">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
@@ -511,6 +512,74 @@
 <li>抽象类不能直接实例化，但可以参照多态的方式通过子类对象实例化</li>
 <li>抽象类的子类要么重写抽象类中的所有抽象方法，要么自己是一个抽象类</li>
 </ul>
+<h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><h2 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h2><p>接口是一种<strong>公共的规范标准</strong>,只要符合规范标准，大家都可以通用<br>JAVAz中的接口更多的体现在<strong>对行为的抽象</strong></p>
+<h2 id="接口特点"><a href="#接口特点" class="headerlink" title="接口特点"></a>接口特点</h2><ul>
+<li>使用关键词<strong>interface</strong>修饰</li>
+<li>类实现接口用<strong>implements</strong>表示</li>
+<li>接口不能实例化<ul>
+<li>接口多态：参照多态的方式，通过实现类对象实例化</li>
+<li>多态的形式： 具体类多态，<strong>抽象类多态</strong>，<strong>接口多态</strong> </li>
+<li>多态的前提：有继承或者实现关系；有方法重写/有父类(类/接口)引用指向(子/实现)类对象。</li>
+<li>接口的实现类：要么重写接口中的所有抽象方法，要么是抽象类<h2 id="接口的成员特点"><a href="#接口的成员特点" class="headerlink" title="接口的成员特点"></a>接口的成员特点</h2></li>
+</ul>
+</li>
+<li>成员变量：只能是常量，默认修饰符：<strong>public static final</strong></li>
+<li>构造方法：<ul>
+<li>接口没有构造方法，因为接口主要是对行为进行抽象的，没有具体存在；</li>
+<li>一个类如果没有父类，默认继承自Object类</li>
+</ul>
+</li>
+<li>成员方法<ul>
+<li>只能是抽象方法</li>
+<li>默认修饰符:public abstract<h2 id="类和接口的关系"><a href="#类和接口的关系" class="headerlink" title="类和接口的关系"></a>类和接口的关系</h2></li>
+<li>类和类的关系：继承关系，只能单继承，但可以多层继承</li>
+<li>类和接口的关系：实现关系，可以单实现，也可以多实现，还可以在继承一个类的同时实现多个接口</li>
+<li>接口和接口的关系：继承关系，可以单继承，也可以多继承<h2 id="抽象类和接口的区别"><a href="#抽象类和接口的区别" class="headerlink" title="抽象类和接口的区别"></a>抽象类和接口的区别</h2></li>
+</ul>
+</li>
+<li>成员区别：  <ul>
+<li>抽象类：变量，常量，有构造方法，有抽象方法，也有非抽象方法 </li>
+<li>接口：常量，抽象方法</li>
+</ul>
+</li>
+<li>设计理念区别<ul>
+<li>抽象类：对类抽象，包括属性、行为</li>
+<li>接口： 对行为抽象，主要是行为 </li>
+</ul>
+</li>
+</ul>
+<h1 id="形参和返回值"><a href="#形参和返回值" class="headerlink" title="形参和返回值"></a>形参和返回值</h1><h2 id="类名作为形参和返回值"><a href="#类名作为形参和返回值" class="headerlink" title="类名作为形参和返回值"></a>类名作为形参和返回值</h2><ul>
+<li>方法的形参是类名，其实需要的是该类的对象</li>
+<li>方法的返回值是类名，其实返回的是该类的对象</li>
+</ul>
+<h2 id="抽象类名作为形参和返回值"><a href="#抽象类名作为形参和返回值" class="headerlink" title="抽象类名作为形参和返回值"></a>抽象类名作为形参和返回值</h2><ul>
+<li>方法的形参是抽象类名，其实需要的是该抽象类的子类对象</li>
+<li>方法的换回值是抽象类名，其实返回的是该抽象类的子类对象</li>
+</ul>
+<h2 id="接口名作为新参和返回值"><a href="#接口名作为新参和返回值" class="headerlink" title="接口名作为新参和返回值"></a>接口名作为新参和返回值</h2><ul>
+<li>方法的形参是接口名，其实需要的是该接口的实现类对象</li>
+<li>方法的返回值是接口名，其实返回的是该接口的实现类对象</li>
+</ul>
+<h1 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h1><h2 id="内部类概述"><a href="#内部类概述" class="headerlink" title="内部类概述"></a>内部类概述</h2><p>内部类：就是在一个类中定义一个类<br>内部类的访问特点</p>
+<ul>
+<li>内部类可以直接访问外部类的成员。包括私有</li>
+<li>外部类要访问内部类的成员，必须创建对象</li>
+</ul>
+<h2 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h2><p>成员内部类，外界如何创建对象使用呢？</p>
+<ul>
+<li>格式：外部类名.内部类名 对象名 = 外部类对象.内部类对象</li>
+<li>范例：Outer.Inner oi = new Outer().new Inner();</li>
+</ul>
+<h2 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h2><p>局部内部类是在方法中定义的类，所以外界是无法直接使用，需要在方法内部创建对象并使用<br>该类可以直接访问外部类的成员，也可以访问方法内的局部变量</p>
+<h2 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h2><p>前提：存在一个类或者接口，这里的类可以是具体类也可以是抽象类。<br>格式：<br><strong>new</strong> 类名或接口名(){<br>  重写方法;<br>};<br>本质：是一个继承了该类或者实现了该接口的子类匿名对象</p>
+<h1 id="System类"><a href="#System类" class="headerlink" title="System类"></a>System类</h1><p>public static long currentTimeMillis():返回当前时间(以秒为单位)</p>
+<h1 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h1><p>Object是类层次结构的根，每个类都可以将Object作为超类，所有类都直接或间接的继承自该类<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Object.PNG" alt></p>
+<h1 id="Interger"><a href="#Interger" class="headerlink" title="Interger"></a>Interger</h1><h2 id="使用静态方法得到Interger对象："><a href="#使用静态方法得到Interger对象：" class="headerlink" title="使用静态方法得到Interger对象："></a>使用静态方法得到Interger对象：</h2><ul>
+<li>Integer i1 = Integer.valueOf(100)</li>
+<li>Integer i2 = Integer.valueOf(“100”)</li>
+</ul>
+<h2 id="int和String的相互转换"><a href="#int和String的相互转换" class="headerlink" title="int和String的相互转换"></a>int和String的相互转换</h2><h3 id="int转换为String"><a href="#int转换为String" class="headerlink" title="int转换为String"></a>int转换为String</h3><p>public static String valueOf(int i):返回int参数的字符串表示形式。该方法是String类中的方法</p>
+<h3 id="String转化为int"><a href="#String转化为int" class="headerlink" title="String转化为int"></a>String转化为int</h3><p>public static int parseInt(String s):将字符串解析为int类型。该方法是Integer类中的方法</p>
 
       
     </div>
@@ -539,7 +608,7 @@
   <p><span>本文标题:</span><a href="/2020/07/10/java-se-%E5%88%98%E6%84%8F-1-83%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/">java-se-刘意-1-83查漏补缺</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
   <p><span>发布时间:</span>2020年07月10日 - 00:07</p>
-  <p><span>最后更新:</span>2020年08月21日 - 12:08</p>
+  <p><span>最后更新:</span>2020年08月28日 - 16:08</p>
   <p><span>原始链接:</span><a href="/2020/07/10/java-se-%E5%88%98%E6%84%8F-1-83%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/" title="java-se-刘意-1-83查漏补缺">http://woshibwt.github.io/2020/07/10/java-se-%E5%88%98%E6%84%8F-1-83%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/</a>
     <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/07/10/java-se-%E5%88%98%E6%84%8F-1-83%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/"  aria-label="复制成功！"></i></span>
   </p>
@@ -691,7 +760,7 @@
               
                 <a href="/archives/%7C%7C%20archive">
               
-                  <span class="site-state-item-count">14</span>
+                  <span class="site-state-item-count">15</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -713,7 +782,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -771,7 +840,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IDEA的使用技巧"><span class="nav-number">1.</span> <span class="nav-text">IDEA的使用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDEA的项目结构"><span class="nav-number">1.1.</span> <span class="nav-text">IDEA的项目结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包"><span class="nav-number"></span> <span class="nav-text">包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#包的概述和使用"><span class="nav-number">1.</span> <span class="nav-text">包的概述和使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDEA的快捷键"><span class="nav-number">1.1.</span> <span class="nav-text">IDEA的快捷键</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快速生成语句"><span class="nav-number">1.1.1.</span> <span class="nav-text">快速生成语句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内容辅助键"><span class="nav-number">1.1.2.</span> <span class="nav-text">内容辅助键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注释"><span class="nav-number">1.1.3.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#格式化"><span class="nav-number">1.1.4.</span> <span class="nav-text">格式化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String"><span class="nav-number"></span> <span class="nav-text">String</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#遍历字符串"><span class="nav-number">1.</span> <span class="nav-text">遍历字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串长度"><span class="nav-number">1.1.</span> <span class="nav-text">字符串长度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StringBuilder"><span class="nav-number"></span> <span class="nav-text">StringBuilder</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#StringBuilder概述"><span class="nav-number">1.</span> <span class="nav-text">StringBuilder概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StringBuilder-和-String相互转换"><span class="nav-number">2.</span> <span class="nav-text">StringBuilder 和 String相互转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#继承"><span class="nav-number"></span> <span class="nav-text">继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中变量的访问特点"><span class="nav-number">1.</span> <span class="nav-text">继承中变量的访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#super"><span class="nav-number">2.</span> <span class="nav-text">super</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中构造方法的访问特点"><span class="nav-number">3.</span> <span class="nav-text">继承中构造方法的访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中成员方法的访问特点"><span class="nav-number">4.</span> <span class="nav-text">继承中成员方法的访问特点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重写"><span class="nav-number"></span> <span class="nav-text">重写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#方法重写注意事项"><span class="nav-number">1.</span> <span class="nav-text">方法重写注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修饰符"><span class="nav-number"></span> <span class="nav-text">修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#权限修饰符"><span class="nav-number">0.1.</span> <span class="nav-text">权限修饰符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static"><span class="nav-number">0.2.</span> <span class="nav-text">static</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多态"><span class="nav-number"></span> <span class="nav-text">多态</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多态中成员访问特点"><span class="nav-number">1.</span> <span class="nav-text">多态中成员访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态的好处和弊端"><span class="nav-number">2.</span> <span class="nav-text">多态的好处和弊端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态中的转型"><span class="nav-number">3.</span> <span class="nav-text">多态中的转型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#抽象类"><span class="nav-number"></span> <span class="nav-text">抽象类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象类概述"><span class="nav-number">1.</span> <span class="nav-text">抽象类概述</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#IDEA的使用技巧"><span class="nav-number">1.</span> <span class="nav-text">IDEA的使用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDEA的项目结构"><span class="nav-number">1.1.</span> <span class="nav-text">IDEA的项目结构</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#包"><span class="nav-number"></span> <span class="nav-text">包</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#包的概述和使用"><span class="nav-number">1.</span> <span class="nav-text">包的概述和使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#IDEA的快捷键"><span class="nav-number">1.1.</span> <span class="nav-text">IDEA的快捷键</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#快速生成语句"><span class="nav-number">1.1.1.</span> <span class="nav-text">快速生成语句</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#内容辅助键"><span class="nav-number">1.1.2.</span> <span class="nav-text">内容辅助键</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#注释"><span class="nav-number">1.1.3.</span> <span class="nav-text">注释</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#格式化"><span class="nav-number">1.1.4.</span> <span class="nav-text">格式化</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#String"><span class="nav-number"></span> <span class="nav-text">String</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#遍历字符串"><span class="nav-number">1.</span> <span class="nav-text">遍历字符串</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字符串长度"><span class="nav-number">1.1.</span> <span class="nav-text">字符串长度</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StringBuilder"><span class="nav-number"></span> <span class="nav-text">StringBuilder</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#StringBuilder概述"><span class="nav-number">1.</span> <span class="nav-text">StringBuilder概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#StringBuilder-和-String相互转换"><span class="nav-number">2.</span> <span class="nav-text">StringBuilder 和 String相互转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#继承"><span class="nav-number"></span> <span class="nav-text">继承</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中变量的访问特点"><span class="nav-number">1.</span> <span class="nav-text">继承中变量的访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#super"><span class="nav-number">2.</span> <span class="nav-text">super</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中构造方法的访问特点"><span class="nav-number">3.</span> <span class="nav-text">继承中构造方法的访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#继承中成员方法的访问特点"><span class="nav-number">4.</span> <span class="nav-text">继承中成员方法的访问特点</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#重写"><span class="nav-number"></span> <span class="nav-text">重写</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#方法重写注意事项"><span class="nav-number">1.</span> <span class="nav-text">方法重写注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#修饰符"><span class="nav-number"></span> <span class="nav-text">修饰符</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#权限修饰符"><span class="nav-number">0.1.</span> <span class="nav-text">权限修饰符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#static"><span class="nav-number">0.2.</span> <span class="nav-text">static</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多态"><span class="nav-number"></span> <span class="nav-text">多态</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#多态中成员访问特点"><span class="nav-number">1.</span> <span class="nav-text">多态中成员访问特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态的好处和弊端"><span class="nav-number">2.</span> <span class="nav-text">多态的好处和弊端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态中的转型"><span class="nav-number">3.</span> <span class="nav-text">多态中的转型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#抽象类"><span class="nav-number"></span> <span class="nav-text">抽象类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象类概述"><span class="nav-number">1.</span> <span class="nav-text">抽象类概述</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#接口"><span class="nav-number"></span> <span class="nav-text">接口</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口概述"><span class="nav-number">1.</span> <span class="nav-text">接口概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口特点"><span class="nav-number">2.</span> <span class="nav-text">接口特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口的成员特点"><span class="nav-number">3.</span> <span class="nav-text">接口的成员特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类和接口的关系"><span class="nav-number">4.</span> <span class="nav-text">类和接口的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象类和接口的区别"><span class="nav-number">5.</span> <span class="nav-text">抽象类和接口的区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#形参和返回值"><span class="nav-number"></span> <span class="nav-text">形参和返回值</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#类名作为形参和返回值"><span class="nav-number">1.</span> <span class="nav-text">类名作为形参和返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象类名作为形参和返回值"><span class="nav-number">2.</span> <span class="nav-text">抽象类名作为形参和返回值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口名作为新参和返回值"><span class="nav-number">3.</span> <span class="nav-text">接口名作为新参和返回值</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#内部类"><span class="nav-number"></span> <span class="nav-text">内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#内部类概述"><span class="nav-number">1.</span> <span class="nav-text">内部类概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#成员内部类"><span class="nav-number">2.</span> <span class="nav-text">成员内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#局部内部类"><span class="nav-number">3.</span> <span class="nav-text">局部内部类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#匿名内部类"><span class="nav-number">4.</span> <span class="nav-text">匿名内部类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#System类"><span class="nav-number"></span> <span class="nav-text">System类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Object"><span class="nav-number"></span> <span class="nav-text">Object</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Interger"><span class="nav-number"></span> <span class="nav-text">Interger</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用静态方法得到Interger对象："><span class="nav-number">1.</span> <span class="nav-text">使用静态方法得到Interger对象：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#int和String的相互转换"><span class="nav-number">2.</span> <span class="nav-text">int和String的相互转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#int转换为String"><span class="nav-number">2.1.</span> <span class="nav-text">int转换为String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String转化为int"><span class="nav-number">2.2.</span> <span class="nav-text">String转化为int</span></a></li></ol></li></ol></div>
             
 
           </div>
