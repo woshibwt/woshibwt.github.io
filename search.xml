@@ -86,47 +86,6 @@
       </tags>
   </entry>
   <entry>
-    <title>CS224N笔记(五)-Dependency Parsing</title>
-    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
-    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
-<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
-<ul>
-<li>短语结构将单词组织成嵌套的成分</li>
-<li>单词被赋予了一个词性</li>
-<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
-</ul>
-<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
-<p>&emsp;&emsp;为什么我们需要句子结构</p>
-<ul>
-<li>为了能够正确地解释语言，我们需要理解句子结构</li>
-<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
-<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
-</ul>
-<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
-<ul>
-<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
-<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
-<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
-<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
-</ul>
-<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
-<ul>
-<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
-<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
-<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
-<li>stack和buffer中的单词及其dependent word。</li>
-<li>单词的Part-of-Speech tag。</li>
-<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
-</ul>
-]]></content>
-      <categories>
-        <category>CS224N</category>
-      </categories>
-      <tags>
-        <tag>nlp 机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CS224N笔记-七-Vanishing Gradient and Fancy RNNs</title>
     <url>/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</url>
     <content><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不止在RNN上出现）并且介绍了几种更复杂的RNN变体</p>
@@ -174,6 +133,47 @@
 </ul>
 <p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/GRU.png" alt></p>
 <p>&emsp;&emsp;关于LSTM和GRU推荐两篇文章：<a href="https://zhuanlan.zhihu.com/p/32085405" target="_blank" rel="noopener">人人都能看懂的LSTM</a> , <a href="https://zhuanlan.zhihu.com/p/32481747" target="_blank" rel="noopener">人人都能看懂的GRU</a></p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记(五)-Dependency Parsing</title>
+    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
+    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
+<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
+<ul>
+<li>短语结构将单词组织成嵌套的成分</li>
+<li>单词被赋予了一个词性</li>
+<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
+</ul>
+<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
+<p>&emsp;&emsp;为什么我们需要句子结构</p>
+<ul>
+<li>为了能够正确地解释语言，我们需要理解句子结构</li>
+<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
+<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
+</ul>
+<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
+<ul>
+<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
+<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
+<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
+</ul>
+<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
+<ul>
+<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
+<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
+<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
+<li>stack和buffer中的单词及其dependent word。</li>
+<li>单词的Part-of-Speech tag。</li>
+<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
+</ul>
 ]]></content>
       <categories>
         <category>CS224N</category>
@@ -281,6 +281,68 @@ J^{(1)}(\theta)+J^{(2)}(\theta)+J^{(3)}(\theta)+... &= J(\theta) \\ &=  \frac{1}
       </tags>
   </entry>
   <entry>
+    <title>CS224N笔记-十-Question-Answering</title>
+    <url>/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/</url>
+    <content><![CDATA[<p>&emsp;&emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。<br>&emsp;&emsp;通常可以将问答系统看作两部分：</p>
+<ul>
+<li>从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval)</li>
+<li>从文件或段落中找到相关的答案（reading comprehension）,这是这一讲的<strong>重点</strong><h2 id="Stanford-Question-Answering-Dataset-SQuAD"><a href="#Stanford-Question-Answering-Dataset-SQuAD" class="headerlink" title="Stanford Question Answering Dataset(SQuAD)"></a>Stanford Question Answering Dataset(SQuAD)</h2>&emsp;&emsp;reading comprehension需要的数据包括：</li>
+<li>Passage(文字段落)</li>
+<li>Question(问题)</li>
+<li>Answer(回答)</li>
+</ul>
+<p>&emsp;&emsp;SQuAD数据集中每个问题都有人类提供的三个标准答案，为了评估问答模型，有两个衡量尺度</p>
+<ul>
+<li>Exact Match(精准匹配)：即模型回答与任意一个标准答案匹配即计数为1,否则为零  </li>
+<li>F1，即将模型答案与标准答案当作词袋，计算<script type="math/tex; mode=display">precison=\frac{TP}{TP+FP}</script><script type="math/tex; mode=display">recall=\frac{TP}{TP+FN}</script>并计算它们的调和平均数<script type="math/tex; mode=display">F1 = \frac{2PR}{P+R}</script>(TP:真正例，FP:假正例，FN：假负例，TN：真负例)  </li>
+</ul>
+<p>&emsp;&emsp;通常F1 score被认为是更可靠的衡量尺度<br>&emsp;&emsp;SQuAD 1.0版本中所有问题的答案都包含在段落中,而2.0版本中引入了一些段落中找不到答案的问题。对于这类问题，当模型输出没有答案时得分为1，否则为0 .</p>
+<h3 id="SQuAD的局限性："><a href="#SQuAD的局限性：" class="headerlink" title="SQuAD的局限性："></a>SQuAD的局限性：</h3><ul>
+<li>答案直接截取自段落中的文字，没有是非判断，计数等问题。</li>
+<li>问题是根据段落构造的</li>
+<li>几乎没有跨句子之间的理解和推断</li>
+</ul>
+<h2 id="Stanford-Attentive-Reader"><a href="#Stanford-Attentive-Reader" class="headerlink" title="Stanford Attentive Reader"></a>Stanford Attentive Reader</h2><p>&emsp;&emsp;这就是Manning组的关于QA的模型Stanford Attentive Reader</p>
+<h3 id="part-1-encoding"><a href="#part-1-encoding" class="headerlink" title="part 1:encoding"></a>part 1:encoding</h3><h4 id="step-1-word-embedding"><a href="#step-1-word-embedding" class="headerlink" title="step 1 :word embedding"></a>step 1 :word embedding</h4><p>&emsp;&emsp;将所有的单词(包括question中的以及passage中的)都通过一个embedding矩阵$E \in \mathbb{R}^{d \times \lvert V \rvert}$,用$d$维的词向量来表示，得到：</p>
+<script type="math/tex; mode=display">p : \mathbf{p_1,\cdots,p_m}\in \mathbb{R}^d</script><script type="math/tex; mode=display">q : \mathbf{q_1,\cdots,q_l}\in \mathbb{R}^d</script><h4 id="step-2-Bidirectional-LSTM"><a href="#step-2-Bidirectional-LSTM" class="headerlink" title="step 2 :Bidirectional LSTM"></a>step 2 :Bidirectional LSTM</h4><p>&emsp;&emsp;先利用Bidirectional LSTM对于question提取特征向量：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg" alt></p>
+<p>&emsp;&emsp;再对Passage中的每个单词用Bidirectional LSTM提取其特征向量，并对每个单词对应的特征向量与问题的特征向量进行Attention才做，分别得到推测答案起始位置与中止位置的attention score<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM2.jpg" alt></p>
+<h4 id="Stanford-Attensive-Reader"><a href="#Stanford-Attensive-Reader" class="headerlink" title="Stanford Attensive Reader++"></a>Stanford Attensive Reader++</h4><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/stanfordpp.jpg" alt><br>&emsp;&emsp;整个模型的所有参数都是端到端训练的，训练的目标是提高预测开始位置与中止位置的准确度。<br>&emsp;&emsp;损失函数为</p>
+<script type="math/tex; mode=display">L=-\sum \log P^{start}(a_{start}) - \sum \log P^{end} (a_{end})</script><p>&emsp;&emsp;在模型的基础上进行了改进</p>
+<ul>
+<li>对于question部分，不仅仅是LSTM输出，而且利用了类似self-attention(自注意力)的weighted sum来表示，并且将BiLSTM加至三层。</li>
+<li><p>对于passage的encoding，除了利用Glove得到的word embedding之外，还加入了一些语言学的特征，如POS（part of speech)和NER(named entity recognition) tag以及term frequency。<br>另外还加入了比较简单的特征如段落中单词是否出现在问题中的binary feature，对于这种match，又分为三种即exact match, uncased match(不区分大小写), lemma match(如drive和driving)。更进一步，还引入了aligned question embedding, 与exact match相比，这可以看做是对于相似却不完全相同的单词（如car与vehicle)的soft alignment：$f_{align}(p_i) = \sum a_{i,j}E(q_j)$,其中$a_{i,j}$代表了段落中单词$p_i$与问题中单词$q_j$的相似度，且：</p>
+<script type="math/tex; mode=display">a_{i,j} = \frac{\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_j)))}{\sum_{j'}\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_{j'})))}</script><p>$\boldsymbol{E}(p_i)$:获得word的embedding形式，$\alpha(\boldsymbol{E}(p_i))$：将之前的embedding放入单个隐藏层。</p>
+<h2 id="BiDAF"><a href="#BiDAF" class="headerlink" title="BiDAF"></a>BiDAF</h2><p>&emsp;&emsp;另一个比较重要的QA模型是<strong>BiDAF(Bi-Directional Attention Flow)</strong>,其模型如下：</p>
+</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BiDAF.jpg" alt><br>&emsp;&emsp;核心思想：Attention应当是双向的，既有从Context(即passage)到Query(即Question)的attention,又有从Query到Context的attention<br>&emsp;&emsp;首先计算相似度矩阵(similarity matrix)</p>
+<script type="math/tex; mode=display">S_{ij} = w_{sim}^T[c_i;q_j;c_i\circ q_j] \in \mathbb{R}</script><p>&emsp;&emsp;其中$c_i,q_j$分别代表context vector与query vector</p>
+<p>&emsp;&emsp;对于Context $\to$ Query 的Attention，我们想要知道对于每个context word,哪些query word比较重要，因此得到attention score及weighted vector:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\alpha^i &= softmax(\boldsymbol{S}_i,:) \in \mathbb{R}^M  \quad \forall i \in \{1,\cdots,N\} \\ 
+\mathbb{a}_i &= \boldsymbol{\sum _{j=1}^M} \alpha_{j}^{i}\mathbb{q}_j \in \mathbb{R}^{2h}  \quad \forall i \in \{1,\cdots,N\} \\ 
+
+
+\end{aligned}</script><p>&emsp;&emsp;其中$N$是context的大小，$M$是query的大小。<br>ps . 相似矩阵的处理看这里：<a href="https://blog.csdn.net/zllljf/article/details/78786395" target="_blank" rel="noopener">戳这里</a></p>
+<p>&emsp;<br>&emsp;&emsp;而对于query$\to$Context Attention,我们想知道对于query，哪些context words与任意一个query words相似度较高，我们得到对于query来说最关键的context words的加权求和：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\boldsymbol{m_i} &= \max_{j} \boldsymbol{S_{ij}} \in \mathbb{R} \quad \forall i \in \{1,\cdots,N\} \\
+\beta &= softmax(\boldsymbol{m}) \in \mathbb{R}^N \\
+c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
+\end{aligned}</script><p>&emsp;&emsp;$m_i$从$S_{ij}$每一行($i$)中找出相似度最高的项组成向量</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;由此得到了Attention Flow Layer的输出:</p>
+<script type="math/tex; mode=display">b_i = \boldsymbol{[c_i;a_i;c_i \circ a_i;c_i \circ c']} \in \mathbb{R}^{8h}</script><p>&emsp;&emsp;再对其进行多层LSTM与Softmax得到相应的输出。</p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS224N笔记（三，四）-Word Window Classification,Nerual Networks,Matrix Calculus</title>
     <url>/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%EF%BC%88%E4%B8%89%EF%BC%8C%E5%9B%9B%EF%BC%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/</url>
     <content><![CDATA[<p>&emsp;&emsp;本次课程主要介绍了神经网络的基础知识并以<strong>命名实体识别Named Entity Recognition(NER)</strong>来介绍DNN在NLP领域内的应用。  </p>
@@ -359,85 +421,190 @@ W_d
       </tags>
   </entry>
   <entry>
-    <title>CS224N笔记-十-Question-Answering</title>
-    <url>/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/</url>
-    <content><![CDATA[<p>&emsp;&emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。<br>&emsp;&emsp;通常可以将问答系统看作两部分：</p>
-<ul>
-<li>从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval)</li>
-<li>从文件或段落中找到相关的答案（reading comprehension）,这是这一讲的<strong>重点</strong><h2 id="Stanford-Question-Answering-Dataset-SQuAD"><a href="#Stanford-Question-Answering-Dataset-SQuAD" class="headerlink" title="Stanford Question Answering Dataset(SQuAD)"></a>Stanford Question Answering Dataset(SQuAD)</h2>&emsp;&emsp;reading comprehension需要的数据包括：</li>
-<li>Passage(文字段落)</li>
-<li>Question(问题)</li>
-<li>Answer(回答)</li>
-</ul>
-<p>&emsp;&emsp;SQuAD数据集中每个问题都有人类提供的三个标准答案，为了评估问答模型，有两个衡量尺度</p>
-<ul>
-<li>Exact Match(精准匹配)：即模型回答与任意一个标准答案匹配即计数为1,否则为零  </li>
-<li>F1，即将模型答案与标准答案当作词袋，计算<script type="math/tex; mode=display">precison=\frac{TP}{TP+FP}</script><script type="math/tex; mode=display">recall=\frac{TP}{TP+FN}</script>并计算它们的调和平均数<script type="math/tex; mode=display">F1 = \frac{2PR}{P+R}</script>(TP:真正例，FP:假正例，FN：假负例，TN：真负例)  </li>
-</ul>
-<p>&emsp;&emsp;通常F1 score被认为是更可靠的衡量尺度<br>&emsp;&emsp;SQuAD 1.0版本中所有问题的答案都包含在段落中,而2.0版本中引入了一些段落中找不到答案的问题。对于这类问题，当模型输出没有答案时得分为1，否则为0 .</p>
-<h3 id="SQuAD的局限性："><a href="#SQuAD的局限性：" class="headerlink" title="SQuAD的局限性："></a>SQuAD的局限性：</h3><ul>
-<li>答案直接截取自段落中的文字，没有是非判断，计数等问题。</li>
-<li>问题是根据段落构造的</li>
-<li>几乎没有跨句子之间的理解和推断</li>
-</ul>
-<h2 id="Stanford-Attentive-Reader"><a href="#Stanford-Attentive-Reader" class="headerlink" title="Stanford Attentive Reader"></a>Stanford Attentive Reader</h2><p>&emsp;&emsp;这就是Manning组的关于QA的模型Stanford Attentive Reader</p>
-<h3 id="part-1-encoding"><a href="#part-1-encoding" class="headerlink" title="part 1:encoding"></a>part 1:encoding</h3><h4 id="step-1-word-embedding"><a href="#step-1-word-embedding" class="headerlink" title="step 1 :word embedding"></a>step 1 :word embedding</h4><p>&emsp;&emsp;将所有的单词(包括question中的以及passage中的)都通过一个embedding矩阵$E \in \mathbb{R}^{d \times \lvert V \rvert}$,用$d$维的词向量来表示，得到：</p>
-<script type="math/tex; mode=display">p : \mathbf{p_1,\cdots,p_m}\in \mathbb{R}^d</script><script type="math/tex; mode=display">q : \mathbf{q_1,\cdots,q_l}\in \mathbb{R}^d</script><h4 id="step-2-Bidirectional-LSTM"><a href="#step-2-Bidirectional-LSTM" class="headerlink" title="step 2 :Bidirectional LSTM"></a>step 2 :Bidirectional LSTM</h4><p>&emsp;&emsp;先利用Bidirectional LSTM对于question提取特征向量：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg" alt></p>
-<p>&emsp;&emsp;再对Passage中的每个单词用Bidirectional LSTM提取其特征向量，并对每个单词对应的特征向量与问题的特征向量进行Attention才做，分别得到推测答案起始位置与中止位置的attention score<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM2.jpg" alt></p>
-<h4 id="Stanford-Attensive-Reader"><a href="#Stanford-Attensive-Reader" class="headerlink" title="Stanford Attensive Reader++"></a>Stanford Attensive Reader++</h4><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/stanfordpp.jpg" alt><br>&emsp;&emsp;整个模型的所有参数都是端到端训练的，训练的目标是提高预测开始位置与中止位置的准确度。<br>&emsp;&emsp;损失函数为</p>
-<script type="math/tex; mode=display">L=-\sum \log P^{start}(a_{start}) - \sum \log P^{end} (a_{end})</script><p>&emsp;&emsp;在模型的基础上进行了改进</p>
-<ul>
-<li>对于question部分，不仅仅是LSTM输出，而且利用了类似self-attention(自注意力)的weighted sum来表示，并且将BiLSTM加至三层。</li>
-<li><p>对于passage的encoding，除了利用Glove得到的word embedding之外，还加入了一些语言学的特征，如POS（part of speech)和NER(named entity recognition) tag以及term frequency。<br>另外还加入了比较简单的特征如段落中单词是否出现在问题中的binary feature，对于这种match，又分为三种即exact match, uncased match(不区分大小写), lemma match(如drive和driving)。更进一步，还引入了aligned question embedding, 与exact match相比，这可以看做是对于相似却不完全相同的单词（如car与vehicle)的soft alignment：$f_{align}(p_i) = \sum a_{i,j}E(q_j)$,其中$a_{i,j}$代表了段落中单词$p_i$与问题中单词$q_j$的相似度，且：</p>
-<script type="math/tex; mode=display">a_{i,j} = \frac{\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_j)))}{\sum_{j'}\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_{j'})))}</script><p>$\boldsymbol{E}(p_i)$:获得word的embedding形式，$\alpha(\boldsymbol{E}(p_i))$：将之前的embedding放入单个隐藏层。</p>
-<h2 id="BiDAF"><a href="#BiDAF" class="headerlink" title="BiDAF"></a>BiDAF</h2><p>&emsp;&emsp;另一个比较重要的QA模型是<strong>BiDAF(Bi-Directional Attention Flow)</strong>,其模型如下：</p>
-</li>
-</ul>
-<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BiDAF.jpg" alt><br>&emsp;&emsp;核心思想：Attention应当是双向的，既有从Context(即passage)到Query(即Question)的attention,又有从Query到Context的attention<br>&emsp;&emsp;首先计算相似度矩阵(similarity matrix)</p>
-<script type="math/tex; mode=display">S_{ij} = w_{sim}^T[c_i;q_j;c_i\circ q_j] \in \mathbb{R}</script><p>&emsp;&emsp;其中$c_i,q_j$分别代表context vector与query vector</p>
-<p>&emsp;&emsp;对于Context $\to$ Query 的Attention，我们想要知道对于每个context word,哪些query word比较重要，因此得到attention score及weighted vector:</p>
+    <title>CS224N Assignment2</title>
+    <url>/2020/07/09/CS224n-assign2/</url>
+    <content><![CDATA[<h2 id="Question-A"><a href="#Question-A" class="headerlink" title="Question A"></a>Question A</h2><blockquote>
+<p>Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that</p>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -\log(\hat{y}_o)</script></blockquote>
+<h2 id="Answer-A"><a href="#Answer-A" class="headerlink" title="Answer A"></a>Answer A</h2><p>&emsp;因为$y$是one-hot向量，所以：</p>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -y_o\log(\hat{y}_o) - {\sum_{w\in{Vocab},w\neq o} y_w\log(\hat{y}_w)}  = -\log(\hat{y}_o)</script><h2 id="Question-B"><a href="#Question-B" class="headerlink" title="Question B"></a>Question B</h2><blockquote>
+<p>Compute the partial derivative of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to $\boldsymbol{v_c}$, Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
+</blockquote>
+<h2 id="Answer-B"><a href="#Answer-B" class="headerlink" title="Answer B"></a>Answer B</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial v_c} &= - \frac{\partial}{\partial{v_c}}\log\frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} \\
+&= - \frac{\partial}{\partial v_c}\left( \log(\exp(u_o^Tv_c)) - \log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\\
+&= - \frac{\partial}{\partial v_c}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
+&= -u_o + \sum_{w\in V}\frac{\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+& = - u_o + \sum_{w\in V}p(O=w|C=c)u_w\\
+& = -u_o + \sum_{w\in V}\hat{y_w}u_w\\
+& = U(\hat{y} - y)
+\end{aligned}</script><h2 id="Question-C"><a href="#Question-C" class="headerlink" title="Question C"></a>Question C</h2><blockquote>
+<p> Compute the partial derivatives of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to each of the ‘outside’ word vectors,$\boldsymbol{u_w}$’s.There will be two cases: when $w = o$,the true ‘outside’ word vector,and$w\neq o$,for<br>all other words. Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
+</blockquote>
+<h2 id="Answer-C"><a href="#Answer-C" class="headerlink" title="Answer C"></a>Answer C</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= - \frac{\partial}{\partial u_w}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
+&= - \frac{\partial(u_o^Tv_c)}{\partial u_w} + \frac{\partial(\log(\sum_{w\in V}\exp(u_w^Tv_c)))}{\partial u_w}
+\end{aligned}</script><p>when $w \neq o$:</p>
 <script type="math/tex; mode=display">\begin{aligned}
-\alpha^i &= softmax(\boldsymbol{S}_i,:) \in \mathbb{R}^M  \quad \forall i \in \{1,\cdots,N\} \\ 
-\mathbb{a}_i &= \boldsymbol{\sum _{j=1}^M} \alpha_{j}^{i}\mathbb{q}_j \in \mathbb{R}^{2h}  \quad \forall i \in \{1,\cdots,N\} \\ 
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= 0 +p(O=w|C=c)v_c\\
+&=\hat{y}_wv_c
+\end{aligned}</script><p>when $w = o$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= -v_c +p(O=w|C=c)v_c\\
+&= \hat{y}_wv_c - v_c\\
+&=(\hat{y}_w -1 )v_c
+\end{aligned}</script><p>Then: </p>
+<script type="math/tex; mode=display">\frac{\partial J(v_c,o,U)}{\partial U} = v_c(\hat{y} - y)^T</script><h2 id="Question-D"><a href="#Question-D" class="headerlink" title="Question D"></a>Question D</h2><blockquote>
+<p>The sigmoid function is given by the follow Equation :</p>
+<script type="math/tex; mode=display">\sigma(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}</script><p>Please compute the derivative of $\sigma(x)$ with respect to$x$, where $x$ is a vector.</p>
+</blockquote>
+<h2 id="Answer-D"><a href="#Answer-D" class="headerlink" title="Answer D"></a>Answer D</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial \sigma(x_i)}{\partial x_i} &= \frac{1}{(1+\exp(-x_i)^2)}\exp(-x_i) = \sigma(x_i)(1-\sigma(x_i)) \\
+\frac{\partial \sigma(x)}{\partial x} &= \left[ \frac{\partial \sigma (x_j)}{\partial x_i}    \right]_{d \times d} \\
+&= \begin{bmatrix}
+  \sigma'(x_1) &   0   & \cdots &0 \\
+      0        &   \sigma'(x_2) & \cdots    &0 \\
+  \vdots       &   \vdots       & \vdots &\vdots\\
+  0            &    0           & \dots  &\sigma'(x_d)
+\end{bmatrix} \\
+&= diag(\sigma '(x_d))
+\end{aligned}</script><h2 id="Question-E"><a href="#Question-E" class="headerlink" title="Question E"></a>Question E</h2><blockquote>
+<p>Now we shall consider the Negative Sampling loss, which is an alternative to the Naive Softmax loss. Assume that $K$ negative samples (words) are drawn from the vocabulary.For simplicity of notation we shall refer to them as $w_1,w_2,\cdots,w_K$ and their outside vectors as $u_1,\cdots,u_K$.Note that $o \notin {w_1,\cdots,w_K}$. For a center word $c$ and an outside word $o$, the negative sampling loss function is<br>given by:</p>
+<script type="math/tex; mode=display">\boldsymbol{J}_{neg-sample}(v_c,o,U) = -\log(\sigma (u_o^Tv_c))- \sum_{k=1}^K \log(\sigma(-u_k^Tv_c))</script><p>for a sample $w_1,\cdots,w_K$, where $\sigma(\cdot)$is the sigmoid function。<br>Please repeat parts (b) and (c), computing the partial derivatives of $\boldsymbol{J}_{neg-sample}$ with respect to $v_c$, with respect to $u_o$, and with respect to a negative sample $u_k$. Please write your answers in terms of the<br>vectors $u_o$, $v_c$, and $u_k$, where k ∈ [1, K]. After you’ve done this, describe with one sentence why this loss function is much more efficient to compute than the naive-softmax loss. Note, you should be able to use your solution to part (d) to help compute the necessary gradients here.</p>
+</blockquote>
+<h2 id="Answer-E"><a href="#Answer-E" class="headerlink" title="Answer E"></a>Answer E</h2><p>For $v_c$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J_{neg-sample}}{\partial v_c} &= (\sigma(u_o^Tv_c)-1)u_o + \sum_{k=1}^{K}(1-\sigma(-u_k^Tv_c))u_k \\
+&= (\sigma(u_o^T)-1)u_o + \sum_{k=1}^{K}\sigma(u_k^Tv_c)u_k
 
+\end{aligned}</script><p>For $u_o$,Remember:$o\notin \{w1,\cdots,w_k\}$</p>
+<script type="math/tex; mode=display">\frac{\partial J_{neg-sample}}{\partial u_o} =   (\sigma(u_o^Tv_c)-1)v_c</script><p>For $u_k$:</p>
+<script type="math/tex; mode=display">\frac{\partial J}{\partial u_k} = (1-\sigma(-u_k^Tv_c))v_c = \sigma(u_k^Tv_c)v_c,for\ k = 1,2,\cdots,K</script><p><strong>Why this loss function is much more efficient to compute than the naive-softmax loss?</strong><br>从求得的偏导数中我们可以看出，原始的softmax函数每次对$v_c$进行反向传播时，需要与 output vector matrix 进行大量且复杂的矩阵运算，而负采样中的计算复杂度则不再与词表大小$V$有关，而是与采样数量$K$有关。</p>
+<h2 id="Question-F"><a href="#Question-F" class="headerlink" title="Question F"></a>Question F</h2><blockquote>
+<p>Suppose the center word is $c=w_t$ and the context window is $[w_{t-m},\cdots,w_{t-1},w_t,w_[t+1],\cdots,w_{t+m}]$,where $m$ is the context window size.Recall that for the skip-gram version of $word2vec$,the total loss for the context window is :</p>
+<script type="math/tex; mode=display">\begin{aligned}
+  \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},U) = \sum_{-m\le j \le m \atop j\neq 0} \boldsymbol{J}(v_c,w_{t+j},U)
+\end{aligned}</script><p>Here,$\boldsymbol{J}(v_c,w_{t+j},U)$  represents an arbitrary loss term for the center word $c=w_t$ and outside word $w_{t+j}$. $\boldsymbol{J}(v_c,w_{t+j},U)$ could be $\boldsymbol{J}_{naive-softmax}(v_c,w_{t+j},U)$ or $\boldsymbol{J}_{neg-sample}(v_c,w_{t+j},U)$ , depending on your implementation.<br>Write down three partial derivatives:<br>(1) $\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{U}$<br>(2)$\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_c$<br>(3)$\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_w$ when $w \neq c$<br>Write your answers in terms of $\partial\boldsymbol{J}(v_c,w_{t+j},U)/\partial \boldsymbol{U}$ and $\partial\boldsymbol{J}(v_c,w_{t+j},U)/\partial \boldsymbol{v}_c$ </p>
+<h2 id="Answer-F"><a href="#Answer-F" class="headerlink" title="Answer F"></a>Answer F</h2></blockquote>
+<script type="math/tex; mode=display">\begin{aligned}\frac{\partial J_{skip-gram}}{\partial U} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial U}\\
+\frac{\partial J_{skip-gram}}{\partial v_c} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial v_c}\\
+\frac{\partial J_{skip-gram}}{\partial v_w} &= 0(when \ w \neq c)
 
-\end{aligned}</script><p>&emsp;&emsp;其中$N$是context的大小，$M$是query的大小。<br>ps . 相似矩阵的处理看这里：<a href="https://blog.csdn.net/zllljf/article/details/78786395" target="_blank" rel="noopener">戳这里</a></p>
-<p>&emsp;<br>&emsp;&emsp;而对于query$\to$Context Attention,我们想知道对于query，哪些context words与任意一个query words相似度较高，我们得到对于query来说最关键的context words的加权求和：</p>
-<script type="math/tex; mode=display">
-\begin{aligned}
-\boldsymbol{m_i} &= \max_{j} \boldsymbol{S_{ij}} \in \mathbb{R} \quad \forall i \in \{1,\cdots,N\} \\
-\beta &= softmax(\boldsymbol{m}) \in \mathbb{R}^N \\
-c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
-\end{aligned}</script><p>&emsp;&emsp;$m_i$从$S_{ij}$每一行($i$)中找出相似度最高的项组成向量</p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;由此得到了Attention Flow Layer的输出:</p>
-<script type="math/tex; mode=display">b_i = \boldsymbol{[c_i;a_i;c_i \circ a_i;c_i \circ c']} \in \mathbb{R}^{8h}</script><p>&emsp;&emsp;再对其进行多层LSTM与Softmax得到相应的输出。</p>
-]]></content>
+\end{aligned}</script>]]></content>
       <categories>
-        <category>CS224N</category>
+        <category>Assignment</category>
       </categories>
       <tags>
-        <tag>nlp 机器学习</tag>
+        <tag>CS224n</tag>
       </tags>
   </entry>
   <entry>
-    <title>hexo 常用命令小记</title>
-    <url>/2020/07/06/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
-    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
+    <title>HPO论文小结</title>
+    <url>/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
+<li>Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。</li>
+<li>Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检查以及行为异常的异常结果。</li>
+<li>varient 变异：基因变异描述的是与正常序列或参考序列的偏差。 例如，在某一染色体位置用一个核苷酸替换另一个核苷酸，一个或多个核苷酸的插入或缺失，数百万个核苷酸的染色体微缺失或整个染色体的三体。</li>
+<li>pathogenicity 致病性：致病性指的是一个人基因组中的基因变异导致疾病的倾向。这一术语最常用于癌症或遗传性疾病的上下文中，即当基因变异对导致疾病或导致疾病发展的基因产物的功能产生重大有害影响时。</li>
+<li>Whole-exome sequencing（wes）全外显子组测序：一种测序技术，试图选择性地富集和分析仅属于人类基因组约1.5％的，由蛋白质编码基因外显子组成的序列（称为外显子组），因为迄今为止在孟德尔疾病中发现的大多数致病性变异都位于或非常接近这些外显子。</li>
+</ul>
 <p>&emsp;</p>
-<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
+<hr>
+<h1 id="The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease"><a href="#The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease" class="headerlink" title="The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease"></a>The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/18950739/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/18950739/</a></p>
+<p>&emsp;&emsp;先来看看2008年的开山之作吧，首先是整篇report的概述:</p>
+<blockquote>
+<p>There are many thousands of hereditary diseases in humans, each of which has a specific combination of phenotypic features, but computational analysis of phenotypic data has been hampered by lack of adequate computational data structures. Therefore, we have developed a Human Phenotype Ontology (HPO) with over 8000 terms representing individual phenotypic anomalies and have annotated all clinical entries in Online Mendelian Inheritance in Man with the terms of the HPO. We show that the HPO is able to capture phenotypic similarities between diseases in a useful and highly significant fashion.  </p>
+</blockquote>
+<p>&emsp;&emsp;人类有成千上万种遗传性疾病，每一种都有特定的表型特征组合，但是由于表型数据的计算分析缺乏足够的计算数据结构而使得分析受到阻碍，由此团队开发了一个人类表型本体论（HPO），其中有超过8000个术语代表个体表型异常，并且用HPO的术语注释了<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>的所有临床条目。该团队证明了HPO能够一种有效且重要的方式捕捉疾病之间的表型相似性。</p>
 <p>&emsp;</p>
-<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
-<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
-<p>&emsp; </p>
-<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
+<p>&emsp;&emsp;人类尤其擅长识别表型特征和异常，然而在人类表型的计算描述和分析方面，还有许多未解决的问题。<br>&emsp;&emsp;显然，某些遗传性疾病是由于共同的表型特征而彼此表型相似。研究发现许多遗传条件显示出重叠的特征而导致了疾病族的概念。一些研究表明，在基因组范围内，将表型与遗传、细胞网络的特征联系起来有着巨大的潜力。<br>&emsp;&emsp;尽管<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>中已经详细描述了绝大多数的人类孟德尔综合症（human Mendelian syndromes）,然而，OMIM中包含的计算分析一直受到限制，因为缺少一个可控的词汇表。包括具有明确定义关系的一致性的注释，例如：</p>
+<blockquote>
+<p>For instance, the descriptions “generalized amyotrophy”, “generalized muscle atrophy”, “muscular atrophy, generalized”, and “muscle atrophy, generalized” are used to describe different diseases in OMIM and might not be easily recognized as synonyms with a purely computational approach. Also, although the clinical-synopsis entries in OMIM are grouped according to organ system, the hierarchical structure does not itself reflect that (for instance) “Hypoplastic philtrum” and “Smooth philtrum” are more closely related to one another than to “Hypoplastic nasal septum” (all three of these descriptions are in the NOSE category of OMIM’s clinical synopsis)  </p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;“本体论”是以有向无环图的形式表示概念、属性和关系的数据模型。尤其是<a href="https://baike.baidu.com/item/%E5%9F%BA%E5%9B%A0%E6%9C%AC%E4%BD%93/1795532?fr=aladdin" target="_blank" rel="noopener">基因本体</a>（GO）已经被证明对于微阵列（microray）和其他形式的高通量数据(high-throughput data)的探索性分析是非常有用的。<br>&emsp;&emsp;HPO的目的是覆盖人类单基因疾病中的所有表型异常，它从OMIM数据库获取了文本数据<strong>omim.txt</strong>。HPO使用本体论编辑器（OBO-edit）来定义基于omim.txt中概念的术语与连接，在整理术语时，有时需要人工的将几种症状集合到同一个术语，例如：</p>
+<blockquote>
+<p>For instance, the three OMIM descriptions <em>Carpal bone hypoplasia</em>, <em>Hypoplasia of carpal bones</em>, and <em>Hypoplastic carpal bones</em>were fused into the single term HP:0001498, <em>Carpal bone hypoplasia</em></p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO的每个术语都描述了一种表型异常，术语与其父术语是“is a”关系。如下图（Figure 1）所示HPO结构允许一个术语有多个父项。从而可以探索表型异常的不同方面。HPO本身并不描述单个疾病实体。而是与它们相关的表型异常。大多数的HPO术语是用来描述<strong>器官异常</strong>，但单独的本体论用于描述<strong>遗传方式、发病和临床过程</strong>。<br>&emsp;&emsp;真路径（true-path rule）适用于HPO的术语，也就是说，如果一种疾病被注释为<em>Atrial septal defect</em>，那么这个术语的所有祖先，如<em>Abnormality of the cardiac septa</em>也适用。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG" alt><br>&emsp;&emsp;与GO一样，在HPO中，更接近本体根的术语比远离根的术语表示更一般的概念。在整个OMIM语料库的标注中，可以通过其标注的频率来估计HPO中每个节点的信息含量。在HPO的实现中，术语的信息内容是基于OMIM数据库中4779种疾病中该术语注释的频率。显然。如果两种疾病都被注释到一个信息含量较高的术语，那么在此基础上计算出的相似度应该高于将两种疾病注释到更一般（信息含量较低）的术语时计算的相似度。<br>&emsp;&emsp;对于HPO的每一项$t$,信息量被量化为其概率的负对数：$-\log p(t)$,其中的概率被认为是其在所有4779种疾病的注释中的频率，注意上文提到：<strong>如果一种疾病被注释到HPO中的任何一个术语$t$，它也必须被注释到$t$的所有祖先</strong>, 因此，术语在本体中的位置越高，其信息内容就越少。在HPO中，一个术语可能有多个父项，因此一对术语可能有多个共同祖先的路径。将术语$t_1$和$t_2$的所有共同祖先项集合表示为$A(t_1,t_2)$,则$t_1$,$t_2$的相似度被定义为：</p>
+<script type="math/tex; mode=display">sim(t_1,t_2) = \max_{a\in A(t_1,t_2)}-\log p(a)</script><p>&emsp;&emsp;就是要找到$t_1$和$t_2$的最小共同祖先的概率  </p>
+<p>&emsp;&emsp;为了要计算两种疾病$d_1$和$d_2$之间的相似性，使用的方法$d_1$的每个特征与$d_2$最相似的特征相匹配，并取这些特征对的平均值：</p>
+<script type="math/tex; mode=display">sim(d_1 \to d_2) = avg \left[\sum_{s\in d_1} \max_{t\in d_2}sim(s,t) \right]</script><p>&emsp;&emsp;由于上式对于$d_1$与$d_2$并不是对称的，因此最终的相似性度量值被定义为：</p>
+<script type="math/tex; mode=display">sim(d_1,d_2) = \frac{1}{2} \times sim(d_1\to d_2) + \frac{1}{2} \times sim(d_2\to d_1)</script><p>&emsp;&emsp;使用这种方法来定义OMIM数据库列出的疾病之间的相似性，分析了21个生理疾病类别中的727个疾病，这些疾病之间的表型关系通过超过阈值相似评分的所有成对疾病之间的联系如下图所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ApplicationsOfHpo.PNG" alt><br>&emsp;&emsp;尽管生成的表型与疾病类别无关，但最终的表型网络清楚地显示了与21种类别中的许多类别相对应的簇。同样明显的是，某些簇显示出彼此之间的相互联系，这在仅基于共享疾病基因的疾病图谱中是看不到的，对随机网络的分析表明，观察到的网络连接与疾病类别之间的相关性非常显着。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;接下来探索了在临床环境中使用HPO的实用性。在最好的情况下，诊断算法将允许以不同的详细程度进行搜索，比一般的特征更权衡特定特征，并且在对某个个体患者可能没有个体特征这一事实不太敏感。因此，本体论的方法在这种情况下显得特别合适。为了模拟这种搜索过程，使用OMIM中的2116个疾病，用至少6个HPO术语注释来模拟临床搜索过程，只选择与给定疾病相关的1-6个术语，然后在原始数据库中搜索相似的疾病。最理想的情况是，搜索算法会将原始疾病分配到最高级别，或者至少放在前几名。  </p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO-C.PNG" alt></p>
+<p>&emsp;&emsp;即使只使用两个搜索项（术语），算法性能也非常出色，当50％的随机噪声添加到搜索项或者每项映射到一个（不太具体）的父项时，准确度会只会相对降低一些。也就是说相似度的计算对于由于搜索的表型术语集的噪声、完整性或特异性不太敏感。<br>&emsp;&emsp;相对于其他之前完成的工作,人工处理的本体论方法计算表型分析提供了许多优势</p>
+<ul>
+<li>本体的术语和结构基于医学知识，而不是文本挖掘系统</li>
+<li>与层次系统和特征向量相比，本体具有更大的灵活性和描述能力。</li>
+<li>在GO成功后，已开发了的、许多的、用于本体分析的计算算法现在可以用于人类表型数据。</li>
+</ul>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO还会再未来数年中继续发展，继续改进OMIM中列出的疾病的注释，并将注释扩展到其他遗传性疾病。计划在注释文件中包含附加信息，包括特性的频率和严重性。人们希望HPO将为涉及人类表型分析的计算生物医学研究提供基础，通过将人类表型与蛋白质相互作用、代谢和信号转导途径等数据源直接联系起来，使人类现象与细胞的分子病理生理学相互关联。此外，HPO将为医学遗传学的临床研究提供统一的基础，为表型描述提供标准化词汇。</p>
+<p>&emsp;<br>&emsp;<br>&emsp;</p>
+<hr>
+<h1 id="Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison"><a href="#Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison" class="headerlink" title="Improved exome prioritization of disease genes through cross-species phenotype comparison"></a>Improved exome prioritization of disease genes through cross-species phenotype comparison</h1><p>地址:<a href="https://pubmed.ncbi.nlm.nih.gov/24162188/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/24162188/</a>  </p>
+<p>&emsp;&emsp;本文利用了小鼠的模型，将人类疾病和转基因小鼠之间的表型相似性进行计算来对基因变异进行评估（关于这部分生物信息学的基础知识还需要补充，因此现在简单概括文章的大意）</p>
+<h2 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h2><p>&emsp;&emsp;首先来看一下摘要：</p>
+<blockquote>
+<p>Numerous new disease-gene associations have been identified by whole-exome sequencing studies in the last few years.<br>However, many cases remain unsolved due to the sheer number of candidate variants remaining after common filtering strategies such as removing low quality and common variants and those deemed unlikely to be pathogenic. The observation that each of our genomes contains about 100 genuine loss-of-function variants makes identification of the causative mutation problematic when using these strategies alone. We propose using the wealth of genotype to phenotype data that already exists from model organism studies to assess the potential impact of these exome variants. Here, we introduce PHenotypic Interpretation of Variants in Exomes (PHIVE), an algorithm that integrates the calculation of phenotype similarity between human diseases and genetically modified mouse models with evaluation of the variants according to allele frequency, pathogenicity, and mode of inheritance approaches in our Exomiser tool. Large-scale validation of PHIVE analysis using 100,000 exomes containing known mutations demonstrated a substantial improvement (up to 54.1-fold) over purely variant-based (frequency and pathogenicity) methods with the correct gene recalled as the top hit in up to 83% of samples, corresponding to an area under the ROC curve of &gt;95%. We conclude that incorporation of phenotype data can play a vital role in translational bioinformatics and propose that exome sequencing projects should systematically capture clinical phenotypes to take advantage of the strategy presented here.  </p>
+</blockquote>
+<p>&emsp;&emsp;在过去的几年中，通过<a href="http://www.bgitechsolutions.com/sequencing/105" target="_blank" rel="noopener">全外显子组测序研究（whole exome sequencing studies，wes)</a>已经鉴定出许多新的疾病-基因关联。然而，许多病例依旧悬而未决，这是因为在使用诸如去除低质量与常见变体以及那些不太可能治病的变体的常规过滤策略后，仍然存在大量的候选变体。根据实验观察，我们的每个基因组包含大约100个真正的功能丧失变体，这使得单独使用这些过滤策略确定致病突变时会发生问题。我们建议利用模式生物研究中已经存在的基因型到表型的丰富数据来评估这些外显子变体的潜在影响。在这里介绍了<strong>PHIVE(PHenotypic Interpretation of Variants in Exomes)算法</strong>，该算法将人类疾病和转基因小鼠模型之间的表型相似性计算与<a href="https://www.sanger.ac.uk/tool/exomiser/" target="_blank" rel="noopener">Exomiser</a>工具中根据等位基因频率，致病性和继承方法的变体评估方法相结合。使用含有已知突变的100000个外显子对PHIVE分析进行大规模验证，结果表明，与纯基于变体的方法（频率与致病性）相比，PHIVE分析具有显著的提高（高达54.1倍），其中正确的基因被召回的成功率高达83%，对应于ROC曲线下大于95%的面积。我们得出结论：表型数据的整合在翻译生物信息学中发挥着至关重要的作用，并建议外显子组测序项目应系统地捕获临床表型以利用此处介绍的策略。<br>&emsp;&emsp;WES发现疾病基因的主要挑战之一是单个外显子组中发现的变体数量巨大，即使在过滤掉常见的变体之后，也需要额外的方法来预测哪些变体可能具有严重的功能后果，并对他们进行优先排序以进行验证。<br>&emsp;&emsp;由于单纯基于序列变异致病性的优先排序将难以区分疾病相关突变与具有有害生化效应的其他变体。从模式生物研究中已经存在大量从基因型到表型的数据，这些数据可以用来评估这些外显子变体的潜在影响,例如本文中用到的<a href="http://www.informatics.jax.org/" target="_blank" rel="noopener">小鼠基因组信息学（MGI）数据库</a> ,根据先前的研究，小鼠表型显示出与人类临床表型相匹配的大多数孟德尔疾病。</p>
+<h2 id="PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization"><a href="#PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization" class="headerlink" title="PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization"></a>PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization</h2><p>&emsp;&emsp;为了解决纯基于变量的WES数据优先级排序的问题，提出了PHIVE方法(PHenoytpic Interpretation of Variant in Exomes),这种算法首先根据稀有性、外显子中的位置、临近外显子的位置以及预期遗传方式的兼容性来筛选变异，然后根据变异评分（变异的频率和致病性）和表型相关性评分的组合，对所有剩余的基因进行排序。<strong>从本质上说，该方法利用了模型生物中可用的大量数据（eg.MGI），寻找同样具有有害外显子序列变体的表型相关基因。</strong></p>
+<p>&emsp;&emsp;如下图所示，Exomiser通过进一步考虑guo中去除脱靶、常见和同义变体来过滤整个外显子数据集，并根据预测的致病性和次要等位基因频率（变异评分 varient score）评估剩余的变体。假设的遗传模式可选地进一步过滤具有与假设的遗传模式兼容的模式中存在的变体的基因。然后根据与9043个基因突变的28176只小鼠模型的比较，这些基因会得到一个表型相关性分数，最终排名计算为各单项分数之和，以得出PHIVE分数。</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ExomiserFilters.PNG" alt></p>
+<h2 id="PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations"><a href="#PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations" class="headerlink" title="PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations"></a>PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations</h2><p>&emsp;&emsp;总体而言，在常染色体隐性（AR）模型下，PHIVE方法在将平均37个筛选后的候选基因的83%的外显子中，将正确的基因列为得分最高的基因。在常染色体显性（AD）模型下，在平均379个过滤好的候选基因中，66%的外显子有着正确的基因（基因排名最高）。相比之下，单独使用基于变量的评分时，这一比例为28%（AD）或77%（AR）<br>&emsp;&emsp;下面两张表显示了变体、表型相关性、PHIVE分数在各种模拟条件下的性能<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitA.PNG" alt><br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitB.PNG" alt></p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p>&emsp;&emsp;在这项工作中，我们为wes数据设计了一种优先排序的方法，在丰富的转基因小鼠的表型数据中搜索候选基因。结果表明，PHIVE在识别正确的候选基因方面表现出优异的性能，这些候选基因的表型数据可以从相应基因突变的小鼠模型中获得。对该种方法的一个批评是：如果被破坏的基因没有一个对应的老鼠突变体，那么这种方法可能是无效的，为了应对这一问题，当没有数据时，该方法使用默认的表型得分，并运行优化模拟来选择一个值。对于没有小鼠表型基因的致病基因而言，PHIVE在对待外显体上与使用<strong>基于变异</strong>的方法在性能上是等同的。<br>&emsp;&emsp;使用来自众多其他模型系统的表型不仅可以验证这些结果，还可以潜在地补充没有小鼠表型的情况，使用来自不同模型系统的数据带来了包含不同类型的表型的优势，这些表型是不同系统中的重点，因此，Exomiser被整合为了<a href="http://monarchinitiative.org" target="_blank" rel="noopener">Monarch Initiative</a>工具套件的一部分，以便能够在此背景下使用其他模型系统数据。在Exomiser的未来版本中，通过包含蛋白质-蛋白质相互作用网络、共表达和其他模型生物数据，来寻求改善缺少小鼠表型数据的性能。本文采用的本体相似性方法在适应标注中的小错误方面是健壮的。</p>
+<h2 id="Methods"><a href="#Methods" class="headerlink" title="Methods"></a>Methods</h2><h3 id="Data-source"><a href="#Data-source" class="headerlink" title="Data source"></a>Data source</h3><p>&emsp;&emsp;关于变异的群体频率的信息来自dbSNP和<a href="https://evs.gs.washington.edu/EVS/" target="_blank" rel="noopener">Exome变体服务器</a></p>
+<h3 id="Inheritance-model-filtering"><a href="#Inheritance-model-filtering" class="headerlink" title="Inheritance model filtering"></a>Inheritance model filtering</h3><p>&emsp;&emsp;常染色体显性筛选是通过排除至少有一个杂合子变体的基因（及其变体）来完成的。(?)</p>
+<h3 id="Phenotype-ontologies"><a href="#Phenotype-ontologies" class="headerlink" title="Phenotype ontologies"></a>Phenotype ontologies</h3><p>&emsp;&emsp;表型本体论OMIM数据库中列出的人类疾病表型注释是从人类表型本体（HPO）资源中提取的。</p>
+<h3 id="Variant-annotation"><a href="#Variant-annotation" class="headerlink" title="Variant annotation"></a>Variant annotation</h3><p>&emsp;&emsp;VCF文件中的变体（使用染色体坐标定义）使用ANNOVAR的Java实现在转录水平上进行注释。(?)</p>
+<h3 id="Ranking-candidate-genes"><a href="#Ranking-candidate-genes" class="headerlink" title="Ranking candidate genes"></a>Ranking candidate genes</h3><p>&emsp;&emsp;基因是根据变异分数和表型相关性得分的组合进行排序的。用变异分数（$v_i$）和表型相关得分($r_i$d)计算基因$i$的PHIVE得分，即$g_i=(v_i+r_i)/2$</p>
+<h3 id="Variant-score"><a href="#Variant-score" class="headerlink" title="Variant score"></a>Variant score</h3><p>&emsp;&emsp;变异分数被定义为对那些既罕见又被预测为致病性的变异进行较高排名。 变体的估计频率来自dbSNP中的1000基因组计划联盟数据和Exome Server Project(ESP)。</p>
+<h3 id="Phenotypic-relevance-score"><a href="#Phenotypic-relevance-score" class="headerlink" title="Phenotypic relevance score"></a>Phenotypic relevance score</h3><p>&emsp;&emsp;基于人类疾病的语义相似性(HPO注释)和在老鼠模型中观察到的表型表现(MPO注释)来计算表型相关性分数<br>&emsp;</p>
+<hr>
+<h1 id="Human-genotype–phenotypedatabases-aims-challenges-and-opportunities"><a href="#Human-genotype–phenotypedatabases-aims-challenges-and-opportunities" class="headerlink" title="Human genotype–phenotypedatabases: aims, challenges and opportunities"></a>Human genotype–phenotypedatabases: aims, challenges and opportunities</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/26553330/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/26553330/</a>  </p>
+<p>&emsp;&emsp;本篇综述介绍了人类基因-表型数据库的目标，挑战与机遇。 </p>
+<blockquote>
+<p>Genotype–phenotype databases provide information about genetic variation, its consequences and its mechanisms of action for research and health care purposes. Existing databases vary greatly in type, areas of focus and modes of operation. Despite ever larger and more intricate datasets — made possible by advances in DNA sequencing, omics methods and phenotyping technologies — steady progress is being made towards integrating these databases rather than using them as separate entities. The consequential<br>shift in focus from single-gene variants towards large gene panels, exomes, whole genomes and myriad obse       rvable characteristics creates new challenges and opportunities in database design, interpretation of variant pathogenicity and modes of data representation and use.<br>基因型-表型数据库提供有关遗传变异、其后果及其作用机制的信息。用于研究和保健的目的。现有的数据库在类型、重点领域和操作模式上差异很大。尽管由于DNA测序、组学方法和表型技术的进步，数据集变得越来越大、越来越复杂，但在整合这些数据库而不是将他们作为独立实体使用方面，正在稳步取得进展。随之而来的焦点从单基因变异转向大基因面板、外显子、全基因组和无数可观察到的特征，给数据库设计、变异致病性的解释以及数据表示和使用模式带来了新的挑战和机遇。<br>&emsp; </p>
+</blockquote>
+<p>&emsp;&emsp;基因型-表型数据库的一个基本目标是提供获取足够数据和知识的途径，以便能够可靠地建立和记录遗传变异的功能和致病意义。但是基因组学技术的力量可能是一把双刃剑：尽管高通量方法有助于发现新的疾病基因和致病变异，但它们也导致了许多误导性的致病性分配，因此最好的解决方法是最大限度地提高记录在基因型-表型数据库中的数据及其注释的可靠性、有用性、和可用性。<br>&emsp;&emsp;由于人类基因组的巨大规模、复杂性和多变性，需要许多不同类型的基因型-表型数据库。相关数据库的大小和复杂性的快速增长通常与计算和数据库技术的进步相匹配。在综述中提供了一个基于相对大小的简化分类。</p>
+<ul>
+<li>Small-scale databases 小规模数据库：许多基因型-表型数据库都是小规模的工作，支持单个研究项目、特定的疾病领域、已定义的患者登记或特定的基因组（传统上，人类遗传学中的诊断策略集中在单基因或小基因集上）。</li>
+<li>已经有许多较大的基因型-表型数据库被创建，主要是“中央”数据库。一些更大的基因型-表型数据库试图全面涵盖大多数已知孟德尔疾病中单个基因的种系变异。</li>
+<li>数据库种还有一个特殊子集可以称为“集成”数据库，因为它们统一了其他资源，目标是将各种较小的数据库或互相关联的专用数据库中的内容中的内容。</li>
+</ul>
+<h2 id="key-challenges-and-common-goals"><a href="#key-challenges-and-common-goals" class="headerlink" title="key challenges and common goals"></a>key challenges and common goals</h2><h3 id="Expanding-datasets"><a href="#Expanding-datasets" class="headerlink" title="Expanding datasets"></a>Expanding datasets</h3><p> &emsp;&emsp;由于从单基因测试向NGS基因组，外显子组和基因组测序的转变，遗传和表型数据的迅速增加导致基因型-表型数据库的规模，范围和复杂性随之增加。这种增长产生了两个后果</p>
+<ul>
+<li>以前专门研究一个或几个基因的分析师现在将面临着成千上万个基因的变异</li>
+<li>使用的数据源必须具有极高的质量，以最大程度减少错误分析的风险。<h3 id="Assigning-pathogenicity"><a href="#Assigning-pathogenicity" class="headerlink" title="Assigning pathogenicity"></a>Assigning pathogenicity</h3>&emsp;&emsp;将致病性分配给遗传变异的任务并不简单，主要是因为确定因果关系涉及必须对多个证据线应用差异加权，并选择使用哪种分析工具。研究和临床诊断的通用做法试图将致病性降低到只有几个类别（例如‘definitely pathogenic’(绝对致病)，‘probably pathogenic’(可能致病)，‘uncertain’(不确定),‘probably not pathogenic or of little clinical significance’（可能没有致病性或临床意义不大),’not pathogenic or of no clinical significance’(非致病性或无临床意义)）,但是，通常无法很好地定义这些分类背后地致病性的实际概念。<br>&emsp;&emsp;基因型-表型数据库以前仅需要简单的计算技术，包括与致病性相关的非常基本的数据字段，而没有获得致病性解释过程或所采用的证据基础。在未来，这种方法将不得不改变，特别是如果希望提供真正个性化的药物，那么除了概率模型之外，还需要机制，因此输入信息和记录结果的工具的来源也更加复杂。  </li>
+</ul>
+<h2 id="Current-progress-and-trends"><a href="#Current-progress-and-trends" class="headerlink" title="Current progress and trends"></a>Current progress and trends</h2><h3 id="Database-types-and-arrangements"><a href="#Database-types-and-arrangements" class="headerlink" title="Database types and arrangements"></a>Database types and arrangements</h3><p>&emsp;&emsp;有观点认为，诸如鼓励广泛创新，以及让特定领域的专家接近数据管理和管理过程的价值等这些因素都支持建设联合数据库。但同时有另一种观点认为，就基于标准的系统间兼容性而言，只构建几个集中式存储库更具成本效益，也更实用。现实中，主要数据库和数据生成项目正在自行决定将其内容的哪些子集提交到中央储存库，而哪些不需要。</p>
+<h3 id="Data-linking-and-reporting"><a href="#Data-linking-and-reporting" class="headerlink" title="Data linking and reporting"></a>Data linking and reporting</h3><p>&emsp;&emsp;资金、能力、激励、法律限制等因素限制了数据库连接这一领域的进展，期刊和资助机构是解决这些问题的最佳人选，因为两者都可以将资源引导到为数据提交而修建的管道上，并施加压力让研究人员使用这些连接。 一些期刊现在已经开始朝这个方向发展。</p>
+<h3 id="Improving-phenotypic-information-and-pathogenicity-evidence"><a href="#Improving-phenotypic-information-and-pathogenicity-evidence" class="headerlink" title="Improving phenotypic information and pathogenicity evidence"></a>Improving phenotypic information and pathogenicity evidence</h3><p>&emsp;&emsp;相比基因型，表型维度在收集信息的规模和粒度以及标准化程度方面都是落后的，许多较老的基因型-表型数据库只包含和提供有限的表型信息，有很多工作关注着不同数据库中的表型信息和其他元数据来提高WES数据临床解释的准确性。例如，CARE4RARE37、DECIPHER38、基因组管理应用39、PheWAS Catalog40和Kaiser Permanente Research Program on Genees，Environment and Health41正在强调表型内容与基因型数据一样丰富的必要性。<br>&emsp;&emsp;除了基因型和表型数据，在少数情况下，数据库开始包括用于推断变异致病性的实际证据，以及用于处理和解释这些证据的方法。</p>
+<h3 id="Alternative-modes-of-data-provision"><a href="#Alternative-modes-of-data-provision" class="headerlink" title="Alternative modes of data provision"></a>Alternative modes of data provision</h3><p>&emsp;&emsp;为了应对大多数数据既多又复杂，广泛分散在不同存储库或不同设计的项目中，隐私问题对哪些用户在哪些情况下可以访问哪些特定记录施加了限制和不确定性，一种方法是将数据转换为其他表示形式，并以各种方式增强它，以应对对象识别的风险。另一种方法是使许多分散的数据集合能够被联合利用。</p>
+<h3 id="A-focus-on-data-discovery"><a href="#A-focus-on-data-discovery" class="headerlink" title="A focus on data discovery"></a>A focus on data discovery</h3><p>&emsp;&emsp;一种使数据库更有用的新策略改变了传统的模式，即数据提供是由经过批准的用户成功搜索数据库而自动遵循的。换言之，搜索数据库本身就成为一个目标，使人们能够发现感兴趣的数据的存在，而不管这些数据随后是否或如何被访问</p>
+<h2 id="Emerging-community-efforts"><a href="#Emerging-community-efforts" class="headerlink" title="Emerging community efforts"></a>Emerging community efforts</h2><p>&emsp;&emsp;近年来，大规模的研究正在生成大量个体的基因型和表型数据，数据收集工作已经加强，数据库创造者收集文献、临床和研究数据集，国际协调和标准化工作正在进行。</p>
+<h2 id="Future-perspective"><a href="#Future-perspective" class="headerlink" title="Future perspective"></a>Future perspective</h2><p>&emsp;&emsp;基因型-表型数据整理领域正在迅速成熟，但还有以下几个待发展的特别重要的领域</p>
+<ul>
+<li>Metadata</li>
+<li>Data formatting and annotation</li>
+<li>Data discovery</li>
+<li>Consent agreements</li>
+<li>Data analysis and reporting</li>
+<li>Identifiers</li>
+<li>APIs and ontologies</li>
+<li>Long-term sustainability</li>
+</ul>
+<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>&emsp;&emsp;这次检讨描述了一些随着数据集增长产生的需要和要求，这些都应该被认为是真正的医学进步所必需的，但这并不是全部。 为了最大限度地利用数据，必须开发算法和应用程序来共享和集成从数据中获得的知识，以利于研究和患者护理。 因此，下一代基因型-表型数据库可能包括高度聚合和集成的数据，允许人类探索其复杂性的图形表示，以及揭示预测性的、个性化的因果关系数学模型的算法。 因此，这些数据库将把患者或研究对象的深入临床和分子发现与尽可能多的相关现有数据和知识相结合，从而能够做出可靠和有用的诊断和发现。</p>
 ]]></content>
       <categories>
-        <category>web前端</category>
+        <category>HPO</category>
       </categories>
       <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
+        <tag>论文小结</tag>
       </tags>
   </entry>
   <entry>
@@ -583,289 +750,40 @@ c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
       </tags>
   </entry>
   <entry>
-    <title>敏捷生活宣言</title>
-    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
-    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
-<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
-<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
-<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
-<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
-<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
-<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
-<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
-<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
-<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
-<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
-<p>可见的实物是进度的首要度量标准。</p>
-<p>Visible objects are the primary measure of progress.</p>
-<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
-<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
-<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
-<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
-<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
-<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
-<p>最好的生活方式来源于自我管理。</p>
-<p>The best life style comes from self-organizing individuals.</p>
-<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
-<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+    <title>hexo 双仓库</title>
+    <url>/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/</url>
+    <content><![CDATA[<p>最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。<br>在每次到新电脑上时，首先需要完成<code>node/npm/hexo/git</code>等环境的搭建和配置。然后使用 <code>git clone</code>从私密仓库中将hexo源文件拉取下来。<br>尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：<br><strong>千万不要使用hexo init命令</strong>。  <strong>千万不要使用hexo init命令</strong>。<strong>千万不要使用hexo init命令</strong>。<br>原因是当前目录已经建立了git仓库环境, hexo init会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。<br>正确做法是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure><br>因为package.json里面已经保存了hexo的必备资源包信息，npm install后Hexo环境就建立起来了。<br>接下来就进行正常的编写和发布就好。<br>本地预览发布的命令还是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure><br>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
+<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<pre><code>git fetch --all #将git上所有文件拉取到本地
+git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容
+</code></pre><p>reset 对所拉取的文件不做任何处理，此处不用 pull 是因为本地尚有许多文件，使用 pull 会有一些版本冲突，解决起来也麻烦，而本地的文件都是初始化生成的文件，较拉取的库里面的文件而言基本无用，所以直接丢弃。</p>
 ]]></content>
       <categories>
-        <category>生活方式</category>
+        <category>web前端</category>
       </categories>
       <tags>
-        <tag>自我提升</tag>
-        <tag>敏捷生活</tag>
+        <tag>博客</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
-    <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
-    <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
-    <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
-<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
-<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
-<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
-<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
-<li>它适用于不同的分辨率和来自不同设备的图像</li>
-<li>不局限于某一种图像格式</li>
-<li>能够产生良好的预测以及一个小数据集</li>
-<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
-</ul>
-<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
-<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
-<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
-<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
-<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
+    <title>hexo 常用命令小记</title>
+    <url>/2020/07/06/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
 <p>&emsp;</p>
-<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
-<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
-<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
-<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
-<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
-    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
-     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
-     \qquad...\\
-     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
+<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
 <p>&emsp;</p>
-<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
-<li>vh:Patch Reinterpretation的直方图</li>
-<li>距离信息:patch与它邻居的欧式距离</li>
-<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
-</ul>
-<p>&emsp;</p>
-<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
-<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
-<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
-<p>&emsp;</p>
-<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
-<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
-<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
-<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
-<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
-<li>不同参数的设置会较大影响特征提取的速度。</li>
-<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
-</ul>
-<p>&emsp;</p>
-<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
-<p>&emsp;</p>
-<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
-<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
-<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
-</ul>
-<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
+<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
+<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
+<p>&emsp; </p>
+<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
 ]]></content>
       <categories>
-        <category>篡改检测</category>
+        <category>web前端</category>
       </categories>
       <tags>
-        <tag>科学图像篡改检测</tag>
-        <tag>论文简述</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>HPO论文小结</title>
-    <url>/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/</url>
-    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
-<li>Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。</li>
-<li>Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检查以及行为异常的异常结果。</li>
-<li>varient 变异：基因变异描述的是与正常序列或参考序列的偏差。 例如，在某一染色体位置用一个核苷酸替换另一个核苷酸，一个或多个核苷酸的插入或缺失，数百万个核苷酸的染色体微缺失或整个染色体的三体。</li>
-<li>pathogenicity 致病性：致病性指的是一个人基因组中的基因变异导致疾病的倾向。这一术语最常用于癌症或遗传性疾病的上下文中，即当基因变异对导致疾病或导致疾病发展的基因产物的功能产生重大有害影响时。</li>
-<li>Whole-exome sequencing（wes）全外显子组测序：一种测序技术，试图选择性地富集和分析仅属于人类基因组约1.5％的，由蛋白质编码基因外显子组成的序列（称为外显子组），因为迄今为止在孟德尔疾病中发现的大多数致病性变异都位于或非常接近这些外显子。</li>
-</ul>
-<p>&emsp;</p>
-<hr>
-<h1 id="The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease"><a href="#The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease" class="headerlink" title="The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease"></a>The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/18950739/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/18950739/</a></p>
-<p>&emsp;&emsp;先来看看2008年的开山之作吧，首先是整篇report的概述:</p>
-<blockquote>
-<p>There are many thousands of hereditary diseases in humans, each of which has a specific combination of phenotypic features, but computational analysis of phenotypic data has been hampered by lack of adequate computational data structures. Therefore, we have developed a Human Phenotype Ontology (HPO) with over 8000 terms representing individual phenotypic anomalies and have annotated all clinical entries in Online Mendelian Inheritance in Man with the terms of the HPO. We show that the HPO is able to capture phenotypic similarities between diseases in a useful and highly significant fashion.  </p>
-</blockquote>
-<p>&emsp;&emsp;人类有成千上万种遗传性疾病，每一种都有特定的表型特征组合，但是由于表型数据的计算分析缺乏足够的计算数据结构而使得分析受到阻碍，由此团队开发了一个人类表型本体论（HPO），其中有超过8000个术语代表个体表型异常，并且用HPO的术语注释了<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>的所有临床条目。该团队证明了HPO能够一种有效且重要的方式捕捉疾病之间的表型相似性。</p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;人类尤其擅长识别表型特征和异常，然而在人类表型的计算描述和分析方面，还有许多未解决的问题。<br>&emsp;&emsp;显然，某些遗传性疾病是由于共同的表型特征而彼此表型相似。研究发现许多遗传条件显示出重叠的特征而导致了疾病族的概念。一些研究表明，在基因组范围内，将表型与遗传、细胞网络的特征联系起来有着巨大的潜力。<br>&emsp;&emsp;尽管<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>中已经详细描述了绝大多数的人类孟德尔综合症（human Mendelian syndromes）,然而，OMIM中包含的计算分析一直受到限制，因为缺少一个可控的词汇表。包括具有明确定义关系的一致性的注释，例如：</p>
-<blockquote>
-<p>For instance, the descriptions “generalized amyotrophy”, “generalized muscle atrophy”, “muscular atrophy, generalized”, and “muscle atrophy, generalized” are used to describe different diseases in OMIM and might not be easily recognized as synonyms with a purely computational approach. Also, although the clinical-synopsis entries in OMIM are grouped according to organ system, the hierarchical structure does not itself reflect that (for instance) “Hypoplastic philtrum” and “Smooth philtrum” are more closely related to one another than to “Hypoplastic nasal septum” (all three of these descriptions are in the NOSE category of OMIM’s clinical synopsis)  </p>
-</blockquote>
-<p>&emsp;</p>
-<p>&emsp;&emsp;“本体论”是以有向无环图的形式表示概念、属性和关系的数据模型。尤其是<a href="https://baike.baidu.com/item/%E5%9F%BA%E5%9B%A0%E6%9C%AC%E4%BD%93/1795532?fr=aladdin" target="_blank" rel="noopener">基因本体</a>（GO）已经被证明对于微阵列（microray）和其他形式的高通量数据(high-throughput data)的探索性分析是非常有用的。<br>&emsp;&emsp;HPO的目的是覆盖人类单基因疾病中的所有表型异常，它从OMIM数据库获取了文本数据<strong>omim.txt</strong>。HPO使用本体论编辑器（OBO-edit）来定义基于omim.txt中概念的术语与连接，在整理术语时，有时需要人工的将几种症状集合到同一个术语，例如：</p>
-<blockquote>
-<p>For instance, the three OMIM descriptions <em>Carpal bone hypoplasia</em>, <em>Hypoplasia of carpal bones</em>, and <em>Hypoplastic carpal bones</em>were fused into the single term HP:0001498, <em>Carpal bone hypoplasia</em></p>
-</blockquote>
-<p>&emsp;</p>
-<p>&emsp;&emsp;HPO的每个术语都描述了一种表型异常，术语与其父术语是“is a”关系。如下图（Figure 1）所示HPO结构允许一个术语有多个父项。从而可以探索表型异常的不同方面。HPO本身并不描述单个疾病实体。而是与它们相关的表型异常。大多数的HPO术语是用来描述<strong>器官异常</strong>，但单独的本体论用于描述<strong>遗传方式、发病和临床过程</strong>。<br>&emsp;&emsp;真路径（true-path rule）适用于HPO的术语，也就是说，如果一种疾病被注释为<em>Atrial septal defect</em>，那么这个术语的所有祖先，如<em>Abnormality of the cardiac septa</em>也适用。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG" alt><br>&emsp;&emsp;与GO一样，在HPO中，更接近本体根的术语比远离根的术语表示更一般的概念。在整个OMIM语料库的标注中，可以通过其标注的频率来估计HPO中每个节点的信息含量。在HPO的实现中，术语的信息内容是基于OMIM数据库中4779种疾病中该术语注释的频率。显然。如果两种疾病都被注释到一个信息含量较高的术语，那么在此基础上计算出的相似度应该高于将两种疾病注释到更一般（信息含量较低）的术语时计算的相似度。<br>&emsp;&emsp;对于HPO的每一项$t$,信息量被量化为其概率的负对数：$-\log p(t)$,其中的概率被认为是其在所有4779种疾病的注释中的频率，注意上文提到：<strong>如果一种疾病被注释到HPO中的任何一个术语$t$，它也必须被注释到$t$的所有祖先</strong>, 因此，术语在本体中的位置越高，其信息内容就越少。在HPO中，一个术语可能有多个父项，因此一对术语可能有多个共同祖先的路径。将术语$t_1$和$t_2$的所有共同祖先项集合表示为$A(t_1,t_2)$,则$t_1$,$t_2$的相似度被定义为：</p>
-<script type="math/tex; mode=display">sim(t_1,t_2) = \max_{a\in A(t_1,t_2)}-\log p(a)</script><p>&emsp;&emsp;就是要找到$t_1$和$t_2$的最小共同祖先的概率  </p>
-<p>&emsp;&emsp;为了要计算两种疾病$d_1$和$d_2$之间的相似性，使用的方法$d_1$的每个特征与$d_2$最相似的特征相匹配，并取这些特征对的平均值：</p>
-<script type="math/tex; mode=display">sim(d_1 \to d_2) = avg \left[\sum_{s\in d_1} \max_{t\in d_2}sim(s,t) \right]</script><p>&emsp;&emsp;由于上式对于$d_1$与$d_2$并不是对称的，因此最终的相似性度量值被定义为：</p>
-<script type="math/tex; mode=display">sim(d_1,d_2) = \frac{1}{2} \times sim(d_1\to d_2) + \frac{1}{2} \times sim(d_2\to d_1)</script><p>&emsp;&emsp;使用这种方法来定义OMIM数据库列出的疾病之间的相似性，分析了21个生理疾病类别中的727个疾病，这些疾病之间的表型关系通过超过阈值相似评分的所有成对疾病之间的联系如下图所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ApplicationsOfHpo.PNG" alt><br>&emsp;&emsp;尽管生成的表型与疾病类别无关，但最终的表型网络清楚地显示了与21种类别中的许多类别相对应的簇。同样明显的是，某些簇显示出彼此之间的相互联系，这在仅基于共享疾病基因的疾病图谱中是看不到的，对随机网络的分析表明，观察到的网络连接与疾病类别之间的相关性非常显着。  </p>
-<p>&emsp;</p>
-<p>&emsp;&emsp;接下来探索了在临床环境中使用HPO的实用性。在最好的情况下，诊断算法将允许以不同的详细程度进行搜索，比一般的特征更权衡特定特征，并且在对某个个体患者可能没有个体特征这一事实不太敏感。因此，本体论的方法在这种情况下显得特别合适。为了模拟这种搜索过程，使用OMIM中的2116个疾病，用至少6个HPO术语注释来模拟临床搜索过程，只选择与给定疾病相关的1-6个术语，然后在原始数据库中搜索相似的疾病。最理想的情况是，搜索算法会将原始疾病分配到最高级别，或者至少放在前几名。  </p>
-<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO-C.PNG" alt></p>
-<p>&emsp;&emsp;即使只使用两个搜索项（术语），算法性能也非常出色，当50％的随机噪声添加到搜索项或者每项映射到一个（不太具体）的父项时，准确度会只会相对降低一些。也就是说相似度的计算对于由于搜索的表型术语集的噪声、完整性或特异性不太敏感。<br>&emsp;&emsp;相对于其他之前完成的工作,人工处理的本体论方法计算表型分析提供了许多优势</p>
-<ul>
-<li>本体的术语和结构基于医学知识，而不是文本挖掘系统</li>
-<li>与层次系统和特征向量相比，本体具有更大的灵活性和描述能力。</li>
-<li>在GO成功后，已开发了的、许多的、用于本体分析的计算算法现在可以用于人类表型数据。</li>
-</ul>
-<p>&emsp;</p>
-<p>&emsp;&emsp;HPO还会再未来数年中继续发展，继续改进OMIM中列出的疾病的注释，并将注释扩展到其他遗传性疾病。计划在注释文件中包含附加信息，包括特性的频率和严重性。人们希望HPO将为涉及人类表型分析的计算生物医学研究提供基础，通过将人类表型与蛋白质相互作用、代谢和信号转导途径等数据源直接联系起来，使人类现象与细胞的分子病理生理学相互关联。此外，HPO将为医学遗传学的临床研究提供统一的基础，为表型描述提供标准化词汇。</p>
-<p>&emsp;<br>&emsp;<br>&emsp;</p>
-<hr>
-<h1 id="Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison"><a href="#Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison" class="headerlink" title="Improved exome prioritization of disease genes through cross-species phenotype comparison"></a>Improved exome prioritization of disease genes through cross-species phenotype comparison</h1><p>地址:<a href="https://pubmed.ncbi.nlm.nih.gov/24162188/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/24162188/</a>  </p>
-<p>&emsp;&emsp;本文利用了小鼠的模型，将人类疾病和转基因小鼠之间的表型相似性进行计算来对基因变异进行评估（关于这部分生物信息学的基础知识还需要补充，因此现在简单概括文章的大意）</p>
-<h2 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h2><p>&emsp;&emsp;首先来看一下摘要：</p>
-<blockquote>
-<p>Numerous new disease-gene associations have been identified by whole-exome sequencing studies in the last few years.<br>However, many cases remain unsolved due to the sheer number of candidate variants remaining after common filtering strategies such as removing low quality and common variants and those deemed unlikely to be pathogenic. The observation that each of our genomes contains about 100 genuine loss-of-function variants makes identification of the causative mutation problematic when using these strategies alone. We propose using the wealth of genotype to phenotype data that already exists from model organism studies to assess the potential impact of these exome variants. Here, we introduce PHenotypic Interpretation of Variants in Exomes (PHIVE), an algorithm that integrates the calculation of phenotype similarity between human diseases and genetically modified mouse models with evaluation of the variants according to allele frequency, pathogenicity, and mode of inheritance approaches in our Exomiser tool. Large-scale validation of PHIVE analysis using 100,000 exomes containing known mutations demonstrated a substantial improvement (up to 54.1-fold) over purely variant-based (frequency and pathogenicity) methods with the correct gene recalled as the top hit in up to 83% of samples, corresponding to an area under the ROC curve of &gt;95%. We conclude that incorporation of phenotype data can play a vital role in translational bioinformatics and propose that exome sequencing projects should systematically capture clinical phenotypes to take advantage of the strategy presented here.  </p>
-</blockquote>
-<p>&emsp;&emsp;在过去的几年中，通过<a href="http://www.bgitechsolutions.com/sequencing/105" target="_blank" rel="noopener">全外显子组测序研究（whole exome sequencing studies，wes)</a>已经鉴定出许多新的疾病-基因关联。然而，许多病例依旧悬而未决，这是因为在使用诸如去除低质量与常见变体以及那些不太可能治病的变体的常规过滤策略后，仍然存在大量的候选变体。根据实验观察，我们的每个基因组包含大约100个真正的功能丧失变体，这使得单独使用这些过滤策略确定致病突变时会发生问题。我们建议利用模式生物研究中已经存在的基因型到表型的丰富数据来评估这些外显子变体的潜在影响。在这里介绍了<strong>PHIVE(PHenotypic Interpretation of Variants in Exomes)算法</strong>，该算法将人类疾病和转基因小鼠模型之间的表型相似性计算与<a href="https://www.sanger.ac.uk/tool/exomiser/" target="_blank" rel="noopener">Exomiser</a>工具中根据等位基因频率，致病性和继承方法的变体评估方法相结合。使用含有已知突变的100000个外显子对PHIVE分析进行大规模验证，结果表明，与纯基于变体的方法（频率与致病性）相比，PHIVE分析具有显著的提高（高达54.1倍），其中正确的基因被召回的成功率高达83%，对应于ROC曲线下大于95%的面积。我们得出结论：表型数据的整合在翻译生物信息学中发挥着至关重要的作用，并建议外显子组测序项目应系统地捕获临床表型以利用此处介绍的策略。<br>&emsp;&emsp;WES发现疾病基因的主要挑战之一是单个外显子组中发现的变体数量巨大，即使在过滤掉常见的变体之后，也需要额外的方法来预测哪些变体可能具有严重的功能后果，并对他们进行优先排序以进行验证。<br>&emsp;&emsp;由于单纯基于序列变异致病性的优先排序将难以区分疾病相关突变与具有有害生化效应的其他变体。从模式生物研究中已经存在大量从基因型到表型的数据，这些数据可以用来评估这些外显子变体的潜在影响,例如本文中用到的<a href="http://www.informatics.jax.org/" target="_blank" rel="noopener">小鼠基因组信息学（MGI）数据库</a> ,根据先前的研究，小鼠表型显示出与人类临床表型相匹配的大多数孟德尔疾病。</p>
-<h2 id="PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization"><a href="#PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization" class="headerlink" title="PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization"></a>PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization</h2><p>&emsp;&emsp;为了解决纯基于变量的WES数据优先级排序的问题，提出了PHIVE方法(PHenoytpic Interpretation of Variant in Exomes),这种算法首先根据稀有性、外显子中的位置、临近外显子的位置以及预期遗传方式的兼容性来筛选变异，然后根据变异评分（变异的频率和致病性）和表型相关性评分的组合，对所有剩余的基因进行排序。<strong>从本质上说，该方法利用了模型生物中可用的大量数据（eg.MGI），寻找同样具有有害外显子序列变体的表型相关基因。</strong></p>
-<p>&emsp;&emsp;如下图所示，Exomiser通过进一步考虑guo中去除脱靶、常见和同义变体来过滤整个外显子数据集，并根据预测的致病性和次要等位基因频率（变异评分 varient score）评估剩余的变体。假设的遗传模式可选地进一步过滤具有与假设的遗传模式兼容的模式中存在的变体的基因。然后根据与9043个基因突变的28176只小鼠模型的比较，这些基因会得到一个表型相关性分数，最终排名计算为各单项分数之和，以得出PHIVE分数。</p>
-<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ExomiserFilters.PNG" alt></p>
-<h2 id="PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations"><a href="#PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations" class="headerlink" title="PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations"></a>PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations</h2><p>&emsp;&emsp;总体而言，在常染色体隐性（AR）模型下，PHIVE方法在将平均37个筛选后的候选基因的83%的外显子中，将正确的基因列为得分最高的基因。在常染色体显性（AD）模型下，在平均379个过滤好的候选基因中，66%的外显子有着正确的基因（基因排名最高）。相比之下，单独使用基于变量的评分时，这一比例为28%（AD）或77%（AR）<br>&emsp;&emsp;下面两张表显示了变体、表型相关性、PHIVE分数在各种模拟条件下的性能<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitA.PNG" alt><br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitB.PNG" alt></p>
-<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p>&emsp;&emsp;在这项工作中，我们为wes数据设计了一种优先排序的方法，在丰富的转基因小鼠的表型数据中搜索候选基因。结果表明，PHIVE在识别正确的候选基因方面表现出优异的性能，这些候选基因的表型数据可以从相应基因突变的小鼠模型中获得。对该种方法的一个批评是：如果被破坏的基因没有一个对应的老鼠突变体，那么这种方法可能是无效的，为了应对这一问题，当没有数据时，该方法使用默认的表型得分，并运行优化模拟来选择一个值。对于没有小鼠表型基因的致病基因而言，PHIVE在对待外显体上与使用<strong>基于变异</strong>的方法在性能上是等同的。<br>&emsp;&emsp;使用来自众多其他模型系统的表型不仅可以验证这些结果，还可以潜在地补充没有小鼠表型的情况，使用来自不同模型系统的数据带来了包含不同类型的表型的优势，这些表型是不同系统中的重点，因此，Exomiser被整合为了<a href="http://monarchinitiative.org" target="_blank" rel="noopener">Monarch Initiative</a>工具套件的一部分，以便能够在此背景下使用其他模型系统数据。在Exomiser的未来版本中，通过包含蛋白质-蛋白质相互作用网络、共表达和其他模型生物数据，来寻求改善缺少小鼠表型数据的性能。本文采用的本体相似性方法在适应标注中的小错误方面是健壮的。</p>
-<h2 id="Methods"><a href="#Methods" class="headerlink" title="Methods"></a>Methods</h2><h3 id="Data-source"><a href="#Data-source" class="headerlink" title="Data source"></a>Data source</h3><p>&emsp;&emsp;关于变异的群体频率的信息来自dbSNP和<a href="https://evs.gs.washington.edu/EVS/" target="_blank" rel="noopener">Exome变体服务器</a></p>
-<h3 id="Inheritance-model-filtering"><a href="#Inheritance-model-filtering" class="headerlink" title="Inheritance model filtering"></a>Inheritance model filtering</h3><p>&emsp;&emsp;常染色体显性筛选是通过排除至少有一个杂合子变体的基因（及其变体）来完成的。(?)</p>
-<h3 id="Phenotype-ontologies"><a href="#Phenotype-ontologies" class="headerlink" title="Phenotype ontologies"></a>Phenotype ontologies</h3><p>&emsp;&emsp;表型本体论OMIM数据库中列出的人类疾病表型注释是从人类表型本体（HPO）资源中提取的。</p>
-<h3 id="Variant-annotation"><a href="#Variant-annotation" class="headerlink" title="Variant annotation"></a>Variant annotation</h3><p>&emsp;&emsp;VCF文件中的变体（使用染色体坐标定义）使用ANNOVAR的Java实现在转录水平上进行注释。(?)</p>
-<h3 id="Ranking-candidate-genes"><a href="#Ranking-candidate-genes" class="headerlink" title="Ranking candidate genes"></a>Ranking candidate genes</h3><p>&emsp;&emsp;基因是根据变异分数和表型相关性得分的组合进行排序的。用变异分数（$v_i$）和表型相关得分($r_i$d)计算基因$i$的PHIVE得分，即$g_i=(v_i+r_i)/2$</p>
-<h3 id="Variant-score"><a href="#Variant-score" class="headerlink" title="Variant score"></a>Variant score</h3><p>&emsp;&emsp;变异分数被定义为对那些既罕见又被预测为致病性的变异进行较高排名。 变体的估计频率来自dbSNP中的1000基因组计划联盟数据和Exome Server Project(ESP)。</p>
-<h3 id="Phenotypic-relevance-score"><a href="#Phenotypic-relevance-score" class="headerlink" title="Phenotypic relevance score"></a>Phenotypic relevance score</h3><p>&emsp;&emsp;基于人类疾病的语义相似性(HPO注释)和在老鼠模型中观察到的表型表现(MPO注释)来计算表型相关性分数<br>&emsp;</p>
-<hr>
-<h1 id="Human-genotype–phenotypedatabases-aims-challenges-and-opportunities"><a href="#Human-genotype–phenotypedatabases-aims-challenges-and-opportunities" class="headerlink" title="Human genotype–phenotypedatabases: aims, challenges and opportunities"></a>Human genotype–phenotypedatabases: aims, challenges and opportunities</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/26553330/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/26553330/</a>  </p>
-<p>&emsp;&emsp;本篇综述介绍了人类基因-表型数据库的目标，挑战与机遇。 </p>
-<blockquote>
-<p>Genotype–phenotype databases provide information about genetic variation, its consequences and its mechanisms of action for research and health care purposes. Existing databases vary greatly in type, areas of focus and modes of operation. Despite ever larger and more intricate datasets — made possible by advances in DNA sequencing, omics methods and phenotyping technologies — steady progress is being made towards integrating these databases rather than using them as separate entities. The consequential<br>shift in focus from single-gene variants towards large gene panels, exomes, whole genomes and myriad obse       rvable characteristics creates new challenges and opportunities in database design, interpretation of variant pathogenicity and modes of data representation and use.<br>基因型-表型数据库提供有关遗传变异、其后果及其作用机制的信息。用于研究和保健的目的。现有的数据库在类型、重点领域和操作模式上差异很大。尽管由于DNA测序、组学方法和表型技术的进步，数据集变得越来越大、越来越复杂，但在整合这些数据库而不是将他们作为独立实体使用方面，正在稳步取得进展。随之而来的焦点从单基因变异转向大基因面板、外显子、全基因组和无数可观察到的特征，给数据库设计、变异致病性的解释以及数据表示和使用模式带来了新的挑战和机遇。<br>&emsp; </p>
-</blockquote>
-<p>&emsp;&emsp;基因型-表型数据库的一个基本目标是提供获取足够数据和知识的途径，以便能够可靠地建立和记录遗传变异的功能和致病意义。但是基因组学技术的力量可能是一把双刃剑：尽管高通量方法有助于发现新的疾病基因和致病变异，但它们也导致了许多误导性的致病性分配，因此最好的解决方法是最大限度地提高记录在基因型-表型数据库中的数据及其注释的可靠性、有用性、和可用性。<br>&emsp;&emsp;由于人类基因组的巨大规模、复杂性和多变性，需要许多不同类型的基因型-表型数据库。相关数据库的大小和复杂性的快速增长通常与计算和数据库技术的进步相匹配。在综述中提供了一个基于相对大小的简化分类。</p>
-<ul>
-<li>Small-scale databases 小规模数据库：许多基因型-表型数据库都是小规模的工作，支持单个研究项目、特定的疾病领域、已定义的患者登记或特定的基因组（传统上，人类遗传学中的诊断策略集中在单基因或小基因集上）。</li>
-<li>已经有许多较大的基因型-表型数据库被创建，主要是“中央”数据库。一些更大的基因型-表型数据库试图全面涵盖大多数已知孟德尔疾病中单个基因的种系变异。</li>
-<li>数据库种还有一个特殊子集可以称为“集成”数据库，因为它们统一了其他资源，目标是将各种较小的数据库或互相关联的专用数据库中的内容中的内容。</li>
-</ul>
-<h2 id="key-challenges-and-common-goals"><a href="#key-challenges-and-common-goals" class="headerlink" title="key challenges and common goals"></a>key challenges and common goals</h2><h3 id="Expanding-datasets"><a href="#Expanding-datasets" class="headerlink" title="Expanding datasets"></a>Expanding datasets</h3><p> &emsp;&emsp;由于从单基因测试向NGS基因组，外显子组和基因组测序的转变，遗传和表型数据的迅速增加导致基因型-表型数据库的规模，范围和复杂性随之增加。这种增长产生了两个后果</p>
-<ul>
-<li>以前专门研究一个或几个基因的分析师现在将面临着成千上万个基因的变异</li>
-<li>使用的数据源必须具有极高的质量，以最大程度减少错误分析的风险。<h3 id="Assigning-pathogenicity"><a href="#Assigning-pathogenicity" class="headerlink" title="Assigning pathogenicity"></a>Assigning pathogenicity</h3>&emsp;&emsp;将致病性分配给遗传变异的任务并不简单，主要是因为确定因果关系涉及必须对多个证据线应用差异加权，并选择使用哪种分析工具。研究和临床诊断的通用做法试图将致病性降低到只有几个类别（例如‘definitely pathogenic’(绝对致病)，‘probably pathogenic’(可能致病)，‘uncertain’(不确定),‘probably not pathogenic or of little clinical significance’（可能没有致病性或临床意义不大),’not pathogenic or of no clinical significance’(非致病性或无临床意义)）,但是，通常无法很好地定义这些分类背后地致病性的实际概念。<br>&emsp;&emsp;基因型-表型数据库以前仅需要简单的计算技术，包括与致病性相关的非常基本的数据字段，而没有获得致病性解释过程或所采用的证据基础。在未来，这种方法将不得不改变，特别是如果希望提供真正个性化的药物，那么除了概率模型之外，还需要机制，因此输入信息和记录结果的工具的来源也更加复杂。  </li>
-</ul>
-<h2 id="Current-progress-and-trends"><a href="#Current-progress-and-trends" class="headerlink" title="Current progress and trends"></a>Current progress and trends</h2><h3 id="Database-types-and-arrangements"><a href="#Database-types-and-arrangements" class="headerlink" title="Database types and arrangements"></a>Database types and arrangements</h3><p>&emsp;&emsp;有观点认为，诸如鼓励广泛创新，以及让特定领域的专家接近数据管理和管理过程的价值等这些因素都支持建设联合数据库。但同时有另一种观点认为，就基于标准的系统间兼容性而言，只构建几个集中式存储库更具成本效益，也更实用。现实中，主要数据库和数据生成项目正在自行决定将其内容的哪些子集提交到中央储存库，而哪些不需要。</p>
-<h3 id="Data-linking-and-reporting"><a href="#Data-linking-and-reporting" class="headerlink" title="Data linking and reporting"></a>Data linking and reporting</h3><p>&emsp;&emsp;资金、能力、激励、法律限制等因素限制了数据库连接这一领域的进展，期刊和资助机构是解决这些问题的最佳人选，因为两者都可以将资源引导到为数据提交而修建的管道上，并施加压力让研究人员使用这些连接。 一些期刊现在已经开始朝这个方向发展。</p>
-<h3 id="Improving-phenotypic-information-and-pathogenicity-evidence"><a href="#Improving-phenotypic-information-and-pathogenicity-evidence" class="headerlink" title="Improving phenotypic information and pathogenicity evidence"></a>Improving phenotypic information and pathogenicity evidence</h3><p>&emsp;&emsp;相比基因型，表型维度在收集信息的规模和粒度以及标准化程度方面都是落后的，许多较老的基因型-表型数据库只包含和提供有限的表型信息，有很多工作关注着不同数据库中的表型信息和其他元数据来提高WES数据临床解释的准确性。例如，CARE4RARE37、DECIPHER38、基因组管理应用39、PheWAS Catalog40和Kaiser Permanente Research Program on Genees，Environment and Health41正在强调表型内容与基因型数据一样丰富的必要性。<br>&emsp;&emsp;除了基因型和表型数据，在少数情况下，数据库开始包括用于推断变异致病性的实际证据，以及用于处理和解释这些证据的方法。</p>
-<h3 id="Alternative-modes-of-data-provision"><a href="#Alternative-modes-of-data-provision" class="headerlink" title="Alternative modes of data provision"></a>Alternative modes of data provision</h3><p>&emsp;&emsp;为了应对大多数数据既多又复杂，广泛分散在不同存储库或不同设计的项目中，隐私问题对哪些用户在哪些情况下可以访问哪些特定记录施加了限制和不确定性，一种方法是将数据转换为其他表示形式，并以各种方式增强它，以应对对象识别的风险。另一种方法是使许多分散的数据集合能够被联合利用。</p>
-<h3 id="A-focus-on-data-discovery"><a href="#A-focus-on-data-discovery" class="headerlink" title="A focus on data discovery"></a>A focus on data discovery</h3><p>&emsp;&emsp;一种使数据库更有用的新策略改变了传统的模式，即数据提供是由经过批准的用户成功搜索数据库而自动遵循的。换言之，搜索数据库本身就成为一个目标，使人们能够发现感兴趣的数据的存在，而不管这些数据随后是否或如何被访问</p>
-<h2 id="Emerging-community-efforts"><a href="#Emerging-community-efforts" class="headerlink" title="Emerging community efforts"></a>Emerging community efforts</h2><p>&emsp;&emsp;近年来，大规模的研究正在生成大量个体的基因型和表型数据，数据收集工作已经加强，数据库创造者收集文献、临床和研究数据集，国际协调和标准化工作正在进行。</p>
-<h2 id="Future-perspective"><a href="#Future-perspective" class="headerlink" title="Future perspective"></a>Future perspective</h2><p>&emsp;&emsp;基因型-表型数据整理领域正在迅速成熟，但还有以下几个待发展的特别重要的领域</p>
-<ul>
-<li>Metadata</li>
-<li>Data formatting and annotation</li>
-<li>Data discovery</li>
-<li>Consent agreements</li>
-<li>Data analysis and reporting</li>
-<li>Identifiers</li>
-<li>APIs and ontologies</li>
-<li>Long-term sustainability</li>
-</ul>
-<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>&emsp;&emsp;这次检讨描述了一些随着数据集增长产生的需要和要求，这些都应该被认为是真正的医学进步所必需的，但这并不是全部。 为了最大限度地利用数据，必须开发算法和应用程序来共享和集成从数据中获得的知识，以利于研究和患者护理。 因此，下一代基因型-表型数据库可能包括高度聚合和集成的数据，允许人类探索其复杂性的图形表示，以及揭示预测性的、个性化的因果关系数学模型的算法。 因此，这些数据库将把患者或研究对象的深入临床和分子发现与尽可能多的相关现有数据和知识相结合，从而能够做出可靠和有用的诊断和发现。</p>
-]]></content>
-      <categories>
-        <category>HPO</category>
-      </categories>
-      <tags>
-        <tag>论文小结</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS224N Assignment2</title>
-    <url>/2020/07/09/CS224n-assign2/</url>
-    <content><![CDATA[<h2 id="Question-A"><a href="#Question-A" class="headerlink" title="Question A"></a>Question A</h2><blockquote>
-<p>Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that</p>
-<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -\log(\hat{y}_o)</script></blockquote>
-<h2 id="Answer-A"><a href="#Answer-A" class="headerlink" title="Answer A"></a>Answer A</h2><p>&emsp;因为$y$是one-hot向量，所以：</p>
-<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -y_o\log(\hat{y}_o) - {\sum_{w\in{Vocab},w\neq o} y_w\log(\hat{y}_w)}  = -\log(\hat{y}_o)</script><h2 id="Question-B"><a href="#Question-B" class="headerlink" title="Question B"></a>Question B</h2><blockquote>
-<p>Compute the partial derivative of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to $\boldsymbol{v_c}$, Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
-</blockquote>
-<h2 id="Answer-B"><a href="#Answer-B" class="headerlink" title="Answer B"></a>Answer B</h2><script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial J(v_c,o,U)}{\partial v_c} &= - \frac{\partial}{\partial{v_c}}\log\frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} \\
-&= - \frac{\partial}{\partial v_c}\left( \log(\exp(u_o^Tv_c)) - \log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\\
-&= - \frac{\partial}{\partial v_c}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
-&= -u_o + \sum_{w\in V}\frac{\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
-& = - u_o + \sum_{w\in V}p(O=w|C=c)u_w\\
-& = -u_o + \sum_{w\in V}\hat{y_w}u_w\\
-& = U(\hat{y} - y)
-\end{aligned}</script><h2 id="Question-C"><a href="#Question-C" class="headerlink" title="Question C"></a>Question C</h2><blockquote>
-<p> Compute the partial derivatives of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to each of the ‘outside’ word vectors,$\boldsymbol{u_w}$’s.There will be two cases: when $w = o$,the true ‘outside’ word vector,and$w\neq o$,for<br>all other words. Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
-</blockquote>
-<h2 id="Answer-C"><a href="#Answer-C" class="headerlink" title="Answer C"></a>Answer C</h2><script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial J(v_c,o,U)}{\partial u_w} &= - \frac{\partial}{\partial u_w}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
-&= - \frac{\partial(u_o^Tv_c)}{\partial u_w} + \frac{\partial(\log(\sum_{w\in V}\exp(u_w^Tv_c)))}{\partial u_w}
-\end{aligned}</script><p>when $w \neq o$:</p>
-<script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial J(v_c,o,U)}{\partial u_w} &= 0 +p(O=w|C=c)v_c\\
-&=\hat{y}_wv_c
-\end{aligned}</script><p>when $w = o$:</p>
-<script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial J(v_c,o,U)}{\partial u_w} &= -v_c +p(O=w|C=c)v_c\\
-&= \hat{y}_wv_c - v_c\\
-&=(\hat{y}_w -1 )v_c
-\end{aligned}</script><p>Then: </p>
-<script type="math/tex; mode=display">\frac{\partial J(v_c,o,U)}{\partial U} = v_c(\hat{y} - y)^T</script><h2 id="Question-D"><a href="#Question-D" class="headerlink" title="Question D"></a>Question D</h2><blockquote>
-<p>The sigmoid function is given by the follow Equation :</p>
-<script type="math/tex; mode=display">\sigma(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}</script><p>Please compute the derivative of $\sigma(x)$ with respect to$x$, where $x$ is a vector.</p>
-</blockquote>
-<h2 id="Answer-D"><a href="#Answer-D" class="headerlink" title="Answer D"></a>Answer D</h2><script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial \sigma(x_i)}{\partial x_i} &= \frac{1}{(1+\exp(-x_i)^2)}\exp(-x_i) = \sigma(x_i)(1-\sigma(x_i)) \\
-\frac{\partial \sigma(x)}{\partial x} &= \left[ \frac{\partial \sigma (x_j)}{\partial x_i}    \right]_{d \times d} \\
-&= \begin{bmatrix}
-  \sigma'(x_1) &   0   & \cdots &0 \\
-      0        &   \sigma'(x_2) & \cdots    &0 \\
-  \vdots       &   \vdots       & \vdots &\vdots\\
-  0            &    0           & \dots  &\sigma'(x_d)
-\end{bmatrix} \\
-&= diag(\sigma '(x_d))
-\end{aligned}</script><h2 id="Question-E"><a href="#Question-E" class="headerlink" title="Question E"></a>Question E</h2><blockquote>
-<p>Now we shall consider the Negative Sampling loss, which is an alternative to the Naive Softmax loss. Assume that $K$ negative samples (words) are drawn from the vocabulary.For simplicity of notation we shall refer to them as $w_1,w_2,\cdots,w_K$ and their outside vectors as $u_1,\cdots,u_K$.Note that $o \notin {w_1,\cdots,w_K}$. For a center word $c$ and an outside word $o$, the negative sampling loss function is<br>given by:</p>
-<script type="math/tex; mode=display">\boldsymbol{J}_{neg-sample}(v_c,o,U) = -\log(\sigma (u_o^Tv_c))- \sum_{k=1}^K \log(\sigma(-u_k^Tv_c))</script><p>for a sample $w_1,\cdots,w_K$, where $\sigma(\cdot)$is the sigmoid function。<br>Please repeat parts (b) and (c), computing the partial derivatives of $\boldsymbol{J}_{neg-sample}$ with respect to $v_c$, with respect to $u_o$, and with respect to a negative sample $u_k$. Please write your answers in terms of the<br>vectors $u_o$, $v_c$, and $u_k$, where k ∈ [1, K]. After you’ve done this, describe with one sentence why this loss function is much more efficient to compute than the naive-softmax loss. Note, you should be able to use your solution to part (d) to help compute the necessary gradients here.</p>
-</blockquote>
-<h2 id="Answer-E"><a href="#Answer-E" class="headerlink" title="Answer E"></a>Answer E</h2><p>For $v_c$:</p>
-<script type="math/tex; mode=display">\begin{aligned}
-\frac{\partial J_{neg-sample}}{\partial v_c} &= (\sigma(u_o^Tv_c)-1)u_o + \sum_{k=1}^{K}(1-\sigma(-u_k^Tv_c))u_k \\
-&= (\sigma(u_o^T)-1)u_o + \sum_{k=1}^{K}\sigma(u_k^Tv_c)u_k
-
-\end{aligned}</script><p>For $u_o$,Remember:$o\notin \{w1,\cdots,w_k\}$</p>
-<script type="math/tex; mode=display">\frac{\partial J_{neg-sample}}{\partial u_o} =   (\sigma(u_o^Tv_c)-1)v_c</script><p>For $u_k$:</p>
-<script type="math/tex; mode=display">\frac{\partial J}{\partial u_k} = (1-\sigma(-u_k^Tv_c))v_c = \sigma(u_k^Tv_c)v_c,for\ k = 1,2,\cdots,K</script><p><strong>Why this loss function is much more efficient to compute than the naive-softmax loss?</strong><br>从求得的偏导数中我们可以看出，原始的softmax函数每次对$v_c$进行反向传播时，需要与 output vector matrix 进行大量且复杂的矩阵运算，而负采样中的计算复杂度则不再与词表大小$V$有关，而是与采样数量$K$有关。</p>
-<h2 id="Question-F"><a href="#Question-F" class="headerlink" title="Question F"></a>Question F</h2><blockquote>
-<p>Suppose the center word is $c=w_t$ and the context window is $[w_{t-m},\cdots,w_{t-1},w_t,w_[t+1],\cdots,w_{t+m}]$,where $m$ is the context window size.Recall that for the skip-gram version of $word2vec$,the total loss for the context window is :</p>
-<script type="math/tex; mode=display">\begin{aligned}
-  \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},U) = \sum_{-m\le j \le m \atop j\neq 0} \boldsymbol{J}(v_c,w_{t+j},U)
-\end{aligned}</script><p>Here,$\boldsymbol{J}(v_c,w_{t+j},U)$  represents an arbitrary loss term for the center word $c=w_t$ and outside word $w_{t+j}$. $\boldsymbol{J}(v_c,w_{t+j},U)$ could be $\boldsymbol{J}_{naive-softmax}(v_c,w_{t+j},U)$ or $\boldsymbol{J}_{neg-sample}(v_c,w_{t+j},U)$ , depending on your implementation.<br>Write down three partial derivatives:<br>(1) $\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{U}$<br>(2)$\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_c$<br>(3)$\partial \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_w$ when $w \neq c$<br>Write your answers in terms of $\partial\boldsymbol{J}(v_c,w_{t+j},U)/\partial \boldsymbol{U}$ and $\partial\boldsymbol{J}(v_c,w_{t+j},U)/\partial \boldsymbol{v}_c$ </p>
-<h2 id="Answer-F"><a href="#Answer-F" class="headerlink" title="Answer F"></a>Answer F</h2></blockquote>
-<script type="math/tex; mode=display">\begin{aligned}\frac{\partial J_{skip-gram}}{\partial U} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial U}\\
-\frac{\partial J_{skip-gram}}{\partial v_c} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial v_c}\\
-\frac{\partial J_{skip-gram}}{\partial v_w} &= 0(when \ w \neq c)
-
-\end{aligned}</script>]]></content>
-      <categories>
-        <category>Assignment</category>
-      </categories>
-      <tags>
-        <tag>CS224n</tag>
+        <tag>博客</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -1132,6 +1050,105 @@ c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
       </tags>
   </entry>
   <entry>
+    <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
+    <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
+<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
+<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
+<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
+<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
+<li>它适用于不同的分辨率和来自不同设备的图像</li>
+<li>不局限于某一种图像格式</li>
+<li>能够产生良好的预测以及一个小数据集</li>
+<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
+</ul>
+<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
+<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
+<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
+<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
+<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
+<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
+<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
+<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
+<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
+    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
+     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
+     \qquad...\\
+     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
+<p>&emsp;</p>
+<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
+<li>vh:Patch Reinterpretation的直方图</li>
+<li>距离信息:patch与它邻居的欧式距离</li>
+<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
+</ul>
+<p>&emsp;</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
+<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
+<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
+<p>&emsp;</p>
+<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
+<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
+<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
+<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
+<li>不同参数的设置会较大影响特征提取的速度。</li>
+<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
+</ul>
+<p>&emsp;</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
+<p>&emsp;</p>
+<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
+<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
+<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
+</ul>
+<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
+]]></content>
+      <categories>
+        <category>篡改检测</category>
+      </categories>
+      <tags>
+        <tag>科学图像篡改检测</tag>
+        <tag>论文简述</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>敏捷生活宣言</title>
+    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
+    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
+<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
+<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
+<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
+<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
+<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
+<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
+<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
+<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
+<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
+<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
+<p>可见的实物是进度的首要度量标准。</p>
+<p>Visible objects are the primary measure of progress.</p>
+<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
+<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
+<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
+<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
+<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
+<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
+<p>最好的生活方式来源于自我管理。</p>
+<p>The best life style comes from self-organizing individuals.</p>
+<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
+<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+]]></content>
+      <categories>
+        <category>生活方式</category>
+      </categories>
+      <tags>
+        <tag>自我提升</tag>
+        <tag>敏捷生活</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>第一次组会知识点总结</title>
     <url>/2020/10/06/%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%BB%84%E4%BC%9A/</url>
     <content><![CDATA[<p>有一些概念忘记了或是不了解，在此记录一下  </p>
@@ -1155,23 +1172,6 @@ c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
       </categories>
       <tags>
         <tag>组会</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>hexo 双仓库</title>
-    <url>/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/</url>
-    <content><![CDATA[<p>最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。<br>在每次到新电脑上时，首先需要完成<code>node/npm/hexo/git</code>等环境的搭建和配置。然后使用 <code>git clone</code>从私密仓库中将hexo源文件拉取下来。<br>尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：<br><strong>千万不要使用hexo init命令</strong>。  <strong>千万不要使用hexo init命令</strong>。<strong>千万不要使用hexo init命令</strong>。<br>原因是当前目录已经建立了git仓库环境, hexo init会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。<br>正确做法是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure><br>因为package.json里面已经保存了hexo的必备资源包信息，npm install后Hexo环境就建立起来了。<br>接下来就进行正常的编写和发布就好。<br>本地预览发布的命令还是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure><br>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
-<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
-<pre><code>git fetch --all #将git上所有文件拉取到本地
-git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容
-</code></pre><p>reset 对所拉取的文件不做任何处理，此处不用 pull 是因为本地尚有许多文件，使用 pull 会有一些版本冲突，解决起来也麻烦，而本地的文件都是初始化生成的文件，较拉取的库里面的文件而言基本无用，所以直接丢弃。</p>
-]]></content>
-      <categories>
-        <category>web前端</category>
-      </categories>
-      <tags>
-        <tag>博客</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
 </search>
