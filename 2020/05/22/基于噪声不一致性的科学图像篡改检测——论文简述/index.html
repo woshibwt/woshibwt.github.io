@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-mac-osx.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/soccer-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/soccer-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="科学图像篡改检测,论文简述," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Bi Wentao" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets主要背景&amp;emsp;&amp;emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于噪声不一致性的科学图像篡改检测——论文简述">
+<meta property="og:url" content="http://woshibwt.github.io/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/index.html">
+<meta property="og:site_name" content="Bi Wentao">
+<meta property="og:description" content="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets主要背景&amp;emsp;&amp;emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG">
+<meta property="article:published_time" content="2020-05-21T17:25:58.000Z">
+<meta property="article:modified_time" content="2022-05-17T14:23:23.472Z">
+<meta property="article:author" content="Bi Wentao">
+<meta property="article:tag" content="科学图像篡改检测">
+<meta property="article:tag" content="论文简述">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woshibwt.github.io/2020/05/22/基于噪声不一致性的科学图像篡改检测——论文简述/"/>
+
+
+
+
+
+  <title>基于噪声不一致性的科学图像篡改检测——论文简述 | Bi Wentao</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/woshibwt" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Bi Wentao</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woshibwt.github.io/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bi Wentao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bi Wentao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">基于噪声不一致性的科学图像篡改检测——论文简述</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-22T01:25:58+08:00">
+                2020-05-22
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">篡改检测</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/05/22/基于噪声不一致性的科学图像篡改检测——论文简述/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
+<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
+<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
+<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
+<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
+<li>它适用于不同的分辨率和来自不同设备的图像</li>
+<li>不局限于某一种图像格式</li>
+<li>能够产生良好的预测以及一个小数据集</li>
+<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
+</ul>
+<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
+<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
+<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
+<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
+<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
+<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
+<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
+<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
+<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
+    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
+     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
+     \qquad...\\
+     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
+<p>&emsp;</p>
+<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
+<li>vh:Patch Reinterpretation的直方图</li>
+<li>距离信息:patch与它邻居的欧式距离</li>
+<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
+</ul>
+<p>&emsp;</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
+<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
+<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
+<p>&emsp;</p>
+<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
+<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
+<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
+<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
+<li>不同参数的设置会较大影响特征提取的速度。</li>
+<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
+</ul>
+<p>&emsp;</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
+<p>&emsp;</p>
+<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
+<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
+<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
+</ul>
+<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
+
+      
+    </div>
+    
+    
+    
+	<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 感谢您的阅读-------------</div>
+    
+</div>
+
+  
+	</div>
+   <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/">基于噪声不一致性的科学图像篡改检测——论文简述</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
+  <p><span>发布时间:</span>2020年05月22日 - 01:05</p>
+  <p><span>最后更新:</span>2022年05月17日 - 22:05</p>
+  <p><span>原始链接:</span><a href="/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/" title="基于噪声不一致性的科学图像篡改检测——论文简述">http://woshibwt.github.io/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+
+      
+  </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B/" rel="tag"><i class="fa fa-tag"></i> 科学图像篡改检测</a>
+          
+            <a href="/tags/%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/" rel="tag"><i class="fa fa-tag"></i> 论文简述</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/" rel="next" title="敏捷生活宣言">
+                <i class="fa fa-chevron-left"></i> 敏捷生活宣言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/" rel="prev" title="CS224N笔记(一):word vector">
+                CS224N笔记(一):word vector <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/">
+              <img class="site-author-image" itemprop="image"
+                src="/images/header.jpg"
+                alt="Bi Wentao" />
+			</a>
+            
+              <p class="site-author-name" itemprop="name">Bi Wentao</p>
+              <p class="site-description motion-element" itemprop="description">“emmm.....”</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/swift/" title="Swift 4" target="_blank">Swift 4</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/documentation/objectivec" title="Objective-C" target="_blank">Objective-C</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+			
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><span class="nav-number">1.</span> <span class="nav-text">Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主要背景"><span class="nav-number">1.1.</span> <span class="nav-text">主要背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文工作简要概述"><span class="nav-number">1.2.</span> <span class="nav-text">论文工作简要概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为何选择基于噪声矛盾算法"><span class="nav-number">1.3.</span> <span class="nav-text">为何选择基于噪声矛盾算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法特点"><span class="nav-number">1.4.</span> <span class="nav-text">算法特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#算法思路"><span class="nav-number">1.5.</span> <span class="nav-text">算法思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#残差图片生成器"><span class="nav-number">1.6.</span> <span class="nav-text">残差图片生成器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Steganalytic-Filters"><span class="nav-number">1.6.1.</span> <span class="nav-text">Steganalytic Filters</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Error-Level-Analysis-ELA"><span class="nav-number">1.6.2.</span> <span class="nav-text">Error Level Analysis (ELA)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Median-Filtering-Residual"><span class="nav-number">1.6.3.</span> <span class="nav-text">Median Filtering Residual</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Wavelet-Denoising-Residual"><span class="nav-number">1.6.4.</span> <span class="nav-text">Wavelet Denoising Residual</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#特征提取"><span class="nav-number">1.7.</span> <span class="nav-text">特征提取</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Patch-Reinterpretation"><span class="nav-number">1.7.1.</span> <span class="nav-text">Patch Reinterpretation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Feature-Design"><span class="nav-number">1.7.2.</span> <span class="nav-text">Feature Design</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验"><span class="nav-number">1.8.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#生成数据集"><span class="nav-number">1.8.1.</span> <span class="nav-text">生成数据集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#移除类型"><span class="nav-number">1.8.1.1.</span> <span class="nav-text">移除类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#拼接类型"><span class="nav-number">1.8.1.2.</span> <span class="nav-text">拼接类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#修整类型"><span class="nav-number">1.8.1.3.</span> <span class="nav-text">修整类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验配置"><span class="nav-number">1.8.2.</span> <span class="nav-text">实验配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结果"><span class="nav-number">1.9.</span> <span class="nav-text">结果</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#研究中的不足"><span class="nav-number">1.10.</span> <span class="nav-text">研究中的不足</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; 2020 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Bi Wentao</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://comment-5atsimliz7.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://woshibwt.github.io/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/';
+          this.page.identifier = '2020/05/22/基于噪声不一致性的科学图像篡改检测——论文简述/';
+          this.page.title = '基于噪声不一致性的科学图像篡改检测——论文简述';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://comment-5atsimliz7.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+    <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

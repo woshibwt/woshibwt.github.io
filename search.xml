@@ -1,0 +1,1232 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>CS224N笔记(一):word vector</title>
+    <url>/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/</url>
+    <content><![CDATA[<p>&emsp;&emsp;受到导师的推荐来在线学习这门stanford课程CS224N，打下一些基础。这门课程的名称是<strong>Nature Language Processing with Deep Learning</strong>，即基于神经网络的自然语言处理,第一节上课的教授是<strong>Christopher Manning</strong>。老爷子精神很好，也很活泼。<br>&emsp;&emsp;这一节的主要内容是 </p>
+<ul>
+<li>nlp研究的对象</li>
+<li>我们如何表示单词的含义（meaning of a word）</li>
+<li>Word2Vec方法的基本原理</li>
+</ul>
+<p>&emsp;&emsp;自然语言，在这里指的当然就是人类语言，从整个地球史的角度来看，人类语言的出现距离我们当前年代是相当近的。教授认为，恰恰就是人类语言的出现区分了我们与猩猩（尽管它们也有自己的交流系统）。人类语言的奇妙之处在于它可以仅仅运用写在纸上的（莎草纸）的抽象文字来指代现实世界中的物理事物以及抽象概念，而想让机器做到与人一样理解语言是一项复杂的工作，当然这样也衍生出了许多有趣又实用的研究工作。<br>&emsp;&emsp;完成这些工作的前提是需要先解答这个问题：“我们如何表达一个单词的含义？”<br>&emsp;&emsp;一个早期常用的思想是我们将所有那些同义词与下义词建立成一个词库。课程内提到的<strong>wordNet</strong>便是运用这种方法的一个词库，在<strong>wordNet</strong>中一个词的含义由它的同义词集合与下义词集合来定义。显然，这样做会带来许多问题：</p>
+<ul>
+<li>有些词只在某些特定语境下被认为是同义词（例如：“proficient”只在一些情况下被认为是“good”的同义词</li>
+<li>有时会丢失一些词语的新含义（例如该词被解构了）</li>
+<li>定义的主观性</li>
+<li>词库资料需要大量人力收集整理； </li>
+<li>无法计算出准确的单词相似度</li>
+</ul>
+<p>&emsp;&emsp;那么向量呢，我们能否使用一个向量来表示出一个单词?一个简单的方法就是使用<strong>one-hot</strong>编码来表示单词，在一个向量中，只有代表该单词的位置元素被设置为1，而其他位置元素则都被设置为0，如下所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_one-hot.PNG" alt="one-hot"><br>&emsp;&emsp;向量的维数等于词库中的单词数目。显然，由于所有向量都是互相正交的，两个向量间的相似度无法被有效表示出来，并且向量维度过大。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;至此，我们还得寻找一种更好的表达单词含义的方式。这里借鉴了语言学家的思想： <strong><em>A word’s meaning is given by the words that frequently appear close-by”</em></strong>。含义类似于我们高中英语常做的阅读理解。我们定义一个由某个词为中心的定长的窗口，窗口内的其他词构成了它的上下文context，借助这些context我们可以建立对该词有效的表示。下图中banking附近常出现的词定义了banking的含义。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_banking.PNG" alt><br>&emsp;&emsp;前面提到的<strong>one-hot vector</strong>属于一种sparse vector,而我们想要构造的是dense vector即大多数元素不为零且维度较小的向量，并且希望在相似的上下文环境下word vector也较为相似。这里的word vector也可被称为word embedding 或是 word representation。<br>&emsp;&emsp;这里介绍了一种较为流行的方法<strong>Word2Vec</strong>来生成我们想要的word vector。它是由google的nlp专家在2013年的时候提出，其核心思想是已经我们有了很大的文本库（corpus of text,教授还介绍了一下拉丁语词根），当我们用固定窗口不断去扫过文本库中的句子时，我们有位于中间的center word c 以及其周边的单词们conetxt words o,而它们的相似度用$p(o|c)$表示，即给定c的情况下o的条件概率。我们不断的调整word vector使得该概率最大化。每个单词可用两个向量表示，一个是它作为center word时的向量$\mathcal{v}_w$与作为context word时的向量$\mathcal{u}_w$。<br>&emsp;<br>&emsp;&emsp;如下图所示是窗口大小为2，center word 为<em>into</em>的context word 的概率表示。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt><br>当我们扫到下一个位置时，banking就成为center word。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_banking.PNG" alt></p>
+<p>对于每个位置t = 1,…T,在大小为m的固定窗口内预测上下文单词，给定中心词$w_t$  </p>
+<script type="math/tex; mode=display">Likelihood = L(\theta) = {\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}P(w_{t+j}|w_t;\theta)</script><ul>
+<li>其中，$\theta$为所有需要优化的变量<br>目标函数$J(\theta)$(也可被称为代价函数或损失函数)是（平均）负对数似然。 <script type="math/tex; mode=display">J(\theta) = -{\frac{1}{T}}{\prod_{t=1}^T}{\prod_{  {-m\leq j \leq m } \atop {j\neq 0}}}logP(w_{t+j}|w_t;\theta)</script></li>
+</ul>
+<p>&emsp;&emsp;其中$log$形式是方便将连乘转化为求和，负号是希望将极大化似然率转化为极小化损失函数的等价问题。</p>
+<blockquote>
+<p>tips:在连乘之前使用log转化为求和非常常用与有效  </p>
+<script type="math/tex; mode=display">log \prod_{i}{x_i} = \sum_ilog{x_i}</script></blockquote>
+<p>&emsp;接下来的问题是，如何计算$P(w_{t+j}|w_t;\theta)$?<br>&emsp;答案是对于每个单词使用两个向量——</p>
+<ul>
+<li>$v_w$当$w$是中心词时</li>
+<li>$u_w$当$w$是上下文词时</li>
+<li>于是对于一个中心词$c$和一个上下文词$o$<script type="math/tex; mode=display">P(o|c) = \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><blockquote>
+<p>公式中，向量$u_o$和向量$v_c$进行点乘，向量之间越相似，点乘结果越大，从而归一化后得到的概率值也越大。模型的训练是为了让具有相似上下文的单词，具有相似的向量。</p>
+<h2 id="Word2vec-prediction-function"><a href="#Word2vec-prediction-function" class="headerlink" title="Word2vec prediction function"></a>Word2vec prediction function</h2><script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script></blockquote>
+</li>
+<li>取幂使任何数都为正</li>
+<li>点积的目的是比较$o$和$c$的相似性<script type="math/tex; mode=display">u^Tv = u.v = \sum_{i=1}^n{u_iv_i}</script></li>
+<li>分母：对整个词汇表进行标准化，从而给出概率分布</li>
+</ul>
+<p><strong>softmax function</strong> &emsp;$\mathbb{R^n}\to\mathbb{R^n}$</p>
+<script type="math/tex; mode=display">softmax(x_i) = \frac{\exp(x_i)}{\sum_{j=1}^n\exp(x_j)} = p_i</script><p>&emsp;&emsp;该函数可将任意值$x_i$映射到概率分布$p_i$</p>
+<ul>
+<li><strong>max</strong>:因为放大了最大的概率</li>
+<li><strong>soft</strong>:因为仍然为较小的$x_i$赋予了一定概率</li>
+<li>深度学习中常用<br>&emsp;&emsp;首先我们随机初始化$u_w\in\mathbb{R^d}$和$v_w\in\mathbb{R^d}$,而后使用梯度下降法进行更新。<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) &= \frac{\partial}{\partial{v_c}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\ 
+&=\frac{\partial}{\partial{v_c}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial v_c} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}
+\end{aligned}</script></li>
+</ul>
+<p>&emsp;&emsp;可对上述结果重新排序如下，等式右边第一项是真正的上下文单词，第二项为预测的上下文单词，使用梯度下降法，模型的预测上下文将接近真正的上下文。</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{v_c}}\log P(o|c) 
+&= u_o - \frac{\sum_{w\in V}\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= u_o -\frac{\sum_{w\in V}\exp(u_w^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} u_w\\
+&=u_o - \sum_{w\in V} P(w|c)u_w
+\end{aligned}</script><p>在$\sum<em>{w\in V} u_w^Tv_c$上对$u_o$取偏微分运算，注意这里$u_o$是$u</em>{w=0}$的缩写，故可知  </p>
+<script type="math/tex; mode=display">\frac{\partial}{\partial u_o}\sum_{w\in V} u_w^Tv_c=\frac{\partial}{\partial u_o}u_o^Tv_c=v_c</script><p>&emsp;</p>
+<p>因此：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\frac{\partial}{\partial{u_o}}\log P(o|c) 
+&= \frac{\partial}{\partial{u_o}}\log \frac{\exp({u_o^T}v_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&= \frac{\partial}{\partial{u_o}} \left( \log\exp(u_o^Tv_c))-\log\sum_{w\in V}\exp(u_w^Tv_c)\right)
+\\
+&=\frac{\partial}{\partial u_o} \left(u_o^Tv_c -\log\sum_{w\in V}\exp(u_w^Tv_c)\right)\\
+&=v_c - \frac{\sum_{w\in V}{\frac{\partial}{\partial u_o}\exp(u_w^Tv_c)}}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)v_c}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+&=v_c - \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}v_c\\
+&=v_c - P(o|c)v_c\\
+&=(1-P(o|c))v_c  
+\end{aligned}</script><p>&emsp;&emsp;当$P(o|c)\to1$时，即通过中心词$c$可以准确预测上下文词$o$，此时我们不需要调整$u_o$，反之，需要调整$u_o$。</p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记-八-机器翻译，seq2seq与Attention</title>
+    <url>/2020/07/15/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AB-%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91%EF%BC%8CSeq2Seq%E4%B8%8EAttention/</url>
+    <content><![CDATA[<p>&emsp;&emsp;这一讲介绍了nlp领域中的一个重要分支即机器翻译，机器翻译是将源语言中的文字转换为对应目标语言文字的任务，早期的机器翻译都是人为的，随后发展出了依赖于统计信息的<strong>Statistical Machine Translation(SMT)</strong>,之后又发展出利用神经网络使得准确度大幅改善的<strong>Neural Machine Translation(NMT)</strong>,它依赖于seq2seq的模型架构，以及进一步将其改善的Attention机制。</p>
+<h2 id="Section-1-Pre-Neural-Machine-Translation"><a href="#Section-1-Pre-Neural-Machine-Translation" class="headerlink" title="Section 1:Pre-Neural Machine Translation"></a>Section 1:Pre-Neural Machine Translation</h2><p>&emsp;&emsp; <strong>机器翻译（MT）</strong>是将一个句子$x$从一种语言（源语言）转换到另一种语言（目标语言）的句子$y$的任务。</p>
+<h3 id="SMT"><a href="#SMT" class="headerlink" title="SMT"></a>SMT</h3><p>&emsp;&emsp;SMT的核心思想是是从数据中学习概率模型。假设想要将一句法语句子$x$翻译成英文,我们希望找到对应最好的英语句子$y$，即找到$argmax<em>{y}P(y|x)$。<br>&emsp;&emsp;根据贝叶斯公式，这相当于在求$argmax</em>{y}P(x|y)P(y)$（translation model）,其中$P(x|y)$负责模拟单词或词组该如何翻译，主要处理局部的词组的翻译;$P(y)$(language model)负责如何挑选这些单词或词组组成合理的目标语言中的句子。之前<a href="https://woshibwt.com/2020/06/12/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AD-Language-Modeling-And-RNN/" target="_blank" rel="noopener">Language Model And RNN</a>有提到如何学习语言模型，而对于translation model需要parallel data,即大量成对的法语、英语句子。<br>&emsp;&emsp;SMT是一个非常巨大的研究领域，有非常多的重要细节，需要大量的人力来维护，对于每一对语言都要重复操作。NMT的出现极大地改善了这些问题。</p>
+<h2 id="Section2-Neural-Machine-Translation"><a href="#Section2-Neural-Machine-Translation" class="headerlink" title="Section2:Neural Machine Translation"></a>Section2:Neural Machine Translation</h2><h3 id="Neural-Machine-Translation-与-Seq2Seq"><a href="#Neural-Machine-Translation-与-Seq2Seq" class="headerlink" title="Neural Machine Translation 与 Seq2Seq"></a>Neural Machine Translation 与 Seq2Seq</h3><p>&emsp;&emsp;NMT依赖于Seq2Seq的模型架构，即通过一个RNN作为encoder将输入的源语言转化为某表征空间中的向量，再通过另一个RNN作为decoder将其转化为目标语言中的句子。decoder可以被看做预测目标句子$y$的下一个单词的语言模型，同时其概率依赖于原句子的encoding。将法语翻译为英语的Seq2Seq模型如下图所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/seq2seq.jpg" alt><br>&emsp;&emsp;训练过程中的损失函数如下：</p>
+<script type="math/tex; mode=display">\boldsymbol{J(\theta)= \frac{1}{T} \sum_{t=1}^{T}J^{(t)}(\theta)= \frac{1}{T} - \log \hat{y}_x{_{t+1}^{(t)}}}</script><p>&emsp;&emsp;上例的损失函数如下图所示，并且我们可以看出损失函数的梯度可以一致反向传播到encoder。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/seq2seq_loss.jpg" alt></p>
+<p>&emsp;&emsp;我们可以选择greedy decoding即每一步选取概率最大的单词将其作为下一步的decoder input</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/greedy_decoding.jpg" alt><br>&emsp;&emsp;greedy decoding带来的问题是当前的最大概率的单词未必对整个句子来说是最优的选择，但是由于无法撤销决定，我们没机会选择另一条整体最优的路径。<br>&emsp;&emsp;解决这个问题的一个常用方法是<strong>beam search decoding</strong>,它的基本思想是在decoder的每一步，包括概率最大的单词，一共保存k个当前最有可能的翻译假设，其中k被称为<strong>beam size</strong>,通常在5到10之间。<br>&emsp;&emsp;对于$y_1,…,y_t$的翻译，它的分数是</p>
+<script type="math/tex; mode=display">score(y_1,\cdots,y_t) = \log P_{LM}(y_1,\cdots,y_t|x) = \sum_{i=1}^t\log P_{LM}(y_i|y_1,\cdots,y_{i-1},x)</script><p>&emsp;&emsp;分数越高越好，由于求和的每一项都是负数，这导致长的翻译分数更低，所以最后需要做一次归一化：  </p>
+<script type="math/tex; mode=display">\frac{1}{t}\sum_{i=1}^t\log P_{LM}(y_i|y_1,\cdots,y_{i-1},x)</script><p>NMT的优点：</p>
+<ul>
+<li>更好的性能</li>
+<li>单个神经网络端到端优化</li>
+<li>对所有语言采取相同的方法  </li>
+</ul>
+<p>NMT的缺点：</p>
+<ul>
+<li>可解释性较差</li>
+<li>很难控制<h3 id="BLEU"><a href="#BLEU" class="headerlink" title="BLEU"></a>BLEU</h3>&emsp;&emsp;常使用BLEU(<strong>B</strong>ilingual <strong>E</strong>valuation <strong>U</strong>nderstudy)来评估MT的效果。BLEU将机器翻译和（一个或多个）进行比较，计算出一个它们相似度的分数。，它会对过于短的机器翻译加上惩罚。<br>&emsp;&emsp;BLEU很有用，但并不完美，因为一个句子会有很多有效的方法来翻译。一个好的翻译可以得到一个糟糕的BLEU score,因为它与人工翻译的n-gram重复率较低。<h1 id="attention"><a href="#attention" class="headerlink" title="attention"></a>attention</h1>&emsp;&emsp;可参考下面这篇文章：<a href="https://blog.csdn.net/tg229dvt5i93mxaq5a6u/article/details/78422216" target="_blank" rel="noopener">深度学习中的注意力机制</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记-七-Vanishing Gradient and Fancy RNNs</title>
+    <url>/2020/06/14/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%83-Vanishing-Gradient-and-Fancy-RNNs/</url>
+    <content><![CDATA[<p>&emsp;&emsp;这节课助教主要介绍了RNN的问题（其实不止在RNN上出现）并且介绍了几种更复杂的RNN变体</p>
+<h2 id="Vanishing-gradient-intuition"><a href="#Vanishing-gradient-intuition" class="headerlink" title="Vanishing gradient intuition"></a>Vanishing gradient intuition</h2><p>&emsp;&emsp;RNN理论上可与捕捉较早的历史信息，但是由于梯度消失的原因会导致远程信息无法被有效的被捕捉到。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_gradient_intuition.PNG" alt><br>&emsp;&emsp;当图上这些梯度很小时，反向传播得越深入，梯度信号就会越来越小。<br>&emsp;&emsp;上节课提到，t 时间步下的hidden state表达式为：</p>
+<script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)</script><p>&emsp;&emsp;由链式法则可得：</p>
+<script type="math/tex; mode=display">\frac{\partial \boldsymbol{h}^{(t)}}{\partial \boldsymbol{h}^{(t-1)}} = diag\left(\sigma^{'}\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}_{1}\right)\boldsymbol{W}_{h}        \right)</script><p>&emsp;&emsp;考虑一下第$i$步上的损失梯度$J^{(i)}(\theta)$,以及第$j$步上的隐藏状态$h^{(j)}$<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/chainrule.png" alt><br>&emsp;&emsp;由此可见，如果权重矩阵$W_h$很小，那么这一项会随着$i$和$j$的距离越来越大而变得越来越小。  </p>
+<h3 id="why-is-vanishing-gradient-a-problem"><a href="#why-is-vanishing-gradient-a-problem" class="headerlink" title="why is vanishing gradient a problem?"></a>why is vanishing gradient a problem?</h3><p>&emsp;&emsp;<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/why_vanishing_gradient.png" alt><br>&emsp;&emsp;&emsp;&emsp;来自远处的梯度信号会丢失，因为它比邻近的梯度信号小很多，模型权重只会根据近期效应而不是长期效应进行更新。</p>
+<h3 id="Effect-of-vanishing-gradient-on-RNN-LM"><a href="#Effect-of-vanishing-gradient-on-RNN-LM" class="headerlink" title="Effect of vanishing gradient on RNN-LM"></a>Effect of vanishing gradient on RNN-LM</h3><p>例如以下这个语言任务：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/language_task.png" alt><br>&emsp;&emsp;为了从这个例子中学习，RNN-LM需要对第七步的“tickets”和最后的目标“tickets”之间的依赖关系建模，但是如果梯度很小，模型就不能学习这种依赖关系。<br>&emsp;&emsp;再如下面这个例子：</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/vanishing_problem.PNG" alt><br>&emsp;&emsp;由于梯度的消失，RNN-LMs更善于从顺序近因（sequential recency）学习而不是语法近因（sybtactic recency）。</p>
+<h3 id="why-is-exploding-gradient-a-problem"><a href="#why-is-exploding-gradient-a-problem" class="headerlink" title="why is exploding gradient a problem?"></a>why is exploding gradient a problem?</h3><p>&emsp;&emsp;如果梯度过大，则SGD更新步骤过大：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/exploding_gradient.png" alt><br>&emsp;&emsp;这可能导致错误的更新：更新得太多，会导致错误的参数配置。在最坏情况下，会导致网络中的<strong>INF</strong>或<strong>NAN</strong>。  </p>
+<h3 id="Gradient-clipping-solution-for-exploding-gradient"><a href="#Gradient-clipping-solution-for-exploding-gradient" class="headerlink" title="Gradient clipping: solution for exploding gradient"></a>Gradient clipping: solution for exploding gradient</h3><p>&emsp;&emsp;<strong>梯度裁剪</strong>：如果梯度的范数大于某个阈值，在应用SGD更新前将其缩小：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/gradient_clipping.png" alt><br>&emsp;&emsp;<strong>思路</strong>：朝着同样的方向迈出一步，但要小一些。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/gradient_clipping_pic.png" alt>  </p>
+<h3 id="How-to-fix-vanishing-gradient-problem"><a href="#How-to-fix-vanishing-gradient-problem" class="headerlink" title="How to fix vanishing gradient problem?"></a>How to fix vanishing gradient problem?</h3><p>&emsp;&emsp;梯度消失的主要原因是RNN很难学习在多个时间步长下保存信息，在普通的RNN中，隐藏状态被不断地重写：</p>
+<script type="math/tex; mode=display">\boldsymbol{h}^{(t)}=\sigma\left(\boldsymbol{W}_{h} \boldsymbol{h}^{(t-1)}+\boldsymbol{W}_{x} \boldsymbol{x}^{(t)}+\boldsymbol{b}\right)</script><h3 id="Long-Short-Term-Memory-LSTM"><a href="#Long-Short-Term-Memory-LSTM" class="headerlink" title="Long Short-Term Memory (LSTM)"></a>Long Short-Term Memory (LSTM)</h3><p>&emsp;&emsp;长短期记忆网络是循环神经网络的一个变体，可以有效解决<strong>简单循环神经网络</strong>的梯度爆炸或消失问题。<br>&emsp;&emsp;在第t步，该网络有一个隐藏状态$\boldsymbol{h^{(t)}}$和一个单元状态$\boldsymbol{c^{(t)}}$,它们  </p>
+<ul>
+<li>都是长度为n的向量</li>
+<li>在每个时间步长上，门的每个元素可以打开（1）、关闭（0）或介于两者之间</li>
+<li>门是动态的：它们的值是基于上下文计算的<br>&emsp;&emsp;我们有一个输入序列$\boldsymbol{x^{(t)}}$,我们将计算一个隐藏状态$\boldsymbol{h^{(t)}}$和单元状态$\boldsymbol{c^{(t)}}$的序列。在时间步t时，<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/LSTM.png" alt></li>
+<li>遗忘门$\boldsymbol{f^{(t)}}$控制上一个时刻的内部状态$\boldsymbol{c^{(t-1)}}$需要遗忘多少信息。</li>
+<li>输入门$\boldsymbol{i^{(t)}}$控制当前时刻的候选状态$\boldsymbol{\widetilde{c}^{(t)}}$有多少信息需要保存。</li>
+<li>输出门$\boldsymbol{o^{(t)}}$控制当前时刻的内部状态$\boldsymbol{c^{(t)}}$有多少信息需要输出给外部状态$\boldsymbol{h^{(t)}}$</li>
+<li>$\boldsymbol{\widetilde{c}^{(t)}}$是通过非线性函数的得到的<strong>候选状态</strong></li>
+<li>新的<strong>内部状态</strong>$\boldsymbol{c^{(t)}}$专门进行线性的循环信息传递 </li>
+</ul>
+<p>&emsp;&emsp;下面这张图可以更方便来理解LSTM方程<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/LSTM_2.png" alt></p>
+<h3 id="How-does-LSTM-solve-vanishing-gradients"><a href="#How-does-LSTM-solve-vanishing-gradients" class="headerlink" title="How does LSTM solve vanishing gradients?"></a>How does LSTM solve vanishing gradients?</h3><p>&emsp;&emsp;RNN的LSTM架构更容易保存许多时间步上的信息（如果遗忘门设置为记得每一时间步上的所有信息，那么单元中的信息被无限地保存）。LSTM并不保证没有消失、爆炸梯度，但是提供了一种更容易的方法来学习远程依赖关系。</p>
+<h3 id="Gated-Recurrent-Units-GRU"><a href="#Gated-Recurrent-Units-GRU" class="headerlink" title="Gated Recurrent Units (GRU)"></a>Gated Recurrent Units (GRU)</h3><p>&emsp;&emsp;<strong>门控循环单元</strong>是一种比LSTM网络更加简单的循环神经网络,在每个时间步t上，我们都有输入$x^{(t)}$和隐藏状态$h^{(t)}$而没有单元状态。<br>&emsp;&emsp;GRU引入了一个更新门来控制当前状态需要从历史状态中保留多少信息（不经过非线性变换），同时需要从候选状态中接受多少新信息。</p>
+<script type="math/tex; mode=display">\boldsymbol{h^{(t)}} = (1-\boldsymbol{u^{(t)}})\circ \boldsymbol{h^{(t-1)}}+\boldsymbol{u^{(t)}}\circ \boldsymbol{\widetilde{h}^{(t)}}</script><p>&emsp;&emsp;其中$\boldsymbol{u^{(t)}}$为更新门，</p>
+<script type="math/tex; mode=display">\boldsymbol{u^{(t)}}=\sigma\left(\boldsymbol{W_uh^{(t-1)}+\boldsymbol{U_ux^{(t)}}+\boldsymbol{b_u}}        \right)</script><p>&emsp;&emsp;在LSTM网络中，输入门和遗忘门是互补关系，具有一定的冗余性。GRU网络直接使用一个门来控制输入和遗忘之间的平衡。</p>
+<ul>
+<li>当$\boldsymbol{u^{(t)}}=1$时，当前状态$\boldsymbol{h^{(t)}}$和前一时刻的状态$\boldsymbol{h^{(t-1)}}$之间为非线性函数关系</li>
+<li>当$\boldsymbol{u^{(t)}}=0$时，$\boldsymbol{h^{(t)}}$与$\boldsymbol{h^{(t-1)}}$之间为线性函数关系。  </li>
+</ul>
+<p>&emsp;&emsp;在GRU网络中，$\boldsymbol{\widetilde{h}^{(t)}}$表示当前时刻的候选状态</p>
+<script type="math/tex; mode=display">\boldsymbol{\widetilde{h}^{(t)}} =\tanh \boldsymbol{\left(W_h(r^{(t)}\circ h^{(t-1)})+U_hx^{(t)}+b_h         \right)}</script><p>&emsp;&emsp;$\boldsymbol{r^{(t)}}$为重置门，用来控制候选状态$\boldsymbol{\widetilde{h}^{(t)}}$的计算是否依赖上一时刻的状态$\boldsymbol{h^{(t-1)}}$</p>
+<script type="math/tex; mode=display">\boldsymbol{r^{(t)}} =\sigma\left(\boldsymbol{W_rh^{(t-1)}+\boldsymbol{U_rx^{(t)}}+\boldsymbol{b_r}}        \right)</script><ul>
+<li>当$\boldsymbol{r^{(t)}}=0$时，候选状态$\boldsymbol{\widetilde{h}^{(t)}}=\tanh\boldsymbol{(U_hx^{(t)}+b)}$只和当前输入$\boldsymbol{x^{(t)}}$有关，和历史状态无关</li>
+<li>当$\boldsymbol{r^{(t)}}=1$时，候选状态$\boldsymbol{\widetilde{h}^{(t)}}=\tanh\boldsymbol{(W_hh^{(t-1)}+U_hx^{(t)}+b)}$和当前输入$\boldsymbol{x^{(t)}}$以及历史状态$\boldsymbol{h^{(t-1)}}$相关，和<strong>简单循环网络</strong>一致。</li>
+</ul>
+<p>&emsp;&emsp;综上，GRU网络的状态更新方式为</p>
+<script type="math/tex; mode=display">\boldsymbol{h^{(t)}} = (1-\boldsymbol{u^{(t)}})\circ \boldsymbol{h^{(t-1)}}+\boldsymbol{u^{(t)}}\circ \boldsymbol{\widetilde{h}^{(t)}}</script><p>&emsp;&emsp;可以看出，</p>
+<ul>
+<li>当$\boldsymbol{u^{(t)}}=1，\boldsymbol{r}=1$时，GRU网络退化为<strong>简单循环网络</strong></li>
+<li>若$\boldsymbol{u^{(t)}}=1，\boldsymbol{r}=0$时，当前状态$\boldsymbol{h^{(t)}}$只和当前输入$\boldsymbol{x^{(t)}}$相关，和历史状态$\boldsymbol{h^{(t-1)}}$无关。</li>
+<li>当$\boldsymbol{u^{(t)}}=0$时，当前状态$\boldsymbol{h^{(t)}}$等于上一时刻状态$\boldsymbol{h^{(t-1)}}$，和当前输入$\boldsymbol{x^{(t)}}$无关。</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/GRU.png" alt></p>
+<p>&emsp;&emsp;关于LSTM和GRU推荐两篇文章：<a href="https://zhuanlan.zhihu.com/p/32085405" target="_blank" rel="noopener">人人都能看懂的LSTM</a> , <a href="https://zhuanlan.zhihu.com/p/32481747" target="_blank" rel="noopener">人人都能看懂的GRU</a></p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记-十-Question-Answering</title>
+    <url>/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/</url>
+    <content><![CDATA[<p>&emsp;&emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。<br>&emsp;&emsp;通常可以将问答系统看作两部分：</p>
+<ul>
+<li>从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval)</li>
+<li>从文件或段落中找到相关的答案（reading comprehension）,这是这一讲的<strong>重点</strong><h2 id="Stanford-Question-Answering-Dataset-SQuAD"><a href="#Stanford-Question-Answering-Dataset-SQuAD" class="headerlink" title="Stanford Question Answering Dataset(SQuAD)"></a>Stanford Question Answering Dataset(SQuAD)</h2>&emsp;&emsp;reading comprehension需要的数据包括：</li>
+<li>Passage(文字段落)</li>
+<li>Question(问题)</li>
+<li>Answer(回答)</li>
+</ul>
+<p>&emsp;&emsp;SQuAD数据集中每个问题都有人类提供的三个标准答案，为了评估问答模型，有两个衡量尺度</p>
+<ul>
+<li>Exact Match(精准匹配)：即模型回答与任意一个标准答案匹配即计数为1,否则为零  </li>
+<li>F1，即将模型答案与标准答案当作词袋，计算<script type="math/tex; mode=display">precison=\frac{TP}{TP+FP}</script><script type="math/tex; mode=display">recall=\frac{TP}{TP+FN}</script>并计算它们的调和平均数<script type="math/tex; mode=display">F1 = \frac{2PR}{P+R}</script>(TP:真正例，FP:假正例，FN：假负例，TN：真负例)  </li>
+</ul>
+<p>&emsp;&emsp;通常F1 score被认为是更可靠的衡量尺度<br>&emsp;&emsp;SQuAD 1.0版本中所有问题的答案都包含在段落中,而2.0版本中引入了一些段落中找不到答案的问题。对于这类问题，当模型输出没有答案时得分为1，否则为0 .</p>
+<h3 id="SQuAD的局限性："><a href="#SQuAD的局限性：" class="headerlink" title="SQuAD的局限性："></a>SQuAD的局限性：</h3><ul>
+<li>答案直接截取自段落中的文字，没有是非判断，计数等问题。</li>
+<li>问题是根据段落构造的</li>
+<li>几乎没有跨句子之间的理解和推断</li>
+</ul>
+<h2 id="Stanford-Attentive-Reader"><a href="#Stanford-Attentive-Reader" class="headerlink" title="Stanford Attentive Reader"></a>Stanford Attentive Reader</h2><p>&emsp;&emsp;这就是Manning组的关于QA的模型Stanford Attentive Reader</p>
+<h3 id="part-1-encoding"><a href="#part-1-encoding" class="headerlink" title="part 1:encoding"></a>part 1:encoding</h3><h4 id="step-1-word-embedding"><a href="#step-1-word-embedding" class="headerlink" title="step 1 :word embedding"></a>step 1 :word embedding</h4><p>&emsp;&emsp;将所有的单词(包括question中的以及passage中的)都通过一个embedding矩阵$E \in \mathbb{R}^{d \times \lvert V \rvert}$,用$d$维的词向量来表示，得到：</p>
+<script type="math/tex; mode=display">p : \mathbf{p_1,\cdots,p_m}\in \mathbb{R}^d</script><script type="math/tex; mode=display">q : \mathbf{q_1,\cdots,q_l}\in \mathbb{R}^d</script><h4 id="step-2-Bidirectional-LSTM"><a href="#step-2-Bidirectional-LSTM" class="headerlink" title="step 2 :Bidirectional LSTM"></a>step 2 :Bidirectional LSTM</h4><p>&emsp;&emsp;先利用Bidirectional LSTM对于question提取特征向量：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg" alt></p>
+<p>&emsp;&emsp;再对Passage中的每个单词用Bidirectional LSTM提取其特征向量，并对每个单词对应的特征向量与问题的特征向量进行Attention才做，分别得到推测答案起始位置与中止位置的attention score<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM2.jpg" alt></p>
+<h4 id="Stanford-Attensive-Reader"><a href="#Stanford-Attensive-Reader" class="headerlink" title="Stanford Attensive Reader++"></a>Stanford Attensive Reader++</h4><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/stanfordpp.jpg" alt><br>&emsp;&emsp;整个模型的所有参数都是端到端训练的，训练的目标是提高预测开始位置与中止位置的准确度。<br>&emsp;&emsp;损失函数为</p>
+<script type="math/tex; mode=display">L=-\sum \log P^{start}(a_{start}) - \sum \log P^{end} (a_{end})</script><p>&emsp;&emsp;在模型的基础上进行了改进</p>
+<ul>
+<li>对于question部分，不仅仅是LSTM输出，而且利用了类似self-attention(自注意力)的weighted sum来表示，并且将BiLSTM加至三层。</li>
+<li><p>对于passage的encoding，除了利用Glove得到的word embedding之外，还加入了一些语言学的特征，如POS（part of speech)和NER(named entity recognition) tag以及term frequency。<br>另外还加入了比较简单的特征如段落中单词是否出现在问题中的binary feature，对于这种match，又分为三种即exact match, uncased match(不区分大小写), lemma match(如drive和driving)。更进一步，还引入了aligned question embedding, 与exact match相比，这可以看做是对于相似却不完全相同的单词（如car与vehicle)的soft alignment：$f<em>{align}(p_i) = \sum a</em>{i,j}E(q<em>j)$,其中$a</em>{i,j}$代表了段落中单词$p_i$与问题中单词$q_j$的相似度，且：</p>
+<script type="math/tex; mode=display">a_{i,j} = \frac{\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_j)))}{\sum_{j'}\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_{j'})))}</script><p>$\boldsymbol{E}(p_i)$:获得word的embedding形式，$\alpha(\boldsymbol{E}(p_i))$：将之前的embedding放入单个隐藏层。</p>
+<h2 id="BiDAF"><a href="#BiDAF" class="headerlink" title="BiDAF"></a>BiDAF</h2><p>&emsp;&emsp;另一个比较重要的QA模型是<strong>BiDAF(Bi-Directional Attention Flow)</strong>,其模型如下：</p>
+</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BiDAF.jpg" alt><br>&emsp;&emsp;核心思想：Attention应当是双向的，既有从Context(即passage)到Query(即Question)的attention,又有从Query到Context的attention<br>&emsp;&emsp;首先计算相似度矩阵(similarity matrix)</p>
+<script type="math/tex; mode=display">S_{ij} = w_{sim}^T[c_i;q_j;c_i\circ q_j] \in \mathbb{R}</script><p>&emsp;&emsp;其中$c_i,q_j$分别代表context vector与query vector</p>
+<p>&emsp;&emsp;对于Context $\to$ Query 的Attention，我们想要知道对于每个context word,哪些query word比较重要，因此得到attention score及weighted vector:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\alpha^i &= softmax(\boldsymbol{S}_i,:) \in \mathbb{R}^M  \quad \forall i \in \{1,\cdots,N\} \\ 
+\mathbb{a}_i &= \boldsymbol{\sum _{j=1}^M} \alpha_{j}^{i}\mathbb{q}_j \in \mathbb{R}^{2h}  \quad \forall i \in \{1,\cdots,N\} \\ 
+
+
+\end{aligned}</script><p>&emsp;&emsp;其中$N$是context的大小，$M$是query的大小。<br>ps . 相似矩阵的处理看这里：<a href="https://blog.csdn.net/zllljf/article/details/78786395" target="_blank" rel="noopener">戳这里</a></p>
+<p>&emsp;<br>&emsp;&emsp;而对于query$\to$Context Attention,我们想知道对于query，哪些context words与任意一个query words相似度较高，我们得到对于query来说最关键的context words的加权求和：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\boldsymbol{m_i} &= \max_{j} \boldsymbol{S_{ij}} \in \mathbb{R} \quad \forall i \in \{1,\cdots,N\} \\
+\beta &= softmax(\boldsymbol{m}) \in \mathbb{R}^N \\
+c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
+\end{aligned}</script><p>&emsp;&emsp;$m<em>i$从$S</em>{ij}$每一行($i$)中找出相似度最高的项组成向量</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;由此得到了Attention Flow Layer的输出:</p>
+<script type="math/tex; mode=display">b_i = \boldsymbol{[c_i;a_i;c_i \circ a_i;c_i \circ c']} \in \mathbb{R}^{8h}</script><p>&emsp;&emsp;再对其进行多层LSTM与Softmax得到相应的输出。</p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记（三，四）-Word Window Classification,Nerual Networks,Matrix Calculus</title>
+    <url>/2020/06/04/CS224N%E7%AC%94%E8%AE%B0-%EF%BC%88%E4%B8%89%EF%BC%8C%E5%9B%9B%EF%BC%89-Word-Window-Classification-Nerual-Networks-Matrix-Calculus/</url>
+    <content><![CDATA[<p>&emsp;&emsp;本次课程主要介绍了神经网络的基础知识并以<strong>命名实体识别Named Entity Recognition(NER)</strong>来介绍DNN在NLP领域内的应用。  </p>
+<h2 id="分类的设置与符号"><a href="#分类的设置与符号" class="headerlink" title="分类的设置与符号"></a>分类的设置与符号</h2><p>&emsp;&emsp;通常我们有由样本组成的训练数据集</p>
+<script type="math/tex; mode=display">\{x_i,y_i\}^{N}_{i=1}</script><p>&emsp;&emsp;其中$x_i$是输入，例如单词，句子，文档，维度为$d$<br>&emsp;&emsp;而$y_i$是我们尝试预测的标签（C种类别中的其中一种）  </p>
+<h3 id="直观分类"><a href="#直观分类" class="headerlink" title="直观分类"></a>直观分类</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_ClassificationIntuition.PNG" alt></p>
+<ul>
+<li>固定的二维单词分类</li>
+<li>使用softmax/logistic回归</li>
+<li>线性决策边界</li>
+</ul>
+<p><strong>传统的机器学习、统计学方法</strong>：假设$x_i$是固定的，训练softmax/logistic回归的权重$W \in \mathbb{R}^{C\times d}$来决定边界（超平面）<br><strong>方法</strong>：对每个$x$,预测</p>
+<script type="math/tex; mode=display">p(y|x) = \frac{\exp(W_y\cdot x)}{\sum_{c=1}^C\exp(W_c \cdot x)}</script><p>&emsp;&emsp;将预测函数分为两个步骤：<br>&emsp;&emsp;1.将$W$的$y^{th}$行和$x$中的对应行相乘得到分数</p>
+<script type="math/tex; mode=display">W_y \cdot x = \sum_{i=1}^dW_{yi}x_i = f_y</script><p>&emsp;&emsp;计算所有的$f_c,for \ c =1,…,C$<br>&emsp;&emsp;2.使用softmax函数获得归一化的概率</p>
+<script type="math/tex; mode=display">p(y|x) = \frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)} = softmax(f_y)</script><h3 id="使用softmax与交叉熵训练"><a href="#使用softmax与交叉熵训练" class="headerlink" title="使用softmax与交叉熵训练"></a>使用softmax与交叉熵训练</h3><p>&emsp;&emsp;对于每个训练样本$(x,y)$,我们的目标是最大化正确类$y$的概率，或者最小化该类的负对数概率：</p>
+<script type="math/tex; mode=display">-\log p(y|x) = - \log\left(\frac{\exp(f_y)}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="什么是交叉熵"><a href="#什么是交叉熵" class="headerlink" title="什么是交叉熵"></a>什么是交叉熵</h3><ul>
+<li>其概念来源于信息论，用于衡量两个分布之间的差异</li>
+<li>令真实分布为$p$</li>
+<li>令我们计算的模型概率为$q$</li>
+<li>交叉熵即为：<script type="math/tex; mode=display">H(p,q) = -\sum_{c=1}^Cp(c)\log q(c)</script><h3 id="整个数据集上的分类"><a href="#整个数据集上的分类" class="headerlink" title="整个数据集上的分类"></a>整个数据集上的分类</h3>&emsp;&emsp;在整个数据集${{x<em>i,y_i}}</em>{i=1}^N$上的交叉熵损失函数，是所有样本的交叉熵的均值：<script type="math/tex; mode=display">J(\theta) = \frac{1}{N}\sum_{i=1}^N-log\left(\frac{\exp(f_{yi})}{\sum_{c=1}^C\exp(f_c)}\right)</script><h3 id="传统的机器学习优化"><a href="#传统的机器学习优化" class="headerlink" title="传统的机器学习优化"></a>传统的机器学习优化</h3>&emsp;&emsp;一般机器学习的参数$\theta$通常只由$W$的列组成：</li>
+</ul>
+<script type="math/tex; mode=display">\theta = \begin{bmatrix}
+W_1          \\
+.            \\
+.            \\
+.            \\
+W_d
+
+\end{bmatrix} \in W(:)\in \mathbb{R}^{Cd}</script><p>&emsp;&emsp;因此，我们通过以下方式更新决策边界：</p>
+<script type="math/tex; mode=display">\nabla_\theta J(\theta) = \begin{bmatrix}
+\nabla_{W_1} \\
+.            \\
+.            \\
+.            \\
+\nabla_{W_d}
+
+\end{bmatrix} \in \mathbb{R}^{Cd}</script><h3 id="神经网络分类器"><a href="#神经网络分类器" class="headerlink" title="神经网络分类器"></a>神经网络分类器</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_ClassificationIntuition.PNG" alt></p>
+<ul>
+<li>单独使用Softmax(或logistic回归)效果并不是很好</li>
+<li>softmax只能给出线性决策边界   </li>
+</ul>
+<p>&emsp;&emsp;<strong>神经网络基础知识在这里省略</strong>😀</p>
+<h2 id="命名实体识别（NER）"><a href="#命名实体识别（NER）" class="headerlink" title="命名实体识别（NER）"></a>命名实体识别（NER）</h2><ul>
+<li>任务：比如查找和分类文本中的名称<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_NERTask.PNG" alt></li>
+<li>可能的用途<ul>
+<li>跟踪文档中提到的特定实体</li>
+<li>对于问答，答案通常是命名实体</li>
+<li>许多需要的信息实施上是命名实体之间的关联  </li>
+<li>&emsp;&emsp;我们通过在上下文中对单词进行分类，然后将实体提取为单词子序列来预测实体。<h3 id="为什么NER可能相当困难"><a href="#为什么NER可能相当困难" class="headerlink" title="为什么NER可能相当困难"></a>为什么NER可能相当困难</h3></li>
+</ul>
+</li>
+<li>很难计算出实体的边界</li>
+<li>很难知道某物是否是一个实体</li>
+<li>很难知道新奇实体的类别</li>
+<li>实体是模糊的，依赖于上下文<h3 id="Window-Classification"><a href="#Window-Classification" class="headerlink" title="Window Classification"></a>Window Classification</h3>&emsp;&emsp;由于同一个词在不同上下文中可能是不同的命名实体，因此一个思路是通过对该词在某一窗口内附近的词来对其进行分类(类别包括人民，地名，机构名等)。<br>&emsp;&emsp;对于museums in Paris are amazing,我们希望探测到地名Paris。假设窗口大小为2，并且通过word2vec得到窗口内五个单词的词向量，则我们可以将这5个向量连起来得到更大的向量，再对该向量进行分类。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_Paris.PNG" alt><br>&emsp;&emsp;对于具有多个class的分类问题，我们通常用softmax classofier来解决假设用$x$来表示输入的词向量，$y$来表示对应的class，总计有$C$个class,则$x$对应类别为$y$的概率为：<script type="math/tex; mode=display">p(y|x) = \frac{\exp(W_y\cdot x)}{\sum_{c=1}^C\exp(W_c \cdot x)}</script>&emsp;&emsp;损失函数为交叉熵：<script type="math/tex; mode=display">J(\theta) = \frac{1}{N}\sum_{i=1}^N-log\left(\frac{\exp(f_{yi})}{\sum_{c=1}^C\exp(f_c)}\right)</script>&emsp;&emsp;为了处理输入元素间的非线性关系，我们可以利用神经网络，并且输出层是每一个class概率的softmax layer。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson34_NerualNetworkParis.jpg" alt><br>之后可以使用随机梯度下降算法SGD来更新网络并利用<a href>反向传播算法</a>来有效率的计算梯度。</li>
+</ul>
+<h3 id="Binary-classification-with-unnormalized-scores"><a href="#Binary-classification-with-unnormalized-scores" class="headerlink" title="Binary classification with unnormalized scores"></a>Binary classification with unnormalized scores</h3><p>&emsp;&emsp;对于之前的例子$X<em>{window} = [X</em>{museum} \ \ \ X<em>{in}\ \ \ X</em>{paris}\ \ \ X<em>{are} \ \ \ X</em>{amazing}]$。假设我们要对中心词是否为一个地点进行分类，与word2vec类似，我们将便利语料库中的所有位置，但这一次只有一些位置能获得高分，例如，窗口的中心有一个实际的NER Location时会获得高分。</p>
+<h3 id="Binary-classification-with-unnormalized-scores-1"><a href="#Binary-classification-with-unnormalized-scores-1" class="headerlink" title="Binary classification with unnormalized scores"></a>Binary classification with unnormalized scores</h3><p>&emsp;&emsp;例子：<strong>Not all museums in Paris are amazing</strong><br>&emsp;&emsp;在这里只有以<strong>Paris</strong>为中心的窗口是真正的窗口，所有其他窗口都”毁坏了”，因为它们的中心没有具体的实体位置。</p>
+<h3 id="Binary-classification-with-unnormalized-scores-2"><a href="#Binary-classification-with-unnormalized-scores-2" class="headerlink" title="Binary classification with unnormalized scores"></a>Binary classification with unnormalized scores</h3><p>&emsp;&emsp;使用神经激活$a$简单给出一个非标准化的分数</p>
+<script type="math/tex; mode=display">score(x) = U^Ta\in\mathbb{R}</script><p>&emsp;&emsp;在这里用一个三层神经网络计算一个窗口的得分</p>
+<script type="math/tex; mode=display">s = score("museums in Paris are amazing")</script><script type="math/tex; mode=display">s = U^Tf(Wx+b)</script><script type="math/tex; mode=display">x\in\mathbb{R}^{20\times 1},W\in\mathbb{R}^{8\times20},U\in\mathbb{R}^{8\times1}</script><h3 id="The-max-margin-loss"><a href="#The-max-margin-loss" class="headerlink" title="The max-margin loss"></a>The max-margin loss</h3><ul>
+<li>训练目标，让真实窗口的得分更高，让被损坏的窗口得分更低</li>
+<li>真实窗口：$s = score(“museums \ in \ Paris \ \ are \ amazing”)$</li>
+<li>被损坏的窗口$sc = score(“Not \ all \ museums \ in \ Paris”)$</li>
+<li>最小化$J=max(0)$</li>
+<li>可以使用SGD,单窗口的目标函数为：$J = max(0,1-s+s_c)$</li>
+<li>每个中心有Ner位置的窗口得分比被损坏的窗口高1分</li>
+<li>要获得完整的目标函数：为每个真实窗口采样几个损坏的窗口。对所有窗口求和。<h3 id="Example-Jacobian-Elementwise-activation-Function"><a href="#Example-Jacobian-Elementwise-activation-Function" class="headerlink" title="Example Jacobian: Elementwise activation Function"></a>Example Jacobian: Elementwise activation Function</h3><script type="math/tex; mode=display">h = f(z),\frac{\partial h}{\partial z} = ?,\mathbf{h,z}\in\mathbb{R}^n</script></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记-六-Language Modeling And RNN</title>
+    <url>/2020/06/12/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AD-Language-Modeling-And-RNN/</url>
+    <content><![CDATA[<p>本次课程助教小姐姐主要介绍的是<strong>Language Modeling</strong>与<strong>Recurrent Neural Network(RNN)</strong></p>
+<h2 id="Language-Modeling"><a href="#Language-Modeling" class="headerlink" title="Language Modeling"></a>Language Modeling</h2><p>&emsp;&emsp;语言模型研究的是根据已知的序列来推测下一个单词的问题，也就是假设给定一个单词序列$x^{(1)},x^{(2)},…,x^{(t)}$，计算下一个单词$x^{(t+1)}$的概率分布</p>
+<script type="math/tex; mode=display">P(x^{(t+1)}|x^{(t)},...,x^{(1)})</script><p>&emsp;&emsp;根据条件概率的链式法则，我们也可以将其看作一系列词出现的概率问题：</p>
+<script type="math/tex; mode=display">P(x^{(t)},...,x^{(1)}) = \prod_{t=1}^{T} P\left(x^{(t)}|x^{(t-1)},...,x^{(1)}\right)</script><h2 id="n-gram-Language-Models"><a href="#n-gram-Language-Models" class="headerlink" title="n-gram Language Models"></a>n-gram Language Models</h2><p>&emsp;&emsp;n-gram模型的定义就是连续的n个单词组成的块，例如对于“the students opened their __”这句话：</p>
+<ul>
+<li>unigrams:”the”,”student”,”opened”,”their”</li>
+<li>biagrams:”the students”,”students opened”,”opend their”</li>
+<li>trigrams:”the students opened”,”students opened their”</li>
+<li>4-grams:”the students opened their”<br>&emsp;&emsp;该模型的核心思想是n-gram的概率应正比于器出现的频率，所以可以用此模型预测下一个单词。<br>&emsp;&emsp;假设$P(x^{(t+1)})$仅依赖它之前的n-1个单词，即<script type="math/tex; mode=display">P(x^{(t+1)}|x^{(t)},...,x^{(1)}) = P(x^{(t+1)}|x^{(t)},...,x^{(t-n+2)}) = \\
+\frac{ P(x^{(t+1)},x^{(t)},...,x^{(t-n+2)})}{P(x^{(t)},...,x^{(t-n+2)})}\approx \frac{ count(x^{(t+1)},x^{(t)},...,x^{(t-n+2)})}{count (x^{(t)},...,x^{(t-n+2)})}</script>&emsp;&emsp;其中count是通过处理大量文本相对应的n-gram出现次数得到的。</li>
+</ul>
+<p>&emsp;&emsp;假设在学习一个<strong>4-gram</strong>的语言模型：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/4-gram-model.png" alt><br>&emsp;&emsp;在语料库中：</p>
+<ul>
+<li>“students opened their”出现了1000次</li>
+<li>“students opened their books”出现了400次<script type="math/tex; mode=display">P(books|students\ opened\ their) = 0.4</script></li>
+<li>“students opened their exams”出现了100次<script type="math/tex; mode=display">P(exams|students\ opened\ their) = 0.1</script></li>
+<li>由于上下文出现了“proctor”,所以在这里exams的概率应当比book更大<h3 id="Sparsity-Problems-with-n-gram-Language-Models"><a href="#Sparsity-Problems-with-n-gram-Language-Models" class="headerlink" title="Sparsity Problems with n-gram Language Models"></a>Sparsity Problems with n-gram Language Models</h3><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/SparsityProblems.png" alt> <h3 id="Storage-Problems-with-n-gram-Language-Models"><a href="#Storage-Problems-with-n-gram-Language-Models" class="headerlink" title="Storage Problems with n-gram Language Models"></a>Storage Problems with n-gram Language Models</h3><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/storage_problems.png" alt></li>
+</ul>
+<h3 id="How-to-build-a-neural-Language-Model"><a href="#How-to-build-a-neural-Language-Model" class="headerlink" title="How to build a neural Language Model?"></a>How to build a neural Language Model?</h3><p>&emsp;&emsp;可以使用在第三讲中被用于NER问题的<strong>window-based neural model</strong><br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Ner.png" alt></p>
+<p>&emsp;&emsp;对于下列句子：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/sentence.png" alt><br>&emsp;&emsp;使用上述模型网络结构<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/network.png" alt></p>
+<h4 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h4><ul>
+<li>固定窗口大小</li>
+<li>扩大窗口就要扩大权重矩阵$W$</li>
+<li>窗口再大也不够用</li>
+<li>$x^{(1)}和x^{(2)}$乘以不同的权重，输入的处理不整齐。  </li>
+</ul>
+<p>需要一个可以处理任何长度的输入的神经网络。</p>
+<h2 id="Recurrent-Neural-Networks-RNN"><a href="#Recurrent-Neural-Networks-RNN" class="headerlink" title="Recurrent Neural Networks (RNN)"></a>Recurrent Neural Networks (RNN)</h2><p>&emsp;&emsp;RNN（Recurrent Neural Network）结构通过不断应用<strong>同一个</strong>矩阵$W$来实现参数的有效共享(个人推荐<a href="https://zhuanlan.zhihu.com/p/30844905" target="_blank" rel="noopener">这一篇</a>扫盲)<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/RNN1.png" alt></p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/RNN2.png" alt></p>
+<p>RNN的优点</p>
+<ul>
+<li>可以处理<strong>任意长度</strong>的输入</li>
+<li>步骤t的计算理论上可以使用许多<strong>步骤前</strong>的信息</li>
+<li>模型大小<strong>不会</strong>随着输入的增加而增加</li>
+<li>在每个time step上都应用相同的权重，因此在处理输入时具有<strong>一致性</strong>。  </li>
+</ul>
+<p>RNN的缺点</p>
+<ul>
+<li>递归计算速度慢</li>
+<li>在实践中，很难从<strong>许多步骤前</strong>获得信息</li>
+<li>更多后续课程中会提到</li>
+</ul>
+<p>&emsp;&emsp;RNN的训练过程依赖于大量文本，在每个时刻t会计算模型预测的输出$y^{(t)}$与真实值$\hat{y}^{(t)}$(即$x^{(t+1)}$的one-hot向量)的交叉熵：</p>
+<script type="math/tex; mode=display">\begin{aligned}
+J^{(t)}(\theta) = CE(y^{(t)},\hat{y}^{(t)}) &= -\sum_{w\in V} y^{(t)}_w \log \hat{y}^{(t)}_w \\ &= -\log\hat{y}^{(t)}_{x_{t+1}}
+\end{aligned}</script><p>&emsp;&emsp;将其平均，得到整个训练集的overall loss</p>
+<script type="math/tex; mode=display">J(\theta) = \frac{1}{T}\sum^T_{t=1}J^{(t)}(\theta) = \frac{1}{T}-\log\hat{y}^{(t)}_{x_{t+1}}</script><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/loss.png" alt></p>
+<script type="math/tex; mode=display">\begin{aligned}
+J^{(1)}(\theta)+J^{(2)}(\theta)+J^{(3)}(\theta)+... &= J(\theta) \\ &=  \frac{1}{T}\sum^T_{t=1}J^{(t)}(\theta)
+\end{aligned}</script><p>&emsp;&emsp;然而，计算<strong>整个</strong>语料库$x^{(1)},…,x^{(T)}$的损失和梯度成本太过昂贵了，在实践中，我们将$x^{(1)},…,x^{(T)}$看作一个<strong>句子</strong>或<strong>文档</strong>，应用<strong>随机梯度下降算法</strong>计算小块数据的损失和梯度，并进行更新</p>
+<h3 id="Backpropagation-for-RNNs"><a href="#Backpropagation-for-RNNs" class="headerlink" title="Backpropagation for RNNs"></a>Backpropagation for RNNs</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BackPropagation.png" alt><br>&emsp;&emsp;重复权重的梯度是每次其出现时的梯度总和</p>
+<script type="math/tex; mode=display">\frac{\partial J^{(t)}}{\partial W_h}=  \sum_{i=1}^t \frac{\partial J^{(t)}}{\partial W_h} \bigg|_{(i)}</script><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/caluclate_gradient.png" alt></p>
+<h3 id="Evaluating-Language-Models"><a href="#Evaluating-Language-Models" class="headerlink" title="Evaluating Language Models"></a>Evaluating Language Models</h3><p>&emsp;&emsp;标准语言模型评估指标是perplexity 困惑度<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/perplexity-困惑度.png" alt><br>&emsp;&emsp;等于交叉熵损失$J(\theta)$的指数</p>
+<script type="math/tex; mode=display">\begin{aligned}
+=\prod_{t=1}^T \left( {\frac{1}{\hat y ^ {(t)}_{x_{t+1}}}} \right)^{1/T} &= \exp \left( \frac{1}{T}\sum_{t=1}^T-\log \hat y ^ {(t)}_{x_{t+1}} \right) \\ &= \exp(J(\theta))  
+\end{aligned}</script><p>&emsp;&emsp;低困惑度是好的</p>
+<h3 id="Why-should-we-care-about-Language-Modeling"><a href="#Why-should-we-care-about-Language-Modeling" class="headerlink" title="Why should we care about Language Modeling?"></a>Why should we care about Language Modeling?</h3><p>&emsp;&emsp;语言模型是一项<strong>基准测试</strong>任务，它帮助我们<strong>衡量</strong>我们在理解语言方面的<strong>进展</strong><br>&emsp;&emsp;语言建模是许多NLP任务的<strong>子组件</strong>，尤其是那些涉及<strong>生成文本</strong> 或<strong>估计文本概率</strong>的任务</p>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记(五)-Dependency Parsing</title>
+    <url>/2020/06/11/CS224N%E7%AC%94%E8%AE%B0-%E4%BA%94-Dependency-Parsing/</url>
+    <content><![CDATA[<h1 id="Linguistic-Structure-Dependency-Parsing"><a href="#Linguistic-Structure-Dependency-Parsing" class="headerlink" title="Linguistic Structure:Dependency Parsing"></a>Linguistic Structure:Dependency Parsing</h1><p>&emsp;&emsp;对于<strong>句法结构（syntactic structure）</strong>而言,教授提到主要有两种方式：<strong>Constituency Parsing</strong>与<strong>Dependency Parsing</strong></p>
+<h2 id="Constituency-Parsing"><a href="#Constituency-Parsing" class="headerlink" title="Constituency Parsing"></a>Constituency Parsing</h2><p>&emsp;&emsp;Constituency Parsing主要使用短语语法来不断地将词语整理成嵌套的组成成分，又被称为context-free grammers(CFG)</p>
+<ul>
+<li>短语结构将单词组织成嵌套的成分</li>
+<li>单词被赋予了一个词性</li>
+<li>短语可以递归形成更大的短语<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/CFGS.PNG" alt></li>
+</ul>
+<h2 id="Dependency-Parsing"><a href="#Dependency-Parsing" class="headerlink" title="Dependency Parsing"></a>Dependency Parsing</h2><p>&emsp;&emsp;不是使用各种类型的短语，而是直接通过单词与其他单词的关系表示句子的结构，显示哪些单词依赖于哪些其他单词<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Dependemcy_Look.png" alt></p>
+<p>&emsp;&emsp;为什么我们需要句子结构</p>
+<ul>
+<li>为了能够正确地解释语言，我们需要理解句子结构</li>
+<li>人们通过将单词组合成更大的单元来传达复杂的思想，从而交流复杂的思想</li>
+<li>我们需要知道哪些词是哪些词的修饰词，否则我们无法弄清句子是什么意思</li>
+</ul>
+<p>&emsp;&emsp;课堂上教授主要介绍了这几种类型的歧义：</p>
+<ul>
+<li>介词短语依附歧义：拿刀的是警察还是被杀的人？ <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/介词短语依附歧义.png" alt><br>&emsp;  </li>
+<li>协调范围模糊：主语是一个人还是两个人？<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/协调范围模糊.png" alt><br>&emsp;  </li>
+<li>形容词修饰语歧义：是直接（first hand）的工作还是第一份hand job？🤔<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/handjob.png" alt><br>&emsp;  </li>
+<li>动词短语依附歧义：文中的<strong><em>to be used for Olympic beach volleyball</em></strong> 作为动词短语修饰的是body还是beach?<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/动词短语歧义.png" alt><br>&emsp;<br>&emsp;<br>&emsp;&emsp;面对复杂的句子结构，我们可能需要处理的数量级是指数级的，这个序列被称为<a href="https://zh.wikipedia.org/wiki/%E5%8D%A1%E5%A1%94%E5%85%B0%E6%95%B0" target="_blank" rel="noopener">卡特兰数</a><script type="math/tex; mode=display">C_{n} = \frac{(2n)!}{[(n+1)!n!]}</script>&emsp;&emsp;Dependency Structure展示了词语之间的依赖关系，通常用箭头表示其依存关系，有时也会在肩头上标出具体的语法关系。<br>&emsp;&emsp;Dependency Structure有两种表现形式，一种是直接在句子上标出依存关系箭头及语法关系：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/箭头符号.PNG" alt><br>&emsp;&emsp;另一种是将其做成树状结构：<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/树状图.PNG" alt><br>&emsp;&emsp;Dependency Parsing可以认为是给定输入句子$S=w_0w_1…w_n$(其中$w_0$经常是设置的fake root,使得每一个词都依赖于一个节点)构建对应的Dependency Tree Graph的任务，而<strong>Transition-based Dependency Parsing</strong>是其中的一个有效方法。<h3 id="Transition-based-Dependency-Parsing"><a href="#Transition-based-Dependency-Parsing" class="headerlink" title="Transition-based Dependency Parsing"></a>Transition-based Dependency Parsing</h3>&emsp;&emsp;可以将其看成一种<a href="https://zh.wikipedia.org/wiki/%E6%9C%89%E9%99%90%E7%8A%B6%E6%80%81%E6%9C%BA" target="_blank" rel="noopener">状态机</a>,对于$S=w_0w_1…w_n$,state由三部分构成$(\sigma,\beta,A)$。<br>&emsp;&emsp;$\sigma$是$S$中若干$w_i$构成的stack<br>&emsp;&emsp;$\beta$是$S$中若干$w_i$构成的buffer<br>&emsp;&emsp;$A$是denpency arc(代表依赖关系的箭头)构成的集合，每一条边的形式是$(w_i,r,w_j)$,其中$r$描述了节点之间的依存关系。<br>&emsp;&emsp;初始状态下，$\sigma$仅包含root $w_0$,$\beta$包含了所有单词$w_1…w_n$,而A是空集合$\emptyset$。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/初始状态.PNG" alt></li>
+</ul>
+<p>&emsp;&emsp;最终目标是$\sigma$包含root $w_0$，$\beta$清空，而$A$包含了所有的dependency arc,则$A$就是我们想要的描述Denpendency的结果。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/中止状态.PNG" alt><br>&emsp;&emsp;状态间的转换有三类</p>
+<ul>
+<li>SHIFT:将buffer中的第一个词移除并放到stack上</li>
+<li>LEFT-ARC：将$(w_j,r,w_i)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。</li>
+<li>RIGHT-ARC：将$(w_i,r,w_j)$加入边的集合$A$,其中$w_i$是stack上的次顶层的词，$w_j$是stack上最顶层的词。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.PNG" alt><br>&emsp;&emsp;我们不断的进行上述三类操作，直到从初始态达到最终态。在每个状态下如何选择哪种操作呢？当我们考虑到LEFT-ARC与RIGHT-ARC各有|R|（|R|为r的类的个数）种class，我们可以将其看做是class数为2|R|+1的分类问题，可以用SVM等传统机器学习方法解决。<h3 id="Evaluation"><a href="#Evaluation" class="headerlink" title="Evaluation"></a>Evaluation</h3>&emsp;&emsp;针对上面的模型，我们有两种评估方式。一个是<strong>LAS（labeled attachment score）</strong>,只有在arc的箭头以及语法关系均正确时才算正确，另一种是<strong>UAS（unlabeled attachment score）</strong>,只要arc的箭头方向正确即可。<img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Evaluation.PNG" alt><h3 id="Neural-Dependency-Parsing"><a href="#Neural-Dependency-Parsing" class="headerlink" title="Neural Dependency Parsing"></a>Neural Dependency Parsing</h3>&emsp;&emsp;传统的Transition-based Dependency Parsing对feature engineering要求较高，我们可以用神经网络来减少human labor。<br>&emsp;&emsp;对于Neural Dependency Parser，其输入特征通常包含三种：</li>
+<li>stack和buffer中的单词及其dependent word。</li>
+<li>单词的Part-of-Speech tag。</li>
+<li>描述语法关系的arc label。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/三类输入.jpg" alt><br>&emsp;&emsp;我们将其转换为embedding vector并将它们联结起来作为输入层，再经过若干非线性的隐藏层，最后加入softmax layer得到每个class的概率。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/流程.jpg" alt></li>
+</ul>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N Assignment2</title>
+    <url>/2020/07/09/CS224n-assign2/</url>
+    <content><![CDATA[<h2 id="Question-A"><a href="#Question-A" class="headerlink" title="Question A"></a>Question A</h2><blockquote>
+<p>Show that the naive-softmax loss given in Equation (2) is the same as the cross-entropy loss between $y$ and $\hat{y}$,show that</p>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -\log(\hat{y}_o)</script></blockquote>
+<h2 id="Answer-A"><a href="#Answer-A" class="headerlink" title="Answer A"></a>Answer A</h2><p>&emsp;因为$y$是one-hot向量，所以：</p>
+<script type="math/tex; mode=display">-\sum_{w\in{Vocab}} y_w\log(\hat{y}_w) = -y_o\log(\hat{y}_o) - {\sum_{w\in{Vocab},w\neq o} y_w\log(\hat{y}_w)}  = -\log(\hat{y}_o)</script><h2 id="Question-B"><a href="#Question-B" class="headerlink" title="Question B"></a>Question B</h2><blockquote>
+<p>Compute the partial derivative of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to $\boldsymbol{v_c}$, Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
+</blockquote>
+<h2 id="Answer-B"><a href="#Answer-B" class="headerlink" title="Answer B"></a>Answer B</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial v_c} &= - \frac{\partial}{\partial{v_c}}\log\frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)} \\
+&= - \frac{\partial}{\partial v_c}\left( \log(\exp(u_o^Tv_c)) - \log{\sum_{w\in V}\exp(u_w^Tv_c)}\right)\\
+&= - \frac{\partial}{\partial v_c}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
+&= -u_o + \sum_{w\in V}\frac{\exp(u_w^Tv_c)u_w}{\sum_{w\in V}\exp(u_w^Tv_c)}\\
+& = - u_o + \sum_{w\in V}p(O=w|C=c)u_w\\
+& = -u_o + \sum_{w\in V}\hat{y_w}u_w\\
+& = U(\hat{y} - y)
+\end{aligned}</script><h2 id="Question-C"><a href="#Question-C" class="headerlink" title="Question C"></a>Question C</h2><blockquote>
+<p> Compute the partial derivatives of $\boldsymbol{J}_{naive-softmax}(\boldsymbol{v_c,o,U})$ with respect to each of the ‘outside’ word vectors,$\boldsymbol{u_w}$’s.There will be two cases: when $w = o$,the true ‘outside’ word vector,and$w\neq o$,for<br>all other words. Please write your answer in terms of $\boldsymbol{y}$,$\boldsymbol{\hat{y}}$,and $\boldsymbol{U}$ </p>
+</blockquote>
+<h2 id="Answer-C"><a href="#Answer-C" class="headerlink" title="Answer C"></a>Answer C</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= - \frac{\partial}{\partial u_w}\left(u_o^Tv_c - \log{\sum_{w\in V}}\exp(u_w^Tv_c) \right)\\
+&= - \frac{\partial(u_o^Tv_c)}{\partial u_w} + \frac{\partial(\log(\sum_{w\in V}\exp(u_w^Tv_c)))}{\partial u_w}
+\end{aligned}</script><p>when $w \neq o$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= 0 +p(O=w|C=c)v_c\\
+&=\hat{y}_wv_c
+\end{aligned}</script><p>when $w = o$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J(v_c,o,U)}{\partial u_w} &= -v_c +p(O=w|C=c)v_c\\
+&= \hat{y}_wv_c - v_c\\
+&=(\hat{y}_w -1 )v_c
+\end{aligned}</script><p>Then: </p>
+<script type="math/tex; mode=display">\frac{\partial J(v_c,o,U)}{\partial U} = v_c(\hat{y} - y)^T</script><h2 id="Question-D"><a href="#Question-D" class="headerlink" title="Question D"></a>Question D</h2><blockquote>
+<p>The sigmoid function is given by the follow Equation :</p>
+<script type="math/tex; mode=display">\sigma(x) = \frac{1}{1+e^{-x}} = \frac{e^x}{e^x + 1}</script><p>Please compute the derivative of $\sigma(x)$ with respect to$x$, where $x$ is a vector.</p>
+</blockquote>
+<h2 id="Answer-D"><a href="#Answer-D" class="headerlink" title="Answer D"></a>Answer D</h2><script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial \sigma(x_i)}{\partial x_i} &= \frac{1}{(1+\exp(-x_i)^2)}\exp(-x_i) = \sigma(x_i)(1-\sigma(x_i)) \\
+\frac{\partial \sigma(x)}{\partial x} &= \left[ \frac{\partial \sigma (x_j)}{\partial x_i}    \right]_{d \times d} \\
+&= \begin{bmatrix}
+  \sigma'(x_1) &   0   & \cdots &0 \\
+      0        &   \sigma'(x_2) & \cdots    &0 \\
+  \vdots       &   \vdots       & \vdots &\vdots\\
+  0            &    0           & \dots  &\sigma'(x_d)
+\end{bmatrix} \\
+&= diag(\sigma '(x_d))
+\end{aligned}</script><h2 id="Question-E"><a href="#Question-E" class="headerlink" title="Question E"></a>Question E</h2><blockquote>
+<p>Now we shall consider the Negative Sampling loss, which is an alternative to the Naive Softmax loss. Assume that $K$ negative samples (words) are drawn from the vocabulary.For simplicity of notation we shall refer to them as $w_1,w_2,\cdots,w_K$ and their outside vectors as $u_1,\cdots,u_K$.Note that $o \notin {w_1,\cdots,w_K}$. For a center word $c$ and an outside word $o$, the negative sampling loss function is<br>given by:</p>
+<script type="math/tex; mode=display">\boldsymbol{J}_{neg-sample}(v_c,o,U) = -\log(\sigma (u_o^Tv_c))- \sum_{k=1}^K \log(\sigma(-u_k^Tv_c))</script><p>for a sample $w<em>1,\cdots,w_K$, where $\sigma(\cdot)$is the sigmoid function。<br>Please repeat parts (b) and (c), computing the partial derivatives of $\boldsymbol{J}</em>{neg-sample}$ with respect to $v_c$, with respect to $u_o$, and with respect to a negative sample $u_k$. Please write your answers in terms of the<br>vectors $u_o$, $v_c$, and $u_k$, where k ∈ [1, K]. After you’ve done this, describe with one sentence why this loss function is much more efficient to compute than the naive-softmax loss. Note, you should be able to use your solution to part (d) to help compute the necessary gradients here.</p>
+</blockquote>
+<h2 id="Answer-E"><a href="#Answer-E" class="headerlink" title="Answer E"></a>Answer E</h2><p>For $v_c$:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\frac{\partial J_{neg-sample}}{\partial v_c} &= (\sigma(u_o^Tv_c)-1)u_o + \sum_{k=1}^{K}(1-\sigma(-u_k^Tv_c))u_k \\
+&= (\sigma(u_o^T)-1)u_o + \sum_{k=1}^{K}\sigma(u_k^Tv_c)u_k
+
+\end{aligned}</script><p>For $u_o$,Remember:$o\notin {w1,\cdots,w_k}$</p>
+<script type="math/tex; mode=display">\frac{\partial J_{neg-sample}}{\partial u_o} =   (\sigma(u_o^Tv_c)-1)v_c</script><p>For $u_k$:</p>
+<script type="math/tex; mode=display">\frac{\partial J}{\partial u_k} = (1-\sigma(-u_k^Tv_c))v_c = \sigma(u_k^Tv_c)v_c,for\ k = 1,2,\cdots,K</script><p><strong>Why this loss function is much more efficient to compute than the naive-softmax loss?</strong><br>从求得的偏导数中我们可以看出，原始的softmax函数每次对$v_c$进行反向传播时，需要与 output vector matrix 进行大量且复杂的矩阵运算，而负采样中的计算复杂度则不再与词表大小$V$有关，而是与采样数量$K$有关。</p>
+<h2 id="Question-F"><a href="#Question-F" class="headerlink" title="Question F"></a>Question F</h2><blockquote>
+<p>Suppose the center word is $c=w<em>t$ and the context window is $[w</em>{t-m},\cdots,w<em>{t-1},w_t,w</em>[t+1],\cdots,w_{t+m}]$,where $m$ is the context window size.Recall that for the skip-gram version of $word2vec$,the total loss for the context window is :</p>
+<script type="math/tex; mode=display">\begin{aligned}
+  \boldsymbol{J}_{skip-gram}(v_c,w_{t-m},\cdots,w_{t+m},U) = \sum_{-m\le j \le m \atop j\neq 0} \boldsymbol{J}(v_c,w_{t+j},U)
+\end{aligned}</script><p>Here,$\boldsymbol{J}(v<em>c,w</em>{t+j},U)$  represents an arbitrary loss term for the center word $c=w<em>t$ and outside word $w</em>{t+j}$. $\boldsymbol{J}(v<em>c,w</em>{t+j},U)$ could be $\boldsymbol{J}<em>{naive-softmax}(v_c,w</em>{t+j},U)$ or $\boldsymbol{J}<em>{neg-sample}(v_c,w</em>{t+j},U)$ , depending on your implementation.<br>Write down three partial derivatives:<br>(1) $\partial \boldsymbol{J}<em>{skip-gram}(v_c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{U}$<br>(2)$\partial \boldsymbol{J}</em>{skip-gram}(v<em>c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_c$<br>(3)$\partial \boldsymbol{J}</em>{skip-gram}(v<em>c,w</em>{t-m},\cdots,w<em>{t+m},\boldsymbol{U})/\partial \boldsymbol{v}_w$ when $w \neq c$<br>Write your answers in terms of $\partial\boldsymbol{J}(v_c,w</em>{t+j},U)/\partial \boldsymbol{U}$ and $\partial\boldsymbol{J}(v<em>c,w</em>{t+j},U)/\partial \boldsymbol{v}_c$ </p>
+<h2 id="Answer-F"><a href="#Answer-F" class="headerlink" title="Answer F"></a>Answer F</h2></blockquote>
+<script type="math/tex; mode=display">\begin{aligned}\frac{\partial J_{skip-gram}}{\partial U} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial U}\\
+\frac{\partial J_{skip-gram}}{\partial v_c} &=  \sum_{{-m \le j \le m} \atop j \neq 0}\partial \frac{J(v_c,w_{t+j},U)}{\partial v_c}\\
+\frac{\partial J_{skip-gram}}{\partial v_w} &= 0(when \ w \neq c)
+
+\end{aligned}</script>]]></content>
+      <categories>
+        <category>Assignment</category>
+      </categories>
+      <tags>
+        <tag>CS224n</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>HPO论文小结</title>
+    <url>/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/</url>
+    <content><![CDATA[<h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
+<li>Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。</li>
+<li>Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检查以及行为异常的异常结果。</li>
+<li>varient 变异：基因变异描述的是与正常序列或参考序列的偏差。 例如，在某一染色体位置用一个核苷酸替换另一个核苷酸，一个或多个核苷酸的插入或缺失，数百万个核苷酸的染色体微缺失或整个染色体的三体。</li>
+<li>pathogenicity 致病性：致病性指的是一个人基因组中的基因变异导致疾病的倾向。这一术语最常用于癌症或遗传性疾病的上下文中，即当基因变异对导致疾病或导致疾病发展的基因产物的功能产生重大有害影响时。</li>
+<li>Whole-exome sequencing（wes）全外显子组测序：一种测序技术，试图选择性地富集和分析仅属于人类基因组约1.5％的，由蛋白质编码基因外显子组成的序列（称为外显子组），因为迄今为止在孟德尔疾病中发现的大多数致病性变异都位于或非常接近这些外显子。</li>
+</ul>
+<p>&emsp;</p>
+<hr>
+<h1 id="The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease"><a href="#The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease" class="headerlink" title="The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease"></a>The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/18950739/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/18950739/</a></p>
+<p>&emsp;&emsp;先来看看2008年的开山之作吧，首先是整篇report的概述:</p>
+<blockquote>
+<p>There are many thousands of hereditary diseases in humans, each of which has a specific combination of phenotypic features, but computational analysis of phenotypic data has been hampered by lack of adequate computational data structures. Therefore, we have developed a Human Phenotype Ontology (HPO) with over 8000 terms representing individual phenotypic anomalies and have annotated all clinical entries in Online Mendelian Inheritance in Man with the terms of the HPO. We show that the HPO is able to capture phenotypic similarities between diseases in a useful and highly significant fashion.  </p>
+</blockquote>
+<p>&emsp;&emsp;人类有成千上万种遗传性疾病，每一种都有特定的表型特征组合，但是由于表型数据的计算分析缺乏足够的计算数据结构而使得分析受到阻碍，由此团队开发了一个人类表型本体论（HPO），其中有超过8000个术语代表个体表型异常，并且用HPO的术语注释了<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>的所有临床条目。该团队证明了HPO能够一种有效且重要的方式捕捉疾病之间的表型相似性。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;人类尤其擅长识别表型特征和异常，然而在人类表型的计算描述和分析方面，还有许多未解决的问题。<br>&emsp;&emsp;显然，某些遗传性疾病是由于共同的表型特征而彼此表型相似。研究发现许多遗传条件显示出重叠的特征而导致了疾病族的概念。一些研究表明，在基因组范围内，将表型与遗传、细胞网络的特征联系起来有着巨大的潜力。<br>&emsp;&emsp;尽管<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>中已经详细描述了绝大多数的人类孟德尔综合症（human Mendelian syndromes）,然而，OMIM中包含的计算分析一直受到限制，因为缺少一个可控的词汇表。包括具有明确定义关系的一致性的注释，例如：</p>
+<blockquote>
+<p>For instance, the descriptions “generalized amyotrophy”, “generalized muscle atrophy”, “muscular atrophy, generalized”, and “muscle atrophy, generalized” are used to describe different diseases in OMIM and might not be easily recognized as synonyms with a purely computational approach. Also, although the clinical-synopsis entries in OMIM are grouped according to organ system, the hierarchical structure does not itself reflect that (for instance) “Hypoplastic philtrum” and “Smooth philtrum” are more closely related to one another than to “Hypoplastic nasal septum” (all three of these descriptions are in the NOSE category of OMIM’s clinical synopsis)  </p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;“本体论”是以有向无环图的形式表示概念、属性和关系的数据模型。尤其是<a href="https://baike.baidu.com/item/%E5%9F%BA%E5%9B%A0%E6%9C%AC%E4%BD%93/1795532?fr=aladdin" target="_blank" rel="noopener">基因本体</a>（GO）已经被证明对于微阵列（microray）和其他形式的高通量数据(high-throughput data)的探索性分析是非常有用的。<br>&emsp;&emsp;HPO的目的是覆盖人类单基因疾病中的所有表型异常，它从OMIM数据库获取了文本数据<strong>omim.txt</strong>。HPO使用本体论编辑器（OBO-edit）来定义基于omim.txt中概念的术语与连接，在整理术语时，有时需要人工的将几种症状集合到同一个术语，例如：</p>
+<blockquote>
+<p>For instance, the three OMIM descriptions <em>Carpal bone hypoplasia</em>, <em>Hypoplasia of carpal bones</em>, and <em>Hypoplastic carpal bones</em>were fused into the single term HP:0001498, <em>Carpal bone hypoplasia</em></p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO的每个术语都描述了一种表型异常，术语与其父术语是“is a”关系。如下图（Figure 1）所示HPO结构允许一个术语有多个父项。从而可以探索表型异常的不同方面。HPO本身并不描述单个疾病实体。而是与它们相关的表型异常。大多数的HPO术语是用来描述<strong>器官异常</strong>，但单独的本体论用于描述<strong>遗传方式、发病和临床过程</strong>。<br>&emsp;&emsp;真路径（true-path rule）适用于HPO的术语，也就是说，如果一种疾病被注释为<em>Atrial septal defect</em>，那么这个术语的所有祖先，如<em>Abnormality of the cardiac septa</em>也适用。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG" alt><br>&emsp;&emsp;与GO一样，在HPO中，更接近本体根的术语比远离根的术语表示更一般的概念。在整个OMIM语料库的标注中，可以通过其标注的频率来估计HPO中每个节点的信息含量。在HPO的实现中，术语的信息内容是基于OMIM数据库中4779种疾病中该术语注释的频率。显然。如果两种疾病都被注释到一个信息含量较高的术语，那么在此基础上计算出的相似度应该高于将两种疾病注释到更一般（信息含量较低）的术语时计算的相似度。<br>&emsp;&emsp;对于HPO的每一项$t$,信息量被量化为其概率的负对数：$-\log p(t)$,其中的概率被认为是其在所有4779种疾病的注释中的频率，注意上文提到：<strong>如果一种疾病被注释到HPO中的任何一个术语$t$，它也必须被注释到$t$的所有祖先</strong>, 因此，术语在本体中的位置越高，其信息内容就越少。在HPO中，一个术语可能有多个父项，因此一对术语可能有多个共同祖先的路径。将术语$t_1$和$t_2$的所有共同祖先项集合表示为$A(t_1,t_2)$,则$t_1$,$t_2$的相似度被定义为：</p>
+<script type="math/tex; mode=display">sim(t_1,t_2) = \max_{a\in A(t_1,t_2)}-\log p(a)</script><p>&emsp;&emsp;就是要找到$t_1$和$t_2$的最小共同祖先的概率  </p>
+<p>&emsp;&emsp;为了要计算两种疾病$d_1$和$d_2$之间的相似性，使用的方法$d_1$的每个特征与$d_2$最相似的特征相匹配，并取这些特征对的平均值：</p>
+<script type="math/tex; mode=display">sim(d_1 \to d_2) = avg \left[\sum_{s\in d_1} \max_{t\in d_2}sim(s,t) \right]</script><p>&emsp;&emsp;由于上式对于$d_1$与$d_2$并不是对称的，因此最终的相似性度量值被定义为：</p>
+<script type="math/tex; mode=display">sim(d_1,d_2) = \frac{1}{2} \times sim(d_1\to d_2) + \frac{1}{2} \times sim(d_2\to d_1)</script><p>&emsp;&emsp;使用这种方法来定义OMIM数据库列出的疾病之间的相似性，分析了21个生理疾病类别中的727个疾病，这些疾病之间的表型关系通过超过阈值相似评分的所有成对疾病之间的联系如下图所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ApplicationsOfHpo.PNG" alt><br>&emsp;&emsp;尽管生成的表型与疾病类别无关，但最终的表型网络清楚地显示了与21种类别中的许多类别相对应的簇。同样明显的是，某些簇显示出彼此之间的相互联系，这在仅基于共享疾病基因的疾病图谱中是看不到的，对随机网络的分析表明，观察到的网络连接与疾病类别之间的相关性非常显着。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;接下来探索了在临床环境中使用HPO的实用性。在最好的情况下，诊断算法将允许以不同的详细程度进行搜索，比一般的特征更权衡特定特征，并且在对某个个体患者可能没有个体特征这一事实不太敏感。因此，本体论的方法在这种情况下显得特别合适。为了模拟这种搜索过程，使用OMIM中的2116个疾病，用至少6个HPO术语注释来模拟临床搜索过程，只选择与给定疾病相关的1-6个术语，然后在原始数据库中搜索相似的疾病。最理想的情况是，搜索算法会将原始疾病分配到最高级别，或者至少放在前几名。  </p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO-C.PNG" alt></p>
+<p>&emsp;&emsp;即使只使用两个搜索项（术语），算法性能也非常出色，当50％的随机噪声添加到搜索项或者每项映射到一个（不太具体）的父项时，准确度会只会相对降低一些。也就是说相似度的计算对于由于搜索的表型术语集的噪声、完整性或特异性不太敏感。<br>&emsp;&emsp;相对于其他之前完成的工作,人工处理的本体论方法计算表型分析提供了许多优势</p>
+<ul>
+<li>本体的术语和结构基于医学知识，而不是文本挖掘系统</li>
+<li>与层次系统和特征向量相比，本体具有更大的灵活性和描述能力。</li>
+<li>在GO成功后，已开发了的、许多的、用于本体分析的计算算法现在可以用于人类表型数据。</li>
+</ul>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO还会再未来数年中继续发展，继续改进OMIM中列出的疾病的注释，并将注释扩展到其他遗传性疾病。计划在注释文件中包含附加信息，包括特性的频率和严重性。人们希望HPO将为涉及人类表型分析的计算生物医学研究提供基础，通过将人类表型与蛋白质相互作用、代谢和信号转导途径等数据源直接联系起来，使人类现象与细胞的分子病理生理学相互关联。此外，HPO将为医学遗传学的临床研究提供统一的基础，为表型描述提供标准化词汇。</p>
+<p>&emsp;<br>&emsp;<br>&emsp;</p>
+<hr>
+<h1 id="Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison"><a href="#Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison" class="headerlink" title="Improved exome prioritization of disease genes through cross-species phenotype comparison"></a>Improved exome prioritization of disease genes through cross-species phenotype comparison</h1><p>地址:<a href="https://pubmed.ncbi.nlm.nih.gov/24162188/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/24162188/</a>  </p>
+<p>&emsp;&emsp;本文利用了小鼠的模型，将人类疾病和转基因小鼠之间的表型相似性进行计算来对基因变异进行评估（关于这部分生物信息学的基础知识还需要补充，因此现在简单概括文章的大意）</p>
+<h2 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h2><p>&emsp;&emsp;首先来看一下摘要：</p>
+<blockquote>
+<p>Numerous new disease-gene associations have been identified by whole-exome sequencing studies in the last few years.<br>However, many cases remain unsolved due to the sheer number of candidate variants remaining after common filtering strategies such as removing low quality and common variants and those deemed unlikely to be pathogenic. The observation that each of our genomes contains about 100 genuine loss-of-function variants makes identification of the causative mutation problematic when using these strategies alone. We propose using the wealth of genotype to phenotype data that already exists from model organism studies to assess the potential impact of these exome variants. Here, we introduce PHenotypic Interpretation of Variants in Exomes (PHIVE), an algorithm that integrates the calculation of phenotype similarity between human diseases and genetically modified mouse models with evaluation of the variants according to allele frequency, pathogenicity, and mode of inheritance approaches in our Exomiser tool. Large-scale validation of PHIVE analysis using 100,000 exomes containing known mutations demonstrated a substantial improvement (up to 54.1-fold) over purely variant-based (frequency and pathogenicity) methods with the correct gene recalled as the top hit in up to 83% of samples, corresponding to an area under the ROC curve of &gt;95%. We conclude that incorporation of phenotype data can play a vital role in translational bioinformatics and propose that exome sequencing projects should systematically capture clinical phenotypes to take advantage of the strategy presented here.  </p>
+</blockquote>
+<p>&emsp;&emsp;在过去的几年中，通过<a href="http://www.bgitechsolutions.com/sequencing/105" target="_blank" rel="noopener">全外显子组测序研究（whole exome sequencing studies，wes)</a>已经鉴定出许多新的疾病-基因关联。然而，许多病例依旧悬而未决，这是因为在使用诸如去除低质量与常见变体以及那些不太可能治病的变体的常规过滤策略后，仍然存在大量的候选变体。根据实验观察，我们的每个基因组包含大约100个真正的功能丧失变体，这使得单独使用这些过滤策略确定致病突变时会发生问题。我们建议利用模式生物研究中已经存在的基因型到表型的丰富数据来评估这些外显子变体的潜在影响。在这里介绍了<strong>PHIVE(PHenotypic Interpretation of Variants in Exomes)算法</strong>，该算法将人类疾病和转基因小鼠模型之间的表型相似性计算与<a href="https://www.sanger.ac.uk/tool/exomiser/" target="_blank" rel="noopener">Exomiser</a>工具中根据等位基因频率，致病性和继承方法的变体评估方法相结合。使用含有已知突变的100000个外显子对PHIVE分析进行大规模验证，结果表明，与纯基于变体的方法（频率与致病性）相比，PHIVE分析具有显著的提高（高达54.1倍），其中正确的基因被召回的成功率高达83%，对应于ROC曲线下大于95%的面积。我们得出结论：表型数据的整合在翻译生物信息学中发挥着至关重要的作用，并建议外显子组测序项目应系统地捕获临床表型以利用此处介绍的策略。<br>&emsp;&emsp;WES发现疾病基因的主要挑战之一是单个外显子组中发现的变体数量巨大，即使在过滤掉常见的变体之后，也需要额外的方法来预测哪些变体可能具有严重的功能后果，并对他们进行优先排序以进行验证。<br>&emsp;&emsp;由于单纯基于序列变异致病性的优先排序将难以区分疾病相关突变与具有有害生化效应的其他变体。从模式生物研究中已经存在大量从基因型到表型的数据，这些数据可以用来评估这些外显子变体的潜在影响,例如本文中用到的<a href="http://www.informatics.jax.org/" target="_blank" rel="noopener">小鼠基因组信息学（MGI）数据库</a> ,根据先前的研究，小鼠表型显示出与人类临床表型相匹配的大多数孟德尔疾病。</p>
+<h2 id="PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization"><a href="#PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization" class="headerlink" title="PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization"></a>PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization</h2><p>&emsp;&emsp;为了解决纯基于变量的WES数据优先级排序的问题，提出了PHIVE方法(PHenoytpic Interpretation of Variant in Exomes),这种算法首先根据稀有性、外显子中的位置、临近外显子的位置以及预期遗传方式的兼容性来筛选变异，然后根据变异评分（变异的频率和致病性）和表型相关性评分的组合，对所有剩余的基因进行排序。<strong>从本质上说，该方法利用了模型生物中可用的大量数据（eg.MGI），寻找同样具有有害外显子序列变体的表型相关基因。</strong></p>
+<p>&emsp;&emsp;如下图所示，Exomiser通过进一步考虑guo中去除脱靶、常见和同义变体来过滤整个外显子数据集，并根据预测的致病性和次要等位基因频率（变异评分 varient score）评估剩余的变体。假设的遗传模式可选地进一步过滤具有与假设的遗传模式兼容的模式中存在的变体的基因。然后根据与9043个基因突变的28176只小鼠模型的比较，这些基因会得到一个表型相关性分数，最终排名计算为各单项分数之和，以得出PHIVE分数。</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ExomiserFilters.PNG" alt></p>
+<h2 id="PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations"><a href="#PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations" class="headerlink" title="PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations"></a>PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations</h2><p>&emsp;&emsp;总体而言，在常染色体隐性（AR）模型下，PHIVE方法在将平均37个筛选后的候选基因的83%的外显子中，将正确的基因列为得分最高的基因。在常染色体显性（AD）模型下，在平均379个过滤好的候选基因中，66%的外显子有着正确的基因（基因排名最高）。相比之下，单独使用基于变量的评分时，这一比例为28%（AD）或77%（AR）<br>&emsp;&emsp;下面两张表显示了变体、表型相关性、PHIVE分数在各种模拟条件下的性能<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitA.PNG" alt><br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitB.PNG" alt></p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p>&emsp;&emsp;在这项工作中，我们为wes数据设计了一种优先排序的方法，在丰富的转基因小鼠的表型数据中搜索候选基因。结果表明，PHIVE在识别正确的候选基因方面表现出优异的性能，这些候选基因的表型数据可以从相应基因突变的小鼠模型中获得。对该种方法的一个批评是：如果被破坏的基因没有一个对应的老鼠突变体，那么这种方法可能是无效的，为了应对这一问题，当没有数据时，该方法使用默认的表型得分，并运行优化模拟来选择一个值。对于没有小鼠表型基因的致病基因而言，PHIVE在对待外显体上与使用<strong>基于变异</strong>的方法在性能上是等同的。<br>&emsp;&emsp;使用来自众多其他模型系统的表型不仅可以验证这些结果，还可以潜在地补充没有小鼠表型的情况，使用来自不同模型系统的数据带来了包含不同类型的表型的优势，这些表型是不同系统中的重点，因此，Exomiser被整合为了<a href="http://monarchinitiative.org" target="_blank" rel="noopener">Monarch Initiative</a>工具套件的一部分，以便能够在此背景下使用其他模型系统数据。在Exomiser的未来版本中，通过包含蛋白质-蛋白质相互作用网络、共表达和其他模型生物数据，来寻求改善缺少小鼠表型数据的性能。本文采用的本体相似性方法在适应标注中的小错误方面是健壮的。</p>
+<h2 id="Methods"><a href="#Methods" class="headerlink" title="Methods"></a>Methods</h2><h3 id="Data-source"><a href="#Data-source" class="headerlink" title="Data source"></a>Data source</h3><p>&emsp;&emsp;关于变异的群体频率的信息来自dbSNP和<a href="https://evs.gs.washington.edu/EVS/" target="_blank" rel="noopener">Exome变体服务器</a></p>
+<h3 id="Inheritance-model-filtering"><a href="#Inheritance-model-filtering" class="headerlink" title="Inheritance model filtering"></a>Inheritance model filtering</h3><p>&emsp;&emsp;常染色体显性筛选是通过排除至少有一个杂合子变体的基因（及其变体）来完成的。(?)</p>
+<h3 id="Phenotype-ontologies"><a href="#Phenotype-ontologies" class="headerlink" title="Phenotype ontologies"></a>Phenotype ontologies</h3><p>&emsp;&emsp;表型本体论OMIM数据库中列出的人类疾病表型注释是从人类表型本体（HPO）资源中提取的。</p>
+<h3 id="Variant-annotation"><a href="#Variant-annotation" class="headerlink" title="Variant annotation"></a>Variant annotation</h3><p>&emsp;&emsp;VCF文件中的变体（使用染色体坐标定义）使用ANNOVAR的Java实现在转录水平上进行注释。(?)</p>
+<h3 id="Ranking-candidate-genes"><a href="#Ranking-candidate-genes" class="headerlink" title="Ranking candidate genes"></a>Ranking candidate genes</h3><p>&emsp;&emsp;基因是根据变异分数和表型相关性得分的组合进行排序的。用变异分数（$v_i$）和表型相关得分($r_i$d)计算基因$i$的PHIVE得分，即$g_i=(v_i+r_i)/2$</p>
+<h3 id="Variant-score"><a href="#Variant-score" class="headerlink" title="Variant score"></a>Variant score</h3><p>&emsp;&emsp;变异分数被定义为对那些既罕见又被预测为致病性的变异进行较高排名。 变体的估计频率来自dbSNP中的1000基因组计划联盟数据和Exome Server Project(ESP)。</p>
+<h3 id="Phenotypic-relevance-score"><a href="#Phenotypic-relevance-score" class="headerlink" title="Phenotypic relevance score"></a>Phenotypic relevance score</h3><p>&emsp;&emsp;基于人类疾病的语义相似性(HPO注释)和在老鼠模型中观察到的表型表现(MPO注释)来计算表型相关性分数<br>&emsp;</p>
+<hr>
+<h1 id="Human-genotype–phenotypedatabases-aims-challenges-and-opportunities"><a href="#Human-genotype–phenotypedatabases-aims-challenges-and-opportunities" class="headerlink" title="Human genotype–phenotypedatabases: aims, challenges and opportunities"></a>Human genotype–phenotypedatabases: aims, challenges and opportunities</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/26553330/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/26553330/</a>  </p>
+<p>&emsp;&emsp;本篇综述介绍了人类基因-表型数据库的目标，挑战与机遇。 </p>
+<blockquote>
+<p>Genotype–phenotype databases provide information about genetic variation, its consequences and its mechanisms of action for research and health care purposes. Existing databases vary greatly in type, areas of focus and modes of operation. Despite ever larger and more intricate datasets — made possible by advances in DNA sequencing, omics methods and phenotyping technologies — steady progress is being made towards integrating these databases rather than using them as separate entities. The consequential<br>shift in focus from single-gene variants towards large gene panels, exomes, whole genomes and myriad obse       rvable characteristics creates new challenges and opportunities in database design, interpretation of variant pathogenicity and modes of data representation and use.<br>基因型-表型数据库提供有关遗传变异、其后果及其作用机制的信息。用于研究和保健的目的。现有的数据库在类型、重点领域和操作模式上差异很大。尽管由于DNA测序、组学方法和表型技术的进步，数据集变得越来越大、越来越复杂，但在整合这些数据库而不是将他们作为独立实体使用方面，正在稳步取得进展。随之而来的焦点从单基因变异转向大基因面板、外显子、全基因组和无数可观察到的特征，给数据库设计、变异致病性的解释以及数据表示和使用模式带来了新的挑战和机遇。<br>&emsp; </p>
+</blockquote>
+<p>&emsp;&emsp;基因型-表型数据库的一个基本目标是提供获取足够数据和知识的途径，以便能够可靠地建立和记录遗传变异的功能和致病意义。但是基因组学技术的力量可能是一把双刃剑：尽管高通量方法有助于发现新的疾病基因和致病变异，但它们也导致了许多误导性的致病性分配，因此最好的解决方法是最大限度地提高记录在基因型-表型数据库中的数据及其注释的可靠性、有用性、和可用性。<br>&emsp;&emsp;由于人类基因组的巨大规模、复杂性和多变性，需要许多不同类型的基因型-表型数据库。相关数据库的大小和复杂性的快速增长通常与计算和数据库技术的进步相匹配。在综述中提供了一个基于相对大小的简化分类。</p>
+<ul>
+<li>Small-scale databases 小规模数据库：许多基因型-表型数据库都是小规模的工作，支持单个研究项目、特定的疾病领域、已定义的患者登记或特定的基因组（传统上，人类遗传学中的诊断策略集中在单基因或小基因集上）。</li>
+<li>已经有许多较大的基因型-表型数据库被创建，主要是“中央”数据库。一些更大的基因型-表型数据库试图全面涵盖大多数已知孟德尔疾病中单个基因的种系变异。</li>
+<li>数据库种还有一个特殊子集可以称为“集成”数据库，因为它们统一了其他资源，目标是将各种较小的数据库或互相关联的专用数据库中的内容中的内容。</li>
+</ul>
+<h2 id="key-challenges-and-common-goals"><a href="#key-challenges-and-common-goals" class="headerlink" title="key challenges and common goals"></a>key challenges and common goals</h2><h3 id="Expanding-datasets"><a href="#Expanding-datasets" class="headerlink" title="Expanding datasets"></a>Expanding datasets</h3><p> &emsp;&emsp;由于从单基因测试向NGS基因组，外显子组和基因组测序的转变，遗传和表型数据的迅速增加导致基因型-表型数据库的规模，范围和复杂性随之增加。这种增长产生了两个后果</p>
+<ul>
+<li>以前专门研究一个或几个基因的分析师现在将面临着成千上万个基因的变异</li>
+<li>使用的数据源必须具有极高的质量，以最大程度减少错误分析的风险。<h3 id="Assigning-pathogenicity"><a href="#Assigning-pathogenicity" class="headerlink" title="Assigning pathogenicity"></a>Assigning pathogenicity</h3>&emsp;&emsp;将致病性分配给遗传变异的任务并不简单，主要是因为确定因果关系涉及必须对多个证据线应用差异加权，并选择使用哪种分析工具。研究和临床诊断的通用做法试图将致病性降低到只有几个类别（例如‘definitely pathogenic’(绝对致病)，‘probably pathogenic’(可能致病)，‘uncertain’(不确定),‘probably not pathogenic or of little clinical significance’（可能没有致病性或临床意义不大),’not pathogenic or of no clinical significance’(非致病性或无临床意义)）,但是，通常无法很好地定义这些分类背后地致病性的实际概念。<br>&emsp;&emsp;基因型-表型数据库以前仅需要简单的计算技术，包括与致病性相关的非常基本的数据字段，而没有获得致病性解释过程或所采用的证据基础。在未来，这种方法将不得不改变，特别是如果希望提供真正个性化的药物，那么除了概率模型之外，还需要机制，因此输入信息和记录结果的工具的来源也更加复杂。  </li>
+</ul>
+<h2 id="Current-progress-and-trends"><a href="#Current-progress-and-trends" class="headerlink" title="Current progress and trends"></a>Current progress and trends</h2><h3 id="Database-types-and-arrangements"><a href="#Database-types-and-arrangements" class="headerlink" title="Database types and arrangements"></a>Database types and arrangements</h3><p>&emsp;&emsp;有观点认为，诸如鼓励广泛创新，以及让特定领域的专家接近数据管理和管理过程的价值等这些因素都支持建设联合数据库。但同时有另一种观点认为，就基于标准的系统间兼容性而言，只构建几个集中式存储库更具成本效益，也更实用。现实中，主要数据库和数据生成项目正在自行决定将其内容的哪些子集提交到中央储存库，而哪些不需要。</p>
+<h3 id="Data-linking-and-reporting"><a href="#Data-linking-and-reporting" class="headerlink" title="Data linking and reporting"></a>Data linking and reporting</h3><p>&emsp;&emsp;资金、能力、激励、法律限制等因素限制了数据库连接这一领域的进展，期刊和资助机构是解决这些问题的最佳人选，因为两者都可以将资源引导到为数据提交而修建的管道上，并施加压力让研究人员使用这些连接。 一些期刊现在已经开始朝这个方向发展。</p>
+<h3 id="Improving-phenotypic-information-and-pathogenicity-evidence"><a href="#Improving-phenotypic-information-and-pathogenicity-evidence" class="headerlink" title="Improving phenotypic information and pathogenicity evidence"></a>Improving phenotypic information and pathogenicity evidence</h3><p>&emsp;&emsp;相比基因型，表型维度在收集信息的规模和粒度以及标准化程度方面都是落后的，许多较老的基因型-表型数据库只包含和提供有限的表型信息，有很多工作关注着不同数据库中的表型信息和其他元数据来提高WES数据临床解释的准确性。例如，CARE4RARE37、DECIPHER38、基因组管理应用39、PheWAS Catalog40和Kaiser Permanente Research Program on Genees，Environment and Health41正在强调表型内容与基因型数据一样丰富的必要性。<br>&emsp;&emsp;除了基因型和表型数据，在少数情况下，数据库开始包括用于推断变异致病性的实际证据，以及用于处理和解释这些证据的方法。</p>
+<h3 id="Alternative-modes-of-data-provision"><a href="#Alternative-modes-of-data-provision" class="headerlink" title="Alternative modes of data provision"></a>Alternative modes of data provision</h3><p>&emsp;&emsp;为了应对大多数数据既多又复杂，广泛分散在不同存储库或不同设计的项目中，隐私问题对哪些用户在哪些情况下可以访问哪些特定记录施加了限制和不确定性，一种方法是将数据转换为其他表示形式，并以各种方式增强它，以应对对象识别的风险。另一种方法是使许多分散的数据集合能够被联合利用。</p>
+<h3 id="A-focus-on-data-discovery"><a href="#A-focus-on-data-discovery" class="headerlink" title="A focus on data discovery"></a>A focus on data discovery</h3><p>&emsp;&emsp;一种使数据库更有用的新策略改变了传统的模式，即数据提供是由经过批准的用户成功搜索数据库而自动遵循的。换言之，搜索数据库本身就成为一个目标，使人们能够发现感兴趣的数据的存在，而不管这些数据随后是否或如何被访问</p>
+<h2 id="Emerging-community-efforts"><a href="#Emerging-community-efforts" class="headerlink" title="Emerging community efforts"></a>Emerging community efforts</h2><p>&emsp;&emsp;近年来，大规模的研究正在生成大量个体的基因型和表型数据，数据收集工作已经加强，数据库创造者收集文献、临床和研究数据集，国际协调和标准化工作正在进行。</p>
+<h2 id="Future-perspective"><a href="#Future-perspective" class="headerlink" title="Future perspective"></a>Future perspective</h2><p>&emsp;&emsp;基因型-表型数据整理领域正在迅速成熟，但还有以下几个待发展的特别重要的领域</p>
+<ul>
+<li>Metadata</li>
+<li>Data formatting and annotation</li>
+<li>Data discovery</li>
+<li>Consent agreements</li>
+<li>Data analysis and reporting</li>
+<li>Identifiers</li>
+<li>APIs and ontologies</li>
+<li>Long-term sustainability</li>
+</ul>
+<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>&emsp;&emsp;这次检讨描述了一些随着数据集增长产生的需要和要求，这些都应该被认为是真正的医学进步所必需的，但这并不是全部。 为了最大限度地利用数据，必须开发算法和应用程序来共享和集成从数据中获得的知识，以利于研究和患者护理。 因此，下一代基因型-表型数据库可能包括高度聚合和集成的数据，允许人类探索其复杂性的图形表示，以及揭示预测性的、个性化的因果关系数学模型的算法。 因此，这些数据库将把患者或研究对象的深入临床和分子发现与尽可能多的相关现有数据和知识相结合，从而能够做出可靠和有用的诊断和发现。</p>
+]]></content>
+      <categories>
+        <category>HPO</category>
+      </categories>
+      <tags>
+        <tag>论文小结</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo 常用命令小记</title>
+    <url>/2022/05/17/hexo-%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E5%B0%8F%E8%AE%B0/</url>
+    <content><![CDATA[<h1 id="hexo常用命令小记"><a href="#hexo常用命令小记" class="headerlink" title="hexo常用命令小记"></a>hexo常用命令小记</h1><p>&emsp;&emsp;最近受到社会的毒打，我决定搭建一个属于自己的技术博客，好让自己对学到的知识做到温故知新，不要再出现复试里的尴尬场面了😳所以接下来这篇是我的处女作(惭愧)，介绍一下常用的hexo命令作为小抄。</p>
+<p>&emsp;</p>
+<h2 id="新建一篇博客文章"><a href="#新建一篇博客文章" class="headerlink" title="新建一篇博客文章"></a>新建一篇博客文章</h2><p>&emsp;&emsp;进入你的博客目录，在路径/source/_posts文件夹下右键选择Git Bash Here进入命令窗口，利用<code>hexo new</code>命令来创建新文章。<br><code>hexo new &quot;hexo常用命令小记&quot; #新建文章</code><br>此时，你会发现在/source/_posts文件夹里有了 hexoc常用命令小记.md 这个文件,用markdown语法编辑它吧！</p>
+<p>&emsp;</p>
+<h2 id="给文章添加分类与标签"><a href="#给文章添加分类与标签" class="headerlink" title="给文章添加分类与标签"></a>给文章添加分类与标签</h2><p>&emsp;&emsp;在 常用命令小记.md中可设置tags和categories属性<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">title: hexo 常用命令小记</span><br><span class="line">tags:</span><br><span class="line">- 博客</span><br><span class="line">- hexo</span><br><span class="line">categories: web前端</span><br></pre></td></tr></table></figure><br>&emsp;</p>
+<h2 id="启动本地服务器，本地测试"><a href="#启动本地服务器，本地测试" class="headerlink" title="启动本地服务器，本地测试"></a>启动本地服务器，本地测试</h2><p><code>hexo s</code><br>在本地<code>http://localhost:4000</code>上可以预览文章<br>如图所示：<br><img src="/.io//catch.jpg" alt></p>
+<p>&emsp; </p>
+<h2 id="正式发布新建的博客文章"><a href="#正式发布新建的博客文章" class="headerlink" title="正式发布新建的博客文章"></a>正式发布新建的博客文章</h2><p>&emsp;&emsp;在博客项目文件夹下再次运行Git Bash Here命令窗口，输入以下代码:<br><code>hexo generate # 生成更改</code><br><code>hexo deploy   # 将生成的更改部署到github上</code><br>可以在gitpage上看到自己的这篇博客啦！</p>
+]]></content>
+      <categories>
+        <category>web前端</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS224N笔记 (二):Glove</title>
+    <url>/2020/05/28/cs224N-CS224N%E7%AC%94%E8%AE%B0-%E4%BA%8C-Glove/</url>
+    <content><![CDATA[<p>&emsp;&emsp;上一篇笔记<a href="https://woshibwt.com/2020/05/25/CS224N%E7%AC%94%E8%AE%B0-%E4%B8%80-word-vector/#more" target="_blank" rel="noopener">CS224N笔记(一):word vector</a>中教授主要讲课重点是基于local context window的<strong>Word2Vec</strong>模型，它是一种direct prediction模型。那么对于word vector是否还存在其他模型呢，答案当然是有，本次介绍的就是另一类count based global matrix factorization模型以及Manning教授结合这两种模型的优点提出的<strong>Glove</strong>模型。<br>&emsp;</p>
+<h2 id="回顾：word2vec的主要思想"><a href="#回顾：word2vec的主要思想" class="headerlink" title="回顾：word2vec的主要思想"></a>回顾：word2vec的主要思想</h2><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_centerword_into.PNG" alt></p>
+<script type="math/tex; mode=display">P(o|c) = \frac{\exp(u_o^Tv_c)}{\sum_{w\in V}\exp(u_w^Tv_c)}</script><ul>
+<li>遍历整个语料库中的每个单词</li>
+<li>使用单词向量更好的预测周围的单词</li>
+<li>更新向量以更好的预测</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_Word2vex_ParametersAndComputations.PNG" alt></p>
+<blockquote>
+<p>在这张图中，选取的特定向量是v矩阵的第四行与U的每一行向量做点积</p>
+<ul>
+<li>在这张图以及许多深度学习包中，每一行代表一个单词的词向量。经过点乘操作后的数字通过softmax映射为概率分布，注意该概率分布是对于该中心词而言的上下文中的概率分布，该分布与上下文所在的具体位置无关。</li>
+<li>我们希望对上下文中（相当频繁）出现的所有单词给出一个合理的概率统计。</li>
+<li>the,and,that,of这类的停用词，有时简单地去掉这一部分可以使词向量效果更好。</li>
+</ul>
+</blockquote>
+<h3 id="梯度下降的优化"><a href="#梯度下降的优化" class="headerlink" title="梯度下降的优化"></a>梯度下降的优化</h3><p><strong>Gradient Descent</strong>： 每次使用全部样本进行更新<br><strong>Stochastic Gradient Decent</strong>:每次只使用单个样本更新<br><strong>Mini-batch</strong>:</p>
+<ul>
+<li>通过平均值，减少梯度估计的噪音</li>
+<li>可在GPU上并行化运算，加快运算速度<h4 id="词向量的随机梯度下降"><a href="#词向量的随机梯度下降" class="headerlink" title="词向量的随机梯度下降"></a>词向量的随机梯度下降</h4><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_SGDvector.PNG" alt></li>
+</ul>
+<p>由于$\nabla_{\theta}J_t(\theta)$将会非常稀疏，因此我们只更新实际出现的向量。<br>解决方案  </p>
+<ul>
+<li>需要稀疏矩阵更新操作来只更新矩阵U和V中的特定行</li>
+<li>需要保留单词向量的散列<br>如果有数百万个单词向量，并且进行分布式计算，那么不用到处发送巨大的更新是很重要的。  <h4 id="更多关于word2vec的细节"><a href="#更多关于word2vec的细节" class="headerlink" title="更多关于word2vec的细节"></a>更多关于word2vec的细节</h4>为什么需要两个向量？</li>
+<li>更容易优化，最后可对两个向量取平均值  </li>
+</ul>
+<p>两个模型变体</p>
+<ul>
+<li><strong>Skip-grams(SG)</strong><ul>
+<li>输入中心词并预测上下文中的单词(正是课堂中展示的这一种)</li>
+</ul>
+</li>
+<li><strong>Continuous Bag of Words(CBOW)</strong><ul>
+<li>输入上下文中的单词并预测中心词    </li>
+</ul>
+</li>
+</ul>
+<p>提升训练效率<br>&emsp;&emsp;之前选择的softmax训练方法虽然简单但代价很高，考虑使用负采样方法加快训练速率。<br>&emsp;&emsp;<a href>作业二</a>实现了使用<strong>nagative sampling</strong>(负采样方法)的skip-gram模型</p>
+<ul>
+<li>对一个由true pair(中心词及其上下文窗口中的词)与几个noise pair(中心词与随机词搭配)形成的样本，训练二元逻辑回归。  </li>
+</ul>
+<p>在论文中的(最大化)目标函数是  </p>
+<script type="math/tex; mode=display">J(\theta)=\frac{1}{T}\sum_{t=1}^TJ_t(\theta)</script><script type="math/tex; mode=display">J_t(\theta) = \log\sigma(u_o^Tv_c)+\sum_{i=1}^k\mathbb {E}_{j\sim P(w)}\left[\log\sigma\left(-u_j^Tv_c\right)\right]</script><p>本课及作业中的目标函数是  </p>
+<script type="math/tex; mode=display">J_{neg-sample}(o,v_c,U) = -log(\sigma(u_o^Tv_c)) - \sum_{k=1}^K\log(\sigma(-u_k^Tv_c))</script><ul>
+<li>我们希望中心词与真实上下文单词的向量点积更大，中心词与随机单词的点击更小</li>
+<li>k是负采样的样本数目<script type="math/tex; mode=display">P(w) = U(w)^{3/4}/Z</script>&emsp;&emsp;使用上式作为抽样的分布，$U(w)$是<a href>unigram分布</a>，通过$\frac{3}{4}$次方，相对减少常见单词的频率，增大稀有词的频率。$Z$用于生成概率分布。  <h2 id="SVD模型"><a href="#SVD模型" class="headerlink" title="SVD模型"></a>SVD模型</h2>&emsp;&emsp;暂时放下local context window的模型，现在来讨论count based模型，它的一个经典代表是<strong>SVD</strong>（Single Value Decomposition）模型：我们先扫过一遍所有数据，然后得到共现矩阵(co-occurance matrix),假设矩阵用$X$表示，我们对其使用SVD得到$X$的分解形式$USV^T$ (详情请见<a href="https://zhuanlan.zhihu.com/p/29846048" target="_blank" rel="noopener">奇异值分解</a>)<br>&emsp;&emsp;如何产生矩阵$X$通常有两种选择：</li>
+<li><strong>word-document co-occurrence matrix</strong>:其基本假设是在同一篇文章中出现的单词更有可能相互关联。假设单词$i$出现在文章$j$中，则矩阵元素$X_{ij}$加一，当我们处理完所有的文章后，就得到了矩阵$X$,其大小为$\lvert V \rvert \times M$,其中$\lvert V \rvert$为词汇量，而$M$为文章数</li>
+<li><p><strong>window-based word-word co-occurrence matrix</strong>:该矩阵是利用某个定长窗口中单词与单词同时出现的个数来产生，下面用窗口长度为1来举例(常见的是5-10)，假设我们的数据包含以下几个句子：</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson1_ExampleCorpus.PNG" alt><br>则根据上述原理，我们可以获得如下的word-word co-occurrence matrix:</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_word-wordMatrix.PNG" alt></p>
+<p>&emsp;&emsp;使用共现次数可以衡量单词的相似性，但是随着词汇量的增加，矩阵的大小也会增加，需要很多空间来存储这一高维矩阵，后续的分类模型也会由于矩阵的稀疏性而存在稀疏性问题，因此我们需要对这一矩阵进行降维，获得低维（25-1000）的稠密向量。</p>
+</li>
+<li><strong>Method 1: Dimensionality Reduction on X (HW1)</strong>:可以使用上文提到的SVD方法将共现矩阵分解。为了减少维数同时尽量保存有效信息，可保留对角矩阵的最大k个值，并将矩阵$U$,$V$相应的行列保留，对于大型矩阵而言，计算代价昂贵。</li>
+<li><p><strong>Hacks to X (several used in Rohde et al. 2005)</strong><br>按比例调整计数会很有效</p>
+<ul>
+<li>对高频词进行缩放<ul>
+<li>使用$log$进行缩放</li>
+<li>$min(X,t),t\approx100$</li>
+<li>直接全部忽视</li>
+</ul>
+</li>
+<li>在基于窗口的计数中，提高更加接近的单词的计数</li>
+<li>使用Person相关系数 </li>
+</ul>
+<p>实验结果如下图：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_InterestingSemanticPatterns.PNG" alt><br>$swim\to swimmer , drive \to driver$<br>&emsp;&emsp;在向量中出现了有趣的句法模式，语义向量基本上是动词和动词实施者的方向。</p>
+</li>
+</ul>
+<p>count based:使用整个矩阵的全局统计数据来直接估计</p>
+<ul>
+<li>优点<ul>
+<li>训练快速</li>
+<li>统计数据高效利用</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>主要用于捕捉单词相似性</li>
+<li>对大量数据给予比例失调的重视  </li>
+</ul>
+</li>
+</ul>
+<p>direct prediction：定义概率分布并试图预测单词</p>
+<ul>
+<li>优点<ul>
+<li>提高其他任务的性能</li>
+<li>能捕获包括单词相似性等复杂模式</li>
+</ul>
+</li>
+<li>缺点<ul>
+<li>量度与语料库相关</li>
+<li>统计数据的低效使用</li>
+</ul>
+</li>
+</ul>
+<h2 id="Glove算法"><a href="#Glove算法" class="headerlink" title="Glove算法"></a>Glove算法</h2><p> &emsp;&emsp;Manning教授团队希望采取一种方法可与结合上述两种方法的优势，并将这种算法命名为<strong>GloVe</strong>(Global vectors的缩写)，该算法可以有效地利用全局地统计信息。<br> &emsp;&emsp;如何使用word-word co-occurance count来学习词语背后的含义呢？<br> &emsp;&emsp;首先定义一些符号：对于矩阵$X$,$X<em>{ij}$代表了单词$j$出现在单词$i$的上下文中的单词次数，则$X_i=\sum</em>{k}X<em>{ik}$,即代表了所有出现在单词$i$的上下文中的单词个数，我们用$P</em>{ij}=P(j|i)=X_{ij}/X_i$来代表单词$j$出现在单词$i$上下文中的概率。</p>
+<blockquote>
+<p>算法关键思想：共现概率的<strong>比值</strong>(而不是概率单一大小)可以对meaning component进行编码  </p>
+</blockquote>
+<p> &emsp;&emsp;来参考课上给出的例子：<br> <img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_RatiosOfCo-occurence.PNG" alt><br>&emsp;&emsp;例如我们想区分热力学上两种不同状态ice与steam,它们之间的关系可通过与不同单词$x$的co-occurrence probablity的<strong>比值</strong>来描述，例如对于solid,虽然$P(solid|ice)$与$P(solid|steam)$本身都很小，不能透露有效的信息，但是它们的<strong>比值</strong>$\frac{P(solid|ice)}{P(solid|steam)}$较大，因为solid更多用来描述ice的状态而不是steam的状态，因此在ice的上下文中出现几率较大，对于gas情况则恰恰相反。而对于water这种描述ice与steam皆可或者fashion这种与两者都没什么联系的单词，比值接近于1.所以实际上co-occurence probablity的相对比值更有意义。<br>&emsp;&emsp;基于这些观察，课堂上直接给出了GloVe的损失函数形式：</p>
+<script type="math/tex; mode=display">w_j \cdot w_j = \log P(i|j)</script><script type="math/tex; mode=display">J = \sum_{i,j=1}^V {f(X_{ij})(w_i^T\widetilde{w}_j+b_i+\widetilde{b}_j-\log X_{ij})}^2</script><p>&emsp;&emsp;基于对以上概率比值的观察，我们假设模型的函数有如下形式：</p>
+<script type="math/tex; mode=display">F(w_i,w_j,\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;其中$\widetilde{w}$代表了上下文向量，如上文的solid,gas,water,fashion。$w_i,w_j$则是我们要比较的两个词汇，如上文的ice,steam。</p>
+<blockquote>
+<p>&emsp;&emsp;F可选的形式很多，由于希望$F$能在单词向量空间内表示概率比值，有意向量空间是线性空间，一个自然假设是$F$是关于向量$w_i,w_j$的差的形式：</p>
+<script type="math/tex; mode=display">F((w_i-w_j),\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>等式右边为标量形式，为了将左边矢量也转化为标量形式，使用矢量的点乘:</p>
+<script type="math/tex; mode=display">F((w_i-w_j)^T\widetilde{w}_k) = \frac{P_{ik}}{P_{jk}}</script><p>&emsp;&emsp;在此，作者又进行了对称性分析，即对于word-word co-occurrence,将一个vector划分为center word还是context word是不重要的，即在交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$的时候仍然成立，如何满足这种对称性呢？<br>&emsp;&emsp;接下来分成两步来进行<br>&emsp;&emsp;首先要求满足$F((w_i-w_j)^T \widetilde{w}_k)=\frac{F(w_i^T\widetilde{w}_k)}{F(w_j^T\widetilde{w}_k)}$,显然该方程的解为$F=\exp$，同时也由此找<strong>对应项</strong> (两边分子分母对应) </p>
+</blockquote>
+<p>&emsp;$F((w<em>i-w_j)^T\widetilde{w}_k) = \frac{P</em>{ik}}{P<em>{jk}} \\Rightarrow F(w_i^T\widetilde{w}_k) = P</em>{ik} = \frac{X<em>{ik}}{X_i}\\Rightarrow w_i^T\widetilde{w}_k = \log(P</em>{ik})=\log(X_{ik}) - \log(X_i)$  </p>
+<blockquote>
+<p>&emsp;&emsp;注意其中$\log(X_i)$破坏了交换$w\Leftrightarrow \widetilde{w}$与$X \Leftrightarrow X^T$时的对称性，但是这一项与$k$无关，所以我们通过将其融入关于$w_i$的bias项$b_i$来解决。</p>
+<p>&emsp;&emsp;第二步为了平衡对称性，我们对应的再加入一个关于$\widetilde{w}<em>k$的bias项$\widetilde{b}_k$,然后我们可以得到$w_i^T\widetilde{w}_k+b_i+\widetilde{b}_k = \log(X</em>{ik})$</p>
+<p>&emsp;&emsp;另一方面作者注意到模型的一个缺点是对于所有的co-occurrence的权重是一样的，所以他加入了前面的$f(X_{ij})$项来做weighted least squares regression模型，即为</p>
+<script type="math/tex; mode=display">J = \sum_{i,j=1}^V {f(X_{ij})(w_i^T\widetilde{w}_j+b_i+\widetilde{b}_j-\log X_{ij})}^2</script><p>其中权重项$f$需满足以下条件</p>
+<ul>
+<li>$f(0)=0$,因为要求$\lim_{x\rightarrow 0} f(x)\log^2x$是有限的。</li>
+<li>较少发生的co-occurrence占比重较小</li>
+<li>对于较多发生的co-occurrence$f(x)$也不能过大</li>
+</ul>
+</blockquote>
+<p>&emsp;&emsp;作者使用的较好的权重函数形式是：</p>
+<script type="math/tex; mode=display">f(x)=\begin{cases}
+(x/x_{max})^\alpha &\text{if $x\lt x_{max}$}\\
+1 &\text{otherwise}
+\end{cases}</script><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/lesson2_WeightedLeastSquaresRegression.PNG" alt></p>
+<ul>
+<li>模型优点<ul>
+<li>训练快速</li>
+<li>可以扩展到大型语料库</li>
+<li>即使是小语料库和小向量，性能也很好</li>
+</ul>
+</li>
+</ul>
+]]></content>
+      <categories>
+        <category>CS224N</category>
+      </categories>
+      <tags>
+        <tag>nlp 机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo 双仓库</title>
+    <url>/2020/07/07/hexo%E5%8F%8C%E4%BB%93%E5%BA%93/</url>
+    <content><![CDATA[<p>最近对hexo结构做了调整，将hexo中的source和public等非静态文件存放在了github私密仓库中，这样具有更好的可移植性。<br>在每次到新电脑上时，首先需要完成<code>node/npm/hexo/git</code>等环境的搭建和配置。然后使用 <code>git clone</code>从私密仓库中将hexo源文件拉取下来。<br>尽管拉取下来了，还需要建立一下hexo的环境，格外需要注意的一点是：<br><strong>千万不要使用hexo init命令</strong>。  <strong>千万不要使用hexo init命令</strong>。<strong>千万不要使用hexo init命令</strong>。<br>原因是当前目录已经建立了git仓库环境, hexo init会覆盖到当前的git环境，重建一个新的，这样和我们的私有Hexo源码仓库脱离了联系。<br>正确做法是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure><br>因为package.json里面已经保存了hexo的必备资源包信息，npm install后Hexo环境就建立起来了。<br>接下来就进行正常的编写和发布就好。<br>本地预览发布的命令还是：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo s</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure><br>最后执行<code>git status</code>把更改的新文件<code>git add</code>和<code>git commit</code>，最后<code>git push</code>到私有仓库，又会完成Hexo源码仓库的同步。</p>
+<h2 id="Hexo仓库更新"><a href="#Hexo仓库更新" class="headerlink" title="Hexo仓库更新"></a>Hexo仓库更新</h2><p>下次进行Hexo仓库拉取时执行：</p>
+<pre><code>git fetch --all #将git上所有文件拉取到本地
+git reset --hard origin/master  #强制将本地内容指向刚刚同步git云端内容
+</code></pre><p>reset 对所拉取的文件不做任何处理，此处不用 pull 是因为本地尚有许多文件，使用 pull 会有一些版本冲突，解决起来也麻烦，而本地的文件都是初始化生成的文件，较拉取的库里面的文件而言基本无用，所以直接丢弃。</p>
+]]></content>
+      <categories>
+        <category>web前端</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>java-se-刘意-1-83查漏补缺</title>
+    <url>/2020/07/10/java-se-%E5%88%98%E6%84%8F-1-83%E6%9F%A5%E6%BC%8F%E8%A1%A5%E7%BC%BA/</url>
+    <content><![CDATA[<h2 id="IDEA的使用技巧"><a href="#IDEA的使用技巧" class="headerlink" title="IDEA的使用技巧"></a>IDEA的使用技巧</h2><h3 id="IDEA的项目结构"><a href="#IDEA的项目结构" class="headerlink" title="IDEA的项目结构"></a>IDEA的项目结构</h3><p>&emsp;&emsp;IDEA是以项目为最大单位管理java代码的，比项目更小的是模块(module)，比模块更小的结构是包(package)，包下面就是类(class)。  </p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/IDEA项目结构.PNG" alt></p>
+<p>&emsp;&emsp;下面是FlappyBird的项目结构，可以看见项目(subject)对应的是<strong>FlappyBird</strong>,模块(module)对应的是<strong>src</strong>与<strong>source</strong>,包(package)对应的是<strong>app</strong>,<strong>main</strong>。</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/FlappyBird项目结构.PNG" alt></p>
+<h1 id="包"><a href="#包" class="headerlink" title="包"></a>包</h1><h2 id="包的概述和使用"><a href="#包的概述和使用" class="headerlink" title="包的概述和使用"></a>包的概述和使用</h2><p>其实就是文件夹，作用是对类进行分类管理。</p>
+<h3 id="IDEA的快捷键"><a href="#IDEA的快捷键" class="headerlink" title="IDEA的快捷键"></a>IDEA的快捷键</h3><h4 id="快速生成语句"><a href="#快速生成语句" class="headerlink" title="快速生成语句"></a>快速生成语句</h4><ul>
+<li>快速生成main方法：main +   回车</li>
+<li>System.out.println();:sout + 回车</li>
+<li>自动生成get和set方法：编辑器中邮件，选择<code>generator</code>-&gt;<code>getter and setter</code>-&gt;选择需要生成的属性<h4 id="内容辅助键"><a href="#内容辅助键" class="headerlink" title="内容辅助键"></a>内容辅助键</h4></li>
+<li><code>ctrl</code> + <code>alt</code> + <code>space</code>(内容提示，代码补全)</li>
+<li><code>alt</code> +  <code>enter</code>(快速导包)</li>
+<li><code>ctrl</code> + <code>d</code>(快速复制当前所在行)</li>
+</ul>
+<h4 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h4><ul>
+<li>单行：选中代码，<code>ctrl</code> + <code>/</code>,再来一次就是取消</li>
+<li>多行：选中代码，<code>ctrl</code> + <code>shift</code> + <code>/</code>,再来一次就是取消</li>
+</ul>
+<h4 id="格式化"><a href="#格式化" class="headerlink" title="格式化"></a>格式化</h4><ul>
+<li><code>ctrl</code> +  <code>alt</code> + <code>L</code></li>
+</ul>
+<h1 id="String"><a href="#String" class="headerlink" title="String"></a>String</h1><ul>
+<li>通过new创建的字符串对象，每一次new都会申请一个内存空间，虽然内容相同，但是地址值不同</li>
+<li>以””形式给出的字符串，只要字符序列相同，无论在程序代码中出现几次，JVM都只会建立一个String对象，并在字符串池中维护。</li>
+</ul>
+<p>&emsp;&emsp;使用 == 做比较</p>
+<ul>
+<li>基本类型：比较<strong>数据值</strong>是否相等</li>
+<li>引用类型：比较<strong>地址值</strong>是否相等</li>
+</ul>
+<h2 id="遍历字符串"><a href="#遍历字符串" class="headerlink" title="遍历字符串"></a>遍历字符串</h2><ul>
+<li>public char charAt(int index)<h3 id="字符串长度"><a href="#字符串长度" class="headerlink" title="字符串长度"></a>字符串长度</h3></li>
+<li>数组长度：数组名.length</li>
+<li>字符串长度： 字符串对象.length()</li>
+</ul>
+<h1 id="StringBuilder"><a href="#StringBuilder" class="headerlink" title="StringBuilder"></a>StringBuilder</h1><h2 id="StringBuilder概述"><a href="#StringBuilder概述" class="headerlink" title="StringBuilder概述"></a>StringBuilder概述</h2><p>&emsp;&emsp;StringBuilder是一个可变的字符串类，可以看作一个容器。可变指的是StringBuilder对象中的内容是可变的（String内容不可变）</p>
+<h2 id="StringBuilder-和-String相互转换"><a href="#StringBuilder-和-String相互转换" class="headerlink" title="StringBuilder 和 String相互转换"></a>StringBuilder 和 String相互转换</h2><ul>
+<li>public String toString():通过toString()就可以实现把StringBuilder转化为String</li>
+<li>public StringBuilder(String s):通过构造方法将String转化为StringBuilder</li>
+</ul>
+<h1 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h1><h2 id="继承中变量的访问特点"><a href="#继承中变量的访问特点" class="headerlink" title="继承中变量的访问特点"></a>继承中变量的访问特点</h2><p>在子类中访问一个变量</p>
+<ul>
+<li>子类局部范围找</li>
+<li>子类成员范围找</li>
+<li>父类成员范围找</li>
+<li>如果都没有就报错 </li>
+</ul>
+<h2 id="super"><a href="#super" class="headerlink" title="super"></a>super</h2><ul>
+<li>this:代表本类对象的引用</li>
+<li>super:代表父类存储空间的标识（可以理解为父类对象引用）</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/super.PNG" alt></p>
+<h2 id="继承中构造方法的访问特点"><a href="#继承中构造方法的访问特点" class="headerlink" title="继承中构造方法的访问特点"></a>继承中构造方法的访问特点</h2><p>&emsp;&emsp;子类中所有的构造方法默认都会访问父类中无参的构造方法<br>&emsp;&emsp;why?</p>
+<ul>
+<li>因为子类会继承父类中的数据，可能还会使用父类的数据，所以在子类初始化前，一定要先完成父类数据的初始化</li>
+<li>每一个子类构造方法的第一条语句默认是：super()<br>&emsp;<br>如果父类中没有无参构造方法，只有带参构造方法，该怎么办呢？</li>
+<li>通过使用super关键字去显式地调用父类的带参构造方法</li>
+<li>在父类中自己提供一个无参构建方法（建议）</li>
+</ul>
+<h2 id="继承中成员方法的访问特点"><a href="#继承中成员方法的访问特点" class="headerlink" title="继承中成员方法的访问特点"></a>继承中成员方法的访问特点</h2><p>通过子类对象访问一个方法</p>
+<ul>
+<li>子类成员范围找</li>
+<li>父类成员范围找</li>
+<li>如果都没有就报错（不考虑父亲的父亲）</li>
+</ul>
+<h1 id="重写"><a href="#重写" class="headerlink" title="重写"></a>重写</h1><ul>
+<li>override 注解可以帮助检查重写方法的方法声明的正确性。<h2 id="方法重写注意事项"><a href="#方法重写注意事项" class="headerlink" title="方法重写注意事项"></a>方法重写注意事项</h2></li>
+<li>私有方法不能被重写（父类私有成员子类是不能被继承的）</li>
+<li>子类方法访问权限不能更低（public &gt; 默认 &gt; 私有）</li>
+</ul>
+<h1 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h1><h3 id="权限修饰符"><a href="#权限修饰符" class="headerlink" title="权限修饰符"></a>权限修饰符</h3><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/权限修饰符.PNG" alt></p>
+<h3 id="static"><a href="#static" class="headerlink" title="static"></a>static</h3><p>static修饰的特点</p>
+<ul>
+<li>被类的所有对象共享</li>
+<li>可以通过类名调用（当然也可以通过对象名调用），<strong>推荐使用类名</strong></li>
+<li>静态成员方法只能访问静态成员</li>
+</ul>
+<h1 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h1><p>前提和体现</p>
+<ul>
+<li>有继承/实现关系</li>
+<li>有方法重写</li>
+<li>有父类引用指向子类对象</li>
+</ul>
+<h2 id="多态中成员访问特点"><a href="#多态中成员访问特点" class="headerlink" title="多态中成员访问特点"></a>多态中成员访问特点</h2><ul>
+<li>成员变量：编译看左边，执行看左边</li>
+<li>成员方法：编译看左边，执行看右边<br>为什么不一样？ 因为成员方法有重写而成员变量没有</li>
+</ul>
+<h2 id="多态的好处和弊端"><a href="#多态的好处和弊端" class="headerlink" title="多态的好处和弊端"></a>多态的好处和弊端</h2><ul>
+<li>好处：提高了程序的拓展性：定义方法的时候，使用父类型作为参数。将来在使用的时候，使用具体的子类型参与操作</li>
+<li>弊端：不能使用子类的特有功能</li>
+</ul>
+<h2 id="多态中的转型"><a href="#多态中的转型" class="headerlink" title="多态中的转型"></a>多态中的转型</h2><ul>
+<li>向上转型：从子到父，父类引用指向子类对象</li>
+<li>向下转型：从父到子，父类引用转为子类对象</li>
+</ul>
+<h1 id="抽象类"><a href="#抽象类" class="headerlink" title="抽象类"></a>抽象类</h1><h2 id="抽象类概述"><a href="#抽象类概述" class="headerlink" title="抽象类概述"></a>抽象类概述</h2><p>在java中，一个没有方法体的方法应该被定义为抽象方法，而类中如果有抽象方法，该类必须定义为抽象类</p>
+<ul>
+<li>抽象类和抽象对象必须用<strong>abstract</strong>关键字修饰</li>
+<li>抽象类中不一定有抽象方法，有抽象方法的类一定是抽象类</li>
+<li>抽象类不能直接实例化，但可以参照多态的方式通过子类对象实例化</li>
+<li>抽象类的子类要么重写抽象类中的所有抽象方法，要么自己是一个抽象类</li>
+</ul>
+<h1 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h1><h2 id="接口概述"><a href="#接口概述" class="headerlink" title="接口概述"></a>接口概述</h2><p>接口是一种<strong>公共的规范标准</strong>,只要符合规范标准，大家都可以通用<br>JAVAz中的接口更多的体现在<strong>对行为的抽象</strong></p>
+<h2 id="接口特点"><a href="#接口特点" class="headerlink" title="接口特点"></a>接口特点</h2><ul>
+<li>使用关键词<strong>interface</strong>修饰</li>
+<li>类实现接口用<strong>implements</strong>表示</li>
+<li>接口不能实例化<ul>
+<li>接口多态：参照多态的方式，通过实现类对象实例化</li>
+<li>多态的形式： 具体类多态，<strong>抽象类多态</strong>，<strong>接口多态</strong> </li>
+<li>多态的前提：有继承或者实现关系；有方法重写/有父类(类/接口)引用指向(子/实现)类对象。</li>
+<li>接口的实现类：要么重写接口中的所有抽象方法，要么是抽象类<h2 id="接口的成员特点"><a href="#接口的成员特点" class="headerlink" title="接口的成员特点"></a>接口的成员特点</h2></li>
+</ul>
+</li>
+<li>成员变量：只能是常量，默认修饰符：<strong>public static final</strong></li>
+<li>构造方法：<ul>
+<li>接口没有构造方法，因为接口主要是对行为进行抽象的，没有具体存在；</li>
+<li>一个类如果没有父类，默认继承自Object类</li>
+</ul>
+</li>
+<li>成员方法<ul>
+<li>只能是抽象方法</li>
+<li>默认修饰符:public abstract<h2 id="类和接口的关系"><a href="#类和接口的关系" class="headerlink" title="类和接口的关系"></a>类和接口的关系</h2></li>
+<li>类和类的关系：继承关系，只能单继承，但可以多层继承</li>
+<li>类和接口的关系：实现关系，可以单实现，也可以多实现，还可以在继承一个类的同时实现多个接口</li>
+<li>接口和接口的关系：继承关系，可以单继承，也可以多继承<h2 id="抽象类和接口的区别"><a href="#抽象类和接口的区别" class="headerlink" title="抽象类和接口的区别"></a>抽象类和接口的区别</h2></li>
+</ul>
+</li>
+<li>成员区别：  <ul>
+<li>抽象类：变量，常量，有构造方法，有抽象方法，也有非抽象方法 </li>
+<li>接口：常量，抽象方法</li>
+</ul>
+</li>
+<li>设计理念区别<ul>
+<li>抽象类：对类抽象，包括属性、行为</li>
+<li>接口： 对行为抽象，主要是行为 </li>
+</ul>
+</li>
+</ul>
+<h1 id="形参和返回值"><a href="#形参和返回值" class="headerlink" title="形参和返回值"></a>形参和返回值</h1><h2 id="类名作为形参和返回值"><a href="#类名作为形参和返回值" class="headerlink" title="类名作为形参和返回值"></a>类名作为形参和返回值</h2><ul>
+<li>方法的形参是类名，其实需要的是该类的对象</li>
+<li>方法的返回值是类名，其实返回的是该类的对象</li>
+</ul>
+<h2 id="抽象类名作为形参和返回值"><a href="#抽象类名作为形参和返回值" class="headerlink" title="抽象类名作为形参和返回值"></a>抽象类名作为形参和返回值</h2><ul>
+<li>方法的形参是抽象类名，其实需要的是该抽象类的子类对象</li>
+<li>方法的换回值是抽象类名，其实返回的是该抽象类的子类对象</li>
+</ul>
+<h2 id="接口名作为新参和返回值"><a href="#接口名作为新参和返回值" class="headerlink" title="接口名作为新参和返回值"></a>接口名作为新参和返回值</h2><ul>
+<li>方法的形参是接口名，其实需要的是该接口的实现类对象</li>
+<li>方法的返回值是接口名，其实返回的是该接口的实现类对象</li>
+</ul>
+<h1 id="内部类"><a href="#内部类" class="headerlink" title="内部类"></a>内部类</h1><h2 id="内部类概述"><a href="#内部类概述" class="headerlink" title="内部类概述"></a>内部类概述</h2><p>内部类：就是在一个类中定义一个类<br>内部类的访问特点</p>
+<ul>
+<li>内部类可以直接访问外部类的成员。包括私有</li>
+<li>外部类要访问内部类的成员，必须创建对象</li>
+</ul>
+<h2 id="成员内部类"><a href="#成员内部类" class="headerlink" title="成员内部类"></a>成员内部类</h2><p>成员内部类，外界如何创建对象使用呢？</p>
+<ul>
+<li>格式：外部类名.内部类名 对象名 = 外部类对象.内部类对象</li>
+<li>范例：Outer.Inner oi = new Outer().new Inner();</li>
+</ul>
+<h2 id="局部内部类"><a href="#局部内部类" class="headerlink" title="局部内部类"></a>局部内部类</h2><p>局部内部类是在方法中定义的类，所以外界是无法直接使用，需要在方法内部创建对象并使用<br>该类可以直接访问外部类的成员，也可以访问方法内的局部变量</p>
+<h2 id="匿名内部类"><a href="#匿名内部类" class="headerlink" title="匿名内部类"></a>匿名内部类</h2><p>前提：存在一个类或者接口，这里的类可以是具体类也可以是抽象类。<br>格式：<br><strong>new</strong> 类名或接口名(){<br>  重写方法;<br>};<br>本质：是一个继承了该类或者实现了该接口的子类匿名对象</p>
+<h1 id="System类"><a href="#System类" class="headerlink" title="System类"></a>System类</h1><p>public static long currentTimeMillis():返回当前时间(以秒为单位)</p>
+<h1 id="Object"><a href="#Object" class="headerlink" title="Object"></a>Object</h1><p>Object是类层次结构的根，每个类都可以将Object作为超类，所有类都直接或间接的继承自该类<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Object.PNG" alt></p>
+<h1 id="Interger"><a href="#Interger" class="headerlink" title="Interger"></a>Interger</h1><h2 id="使用静态方法得到Interger对象："><a href="#使用静态方法得到Interger对象：" class="headerlink" title="使用静态方法得到Interger对象："></a>使用静态方法得到Interger对象：</h2><ul>
+<li>Integer i1 = Integer.valueOf(100)</li>
+<li>Integer i2 = Integer.valueOf(“100”)</li>
+</ul>
+<h2 id="int和String的相互转换"><a href="#int和String的相互转换" class="headerlink" title="int和String的相互转换"></a>int和String的相互转换</h2><h3 id="int转换为String"><a href="#int转换为String" class="headerlink" title="int转换为String"></a>int转换为String</h3><p>public static String valueOf(int i):返回int参数的字符串表示形式。该方法是String类中的方法</p>
+<h3 id="String转化为int"><a href="#String转化为int" class="headerlink" title="String转化为int"></a>String转化为int</h3><p>public static int parseInt(String s):将字符串解析为int类型。该方法是Integer类中的方法</p>
+<h1 id="自动拆箱和装箱"><a href="#自动拆箱和装箱" class="headerlink" title="自动拆箱和装箱"></a>自动拆箱和装箱</h1><ul>
+<li>装箱：把基本数据类型转换为对应的包装类类型</li>
+<li>拆箱：把包装类类型转换为对应的基本数据类型</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Integer i &#x3D;  100; &#x2F;&#x2F;自动装箱</span><br><span class="line">i +&#x3D; 200;         &#x2F;&#x2F;i &#x3D; i + 200; i+200自动拆箱； i &#x3D; i + 200;是自动装箱</span><br></pre></td></tr></table></figure>
+<p><strong>注意</strong>：在使用包装类类型的时候，如果需要操作，最好先判断是否为null</p>
+<h1 id="日期类"><a href="#日期类" class="headerlink" title="日期类"></a>日期类</h1><h2 id="Date类"><a href="#Date类" class="headerlink" title="Date类"></a>Date类</h2><p>构造方法：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Date.PNG" alt><br>常用方法：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Date2.PNG" alt></p>
+<h2 id="SimpleDateFormat"><a href="#SimpleDateFormat" class="headerlink" title="SimpleDateFormat"></a>SimpleDateFormat</h2><p>日期和时间格式有日期和时间模式字符串指定，在日期和时间模式字符串中，从‘A’到‘Z’以及从‘a’到‘z’的字母被解释为表示日期或时间字符换的组件的模式字母<br>常用的模式字母及对应关系如下：</p>
+<ul>
+<li>y: 年</li>
+<li>M: 月</li>
+<li>d：日</li>
+<li>H：时</li>
+<li>m: 分</li>
+<li>s: 秒</li>
+</ul>
+<p>构造方法：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/simpleDateFormat.PNG" alt></p>
+<h3 id="格式化和解析日期"><a href="#格式化和解析日期" class="headerlink" title="格式化和解析日期"></a>格式化和解析日期</h3><ul>
+<li>格式化(从Date到String)<br>public final String format(Date date):将日期格式化成日期/时间字符串</li>
+<li>解析(从String到Date)<br>public Date parse(String source):从给定的字符串开始解析文本以生成日期</li>
+</ul>
+<h2 id="Calendar"><a href="#Calendar" class="headerlink" title="Calendar"></a>Calendar</h2><p>Calendar为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法<br>Calendar提供了一个类方法getInstance用于获取Calendar对象，其日历字段已使用当前日期和时间初始化：<br><figure class="highlight plain"><figcaption><span>rightnow </span></figcaption><table><tr><td class="code"><pre><span class="line">常用方法：</span><br><span class="line"></span><br><span class="line">![](https:&#x2F;&#x2F;bwtpicturehouse.oss-cn-shanghai.aliyuncs.com&#x2F;img&#x2F;Calendar.PNG)</span><br><span class="line"></span><br><span class="line"># 异常</span><br><span class="line">- error:严重问题，不需要处理</span><br><span class="line">- Exception:称为异常类，它表示程序本身可以处理的问题</span><br><span class="line">  - RuntimeExcepion:在编译期是不检查的，出现问题后，需要我们回来修改代码</span><br><span class="line">  - 非RuntimeExcepion：编译期必须处理的，否则连编译都过不了</span><br><span class="line">  </span><br><span class="line">## Throwable的成员方法</span><br><span class="line"></span><br><span class="line">![](https:&#x2F;&#x2F;bwtpicturehouse.oss-cn-shanghai.aliyuncs.com&#x2F;img&#x2F;throwable.PNG)</span><br><span class="line">printStackTrace()是输出信息最全的</span><br><span class="line"></span><br><span class="line">## 编译时异常和运行时异常</span><br><span class="line">- 编译时异常：必须显方式处理，否则程序就会发生错误，无法通过编译</span><br><span class="line">- 运行时异常：无需显式处理</span><br><span class="line"></span><br><span class="line">## 自定义异常</span><br><span class="line">格式：</span><br></pre></td></tr></table></figure><br>public class 异常类名 extends Exception{<br>  无参构造<br>  带参构造<br>}<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure><br>public class ScoreException extends Exception{<br>  public ScoreException(){}<br>  public ScoreException(String message){<br>    super(message);<br>  }<br>}<br>```</p>
+<h2 id="throws和throw的区别"><a href="#throws和throw的区别" class="headerlink" title="throws和throw的区别"></a>throws和throw的区别</h2><p>throws</p>
+<ul>
+<li>用在方法声明后面，跟的是异常类名</li>
+<li>表示抛出异常，由该方法的调用者来处理</li>
+<li>表示出现异常的一种可能性，并不一定会发生这些异常</li>
+</ul>
+<p>throw</p>
+<ul>
+<li>用在方法体内，跟的是异常对象名</li>
+<li>表示抛出异常，由方法内的语句处理</li>
+<li>执行throw一定抛出了某种异常</li>
+</ul>
+<h1 id="集合体系结构"><a href="#集合体系结构" class="headerlink" title="集合体系结构"></a>集合体系结构</h1><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/集合体系结构.PNG" alt></p>
+<h1 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h1><h2 id="常用方法"><a href="#常用方法" class="headerlink" title="常用方法"></a>常用方法</h2><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Collection常用.PNG" alt></p>
+<h2 id="Collection集合的遍历"><a href="#Collection集合的遍历" class="headerlink" title="Collection集合的遍历"></a>Collection集合的遍历</h2><p>Iterator:迭代器,集合的专用遍历方式</p>
+<ul>
+<li><code>Iterator&lt;E&gt; iterator():</code>返回此集合中元素的迭代器，通过集合的iterator()方法得到</li>
+<li>迭代器是通过集合的iterator()方法得到，所以我们说它是依赖于集合而存在的</li>
+</ul>
+<p>Iterator中的常用方法</p>
+<ul>
+<li><code>E next()</code>:返回迭代中的下一个元素</li>
+<li><code>boolean hasNext()</code>:如果迭代具有更多元素，则返回true</li>
+</ul>
+<h1 id="List集合"><a href="#List集合" class="headerlink" title="List集合"></a>List集合</h1><h2 id="List概述"><a href="#List概述" class="headerlink" title="List概述"></a>List概述</h2><ul>
+<li>有序集合（也称为序列），用户可以精准控制列表中每个元素的插入位置。用户可以通过整数索引访问元素，并搜索列表中的元素</li>
+<li>与Set集合不同，列表通常允许重复的元素</li>
+</ul>
+<h2 id="List特有方法"><a href="#List特有方法" class="headerlink" title="List特有方法"></a>List特有方法</h2><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/List特有方法.PNG" alt></p>
+<h2 id="并发修改异常（源码阅读-重要）"><a href="#并发修改异常（源码阅读-重要）" class="headerlink" title="并发修改异常（源码阅读 重要）"></a>并发修改异常（源码阅读 重要）</h2><ul>
+<li>concurrentModificationException</li>
+<li>产生原因：迭代器遍历的过程中，通过集合对象修改了集合中元素的长度，造成了迭代器获取元素中判断预取修改值和实际修改值不一致。</li>
+<li>解决方案：用for遍历</li>
+</ul>
+<h2 id="Listlterator中"><a href="#Listlterator中" class="headerlink" title="Listlterator中"></a>Listlterator中</h2><p>Listlterator:列表迭代器</p>
+<ul>
+<li>通过List集合的<code>listlterator()</code>方法得到，所以说它是List集合特有的迭代器</li>
+<li>用于允许程序员沿任一方向遍历列表的列表迭代器，在迭代期间修改列表。并获取列表中迭代器的当前位置。</li>
+</ul>
+<p>Listlterator中的常用方法</p>
+<ul>
+<li><code>E next()</code>:返回迭代中的下一个元素</li>
+<li><code>boolean hasNext()</code>:如果迭代具有更多元素，则返回true</li>
+<li><code>E previous()</code>:返回列表中的上一个元素</li>
+<li><code>boolean hasPrevious()</code>:如果此列表迭代器在相反方向遍历列表时具有更多元素。则返回true</li>
+<li><code>void add(E e)</code>:将指定的元素插入列表</li>
+</ul>
+<h2 id="LinkedList集合的特有功能"><a href="#LinkedList集合的特有功能" class="headerlink" title="LinkedList集合的特有功能"></a>LinkedList集合的特有功能</h2><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/linkedList特有.PNG" alt></p>
+<h2 id="Hash值"><a href="#Hash值" class="headerlink" title="Hash值"></a>Hash值</h2><p>哈希值：是JDK根据对象的地址或者字符串或者数字算出来的int类型的数值<br><code>public int hashCode()</code>:返回对象的hash值</p>
+<h2 id="HashSet集合概述和特点"><a href="#HashSet集合概述和特点" class="headerlink" title="HashSet集合概述和特点"></a>HashSet集合概述和特点</h2><ul>
+<li>底层数据结构是哈希表</li>
+<li>对集合的迭代顺序不作任何保证，也就是不保证存储和取出的元素顺序一致</li>
+<li>没有带索引的方法，所以不能使用普通for循环遍历</li>
+<li>由于是Set集合，不包含重复元素</li>
+</ul>
+<p>在例如判断两个学生相同这种情况时，可以自动生成重写hashcode方法</p>
+<h2 id="LinkedHashSet"><a href="#LinkedHashSet" class="headerlink" title="LinkedHashSet"></a>LinkedHashSet</h2><ul>
+<li>哈希表和链表实现的Set接口，具有可预测的迭代顺序</li>
+<li>由链表保证元素有序，也就是说元素的存储和取出顺序是一致的</li>
+<li>由哈希表保证元素唯一，也就是说没有重复的元素</li>
+</ul>
+]]></content>
+      <categories>
+        <category>java 工作</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>第一次组会知识点总结</title>
+    <url>/2020/10/06/%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%BB%84%E4%BC%9A/</url>
+    <content><![CDATA[<p>有一些概念忘记了或是不了解，在此记录一下  </p>
+<ul>
+<li><a href="https://www.jianshu.com/p/43318a3dc715" target="_blank" rel="noopener">KL散度（相对熵）</a><br>当我们使用一个较简单、常见的分布(如均匀分布、二项分布等)来拟合我们观察到的一个较为复杂的分布时，由于拟合出的分布与观察到的分布并不一致，会有信息损失的情况出现。KL散度就是为了度量这种损失而被提出的。<br>若我们使用分布q来表示分布p，那么信息熵的损失如下  <script type="math/tex; mode=display">D_{KL}(p||q) = \sum^{N}_{i=1}p(x_i)\cdot (\log p(x_i) - \log q(x_i))</script></li>
+</ul>
+<p>可将该式写作其期望的形式</p>
+<script type="math/tex; mode=display">D_{KL}(p||q) = E[\log p(x) - \log q(x)]</script><p>稍加变形</p>
+<script type="math/tex; mode=display">D_{KL}(p||q) = \sum_{i=1}^N p(x_i) \cdot \log \frac{p(x_i)}{q(x_i)}</script><ul>
+<li><a href="https://www.jiqizhixin.com/graph/technologies/9465a09d-6597-452d-a5b2-fd0b1c3521cd" target="_blank" rel="noopener">JS散度</a>度量了两个概率分布的相似度，基于KL散度的变体，解决了KL散度非对称的问题。一般地，JS散度是对称的，其取值是0到1之间。定义如下：<script type="math/tex; mode=display">JS(P_1||P_2) = \frac{1}{2}KL(P_1||\frac{P_1+P_2}{2})+\frac{1}{2}KL(P_2||\frac{P_1+P_2}{2})</script>KL散度和JS散度度量的时候有一个问题：</li>
+</ul>
+<p>如果两个分配P,Q离得很远，完全没有重叠的时候，那么KL散度值是没有意义的，而JS散度值是一个常数。这在学习算法中是比较致命的，这就意味这这一点的梯度为0。梯度消失了。</p>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/34238979" target="_blank" rel="noopener">AE(自编码器)</a>:是一种利用反向传播算法使得输出值等于输入值的神经网络，它先将输入压缩成潜在空间表征，然后通过这种表征来重构输出。</li>
+<li><a href="https://kexue.fm/archives/7038" target="_blank" rel="noopener">DAE(降噪自编码器)</a></li>
+<li><a href="https://easyai.tech/ai-definition/gan/" target="_blank" rel="noopener">GAN</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>组会</category>
+      </categories>
+      <tags>
+        <tag>组会</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>基于噪声不一致性的科学图像篡改检测——论文简述</title>
+    <url>/2020/05/22/%E5%9F%BA%E4%BA%8E%E5%99%AA%E5%A3%B0%E4%B8%8D%E4%B8%80%E8%87%B4%E6%80%A7%E7%9A%84%E7%A7%91%E5%AD%A6%E5%9B%BE%E5%83%8F%E7%AF%A1%E6%94%B9%E6%A3%80%E6%B5%8B%E2%80%94%E2%80%94%E8%AE%BA%E6%96%87%E7%AE%80%E8%BF%B0/</url>
+    <content><![CDATA[<h1 id="Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets"><a href="#Scientific-Image-Tampering-Detection-Based-On-Noise-Inconsistencies-A-Method-And-Datasets" class="headerlink" title="Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets"></a>Scientific Image Tampering Detection Based On Noise Inconsistencies: A Method And Datasets</h1><h2 id="主要背景"><a href="#主要背景" class="headerlink" title="主要背景"></a>主要背景</h2><p>&emsp;&emsp;由于数字图像使用的日渐频繁以及技术的日趋进步，科学图像造假的情况愈发严重。尽管可以用已有的检测技术直接运用在科学图像上，但是仍需要发展适配于该领域的算法，因为该领域有着独特的模式，格式与解决方式。同时，科技论文造假的数据库的建设也应当与算法的进步同步进行。<br>&emsp;&emsp;随着愈来愈多的造假图片进入了科学界，Bik在短时间内就有相当数量的发现，这也说明了通过评审去发现造假图片相当的困难。</p>
+<h2 id="论文工作简要概述"><a href="#论文工作简要概述" class="headerlink" title="论文工作简要概述"></a>论文工作简要概述</h2><p>&emsp;&emsp;过去种种研究篡改图像的算法在面对不同的科学条件下常常会失效，本论文提出的基于噪声矛盾的算法可适宜于很多不同的科学领域。实验结果证明本方法可以健壮地检测各种场景下的图像操纵，并且表现超过了现存地同类型算法。该方法有望可以为检测嫌疑图像成为系统性步骤做出贡献。</p>
+<h2 id="为何选择基于噪声矛盾算法"><a href="#为何选择基于噪声矛盾算法" class="headerlink" title="为何选择基于噪声矛盾算法"></a>为何选择基于噪声矛盾算法</h2><p>&emsp;&emsp;科学研究对图像处理已经相当宽容了，包括调整大小，对比度调整，锐化，白平衡都被认为是合理的预处理。而改变了上下文含义的行为则当然不被允许，如复制粘贴，切割移除等。对于专家而言，发现导致上下文语意不同的图像比较容易，而一些造假学者利用了人类很难去辨别噪声模式这一弱点。因此本文因此提出了一种基于发现噪声不一致性的科学图像篡改检测方法。</p>
+<h2 id="算法特点"><a href="#算法特点" class="headerlink" title="算法特点"></a>算法特点</h2><ul>
+<li>基于监督学习，可以从已有的数据集与新实例中学习</li>
+<li>它适用于不同的分辨率和来自不同设备的图像</li>
+<li>不局限于某一种图像格式</li>
+<li>能够产生良好的预测以及一个小数据集</li>
+<li>具有灵活性，可以针对不同科学场景进行参数调整</li>
+</ul>
+<h2 id="算法思路"><a href="#算法思路" class="headerlink" title="算法思路"></a>算法思路</h2><p>&emsp;&emsp;本算法运用了几种异构特征提取器，刚开始，一个输入图像会经过几种残差图像生成器，每种残差图像会有他们自己的特征提取器（可能会基于不同配置的特征提取方案），这种特征在后处理后会被送入分类器。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_1.PNG" alt><br>&emsp;&emsp;特征提取方法大大减少了维数，减少了对训练数据量需求,可以在后端使用轻量级分类器，如逻辑回归或支持向量机。生成残差图像的方法数量与特征提取地参数增加了该方法的灵活性，并且不像神经网络参数调节那样地模糊，对于人类可以方便地手动调节。</p>
+<h2 id="残差图片生成器"><a href="#残差图片生成器" class="headerlink" title="残差图片生成器"></a>残差图片生成器</h2><h3 id="Steganalytic-Filters"><a href="#Steganalytic-Filters" class="headerlink" title="Steganalytic Filters"></a>Steganalytic Filters</h3><p>&emsp;&emsp;Steganalytic Filters是从速记式加密技术处借鉴而来，将隐写术中嵌入数据地行为类推到图像操作。选择高通的滤波器，丢弃关于图像的内容，尽可能地强调噪音模式。</p>
+<h3 id="Error-Level-Analysis-ELA"><a href="#Error-Level-Analysis-ELA" class="headerlink" title="Error Level Analysis (ELA)"></a>Error Level Analysis (ELA)</h3><p>&emsp;&emsp;该算法地思想是基于在JPEG压缩时引入的错误是非线性的，如果图像中的一部分具有与图像剩余部分不一致的JPEG质量因子，那么在压缩后可以与对应的默认质量因子平均的图片进行比较，比较其差异。</p>
+<h3 id="Median-Filtering-Residual"><a href="#Median-Filtering-Residual" class="headerlink" title="Median Filtering Residual"></a>Median Filtering Residual</h3><p>&emsp;&emsp;中值滤波可以抑制图像噪声，篡改的部分中值滤波后会表现出不同的噪声模式。残差图像是原始图像与中值滤波后的图像的差。</p>
+<h3 id="Wavelet-Denoising-Residual"><a href="#Wavelet-Denoising-Residual" class="headerlink" title="Wavelet Denoising Residual"></a>Wavelet Denoising Residual</h3><p>&emsp;&emsp;小波去噪是一种在小波域内对图像进行去噪的方法，它基于小波域去噪来消除图像中的噪声。该算法运用方法与前一种中值滤波法类似。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;示例中的残差图像算法在论文的例子中都有效果，但这并不是常态，真实情况往往需要几种算法结合起来分析。</p>
+<h2 id="特征提取"><a href="#特征提取" class="headerlink" title="特征提取"></a>特征提取</h2><p>&emsp;&emsp;在该论文中特征提取是基于patch而不是基于像素点，这减少了计算规模并丰富了每个最小单元内的统计信息量，patch size决定后会生成对应的特征向量v。</p>
+<h3 id="Patch-Reinterpretation"><a href="#Patch-Reinterpretation" class="headerlink" title="Patch Reinterpretation"></a>Patch Reinterpretation</h3><p>&emsp;&emsp;残差降低了图像数据的复杂性，但残差图像仍然具有与原始图像相同的维数。<br>&emsp;&emsp;为了进一步压缩数据进行分类，我们提出了一种新的图像篡改检测的特征提取方法。直观地说，一个图像区域被认为是被篡改的，不是因为它本身是唯一的，而是因为它与图像的其他部分不同。因此，一个理想的特征设计应该包含足够的全局信息。我们通过使用图像的其余部分重新解释图像区域来添加全局信息。<br>&emsp;&emsp;首先对于大小为（h;w）的图像会被分割为大小为（m;n）的图像，如果不可正好分割，就向下取最近整数，由此大小为（h;w）的图像就被成为了一个patch矩阵。然后将patch矩阵分割成大小为(s;t)，其中每个单元包含一定数量的patch。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Figure_2.PNG" alt></p>
+<p>&emsp;&emsp;对于网格中的每个细胞，我们都安装了一个异常值检测器，它能够告诉新样本成为异常值的可能性。给定一个p，它可以被向量v重新解释,  </p>
+<script type="math/tex; mode=display">v = (l_{11}(p), l_{12}(p),l_{13}(p),...,l_{1t}(p)\\
+    \qquad l_{21}(p), l_{22}(p),l_{23}(p),...,l_{2t}(p) \\
+     \qquad l_{31}(p), l_{32}(p),l_{33}(p),...,l_{1t}(p)\\
+     \qquad...\\
+     \qquad l_{s1}(p), l_{s2}(p),l_{s3}(p),... ,l_{st}(p)).</script><p>&emsp;&emsp;由于被篡改区域的残馀形态不同，且其污染斑块集中在其中一个cell内，<br>因此该cell的离群点检测器与其他cell相比具有不同的判定边界。<br>&emsp;&emsp;Eg.对于真实的patch pa,除了l23(pa)外别的离散概率都会较低；而对于伪造的patch pt,除了l23(pt)外别的离散概率都会较高。<br>&emsp;&emsp;在实际应用中，我们使用了v的直方图(用vh表示)，它不仅在摘要统计，空间中对结构进行编码，而且保留了位置信息。  </p>
+<p>&emsp;</p>
+<h3 id="Feature-Design"><a href="#Feature-Design" class="headerlink" title="Feature Design"></a>Feature Design</h3><ul>
+<li>vh:Patch Reinterpretation的直方图</li>
+<li>距离信息:patch与它邻居的欧式距离</li>
+<li>全局信息:patch与全图的信息差异，patch的附加全局信息是由重新解释和聚类中心之间的欧氏距离以及中心的相应权重给出的。  </li>
+</ul>
+<p>&emsp;</p>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="生成数据集"><a href="#生成数据集" class="headerlink" title="生成数据集"></a>生成数据集</h3><h4 id="移除类型"><a href="#移除类型" class="headerlink" title="移除类型"></a>移除类型</h4><p>&emsp;&emsp;删除一个区域，并选用某一背景区域的噪声或色彩去采样填补这一区域。</p>
+<h4 id="拼接类型"><a href="#拼接类型" class="headerlink" title="拼接类型"></a>拼接类型</h4><p>&emsp;&emsp;从前景图像中选取一小部分黏贴到任意位置，该区域要么用JPEG重新压缩，要么用锐化过滤器处理。</p>
+<h4 id="修整类型"><a href="#修整类型" class="headerlink" title="修整类型"></a>修整类型</h4><p>&emsp;&emsp;随机对一块区域使用高斯模糊。  </p>
+<p>&emsp;</p>
+<p>最终生成的图像有蛋白质印记法与显微镜观测两种类型</p>
+<h3 id="实验配置"><a href="#实验配置" class="headerlink" title="实验配置"></a>实验配置</h3><ul>
+<li>利用离散余弦变换(DCT)将残差图像上的小块变换到频域，得到了较好的效果</li>
+<li>使用由scikit-learn提供的支持向量机离群点检测器，其核函数使用径向基函数</li>
+<li>优化公差设置为0:01;(训练误差分数的上界和支持向量分数的下界)设为0.1</li>
+<li>不同参数的设置会较大影响特征提取的速度。</li>
+<li>使用的分类器是一个简单的多层结构感知器神经网络。对于蛋白质标记模型，我们使用四层网络，每层200个unit;对于显微模型，我们使用类似的网络，每层300个unit。最后一层应用Softmax回归得到分类结果。</li>
+</ul>
+<p>&emsp;</p>
+<h2 id="结果"><a href="#结果" class="headerlink" title="结果"></a>结果</h2><p>&emsp;&emsp;在使用的是patch级别的准确性，AUC分数和F1分数的评判下,总的来说，该论文方法在不同类型的操作之间的性能更一致，这使它在实践中更可靠。</p>
+<p>&emsp;</p>
+<h2 id="研究中的不足"><a href="#研究中的不足" class="headerlink" title="研究中的不足"></a>研究中的不足</h2><ul>
+<li>数据集还是过小，但相信随着研究深入会逐渐扩充</li>
+<li>只基于噪声的方法会受到限制，例如一些图像篡改不会影响到噪声。如果一个人已经了解了自动检测的原理，他可以有意避开噪声不一致性</li>
+</ul>
+<p>&emsp;&emsp;最终作者希望这种算法的灵活性可以帮助其顺利迁移到更多其他领域。</p>
+]]></content>
+      <categories>
+        <category>篡改检测</category>
+      </categories>
+      <tags>
+        <tag>科学图像篡改检测</tag>
+        <tag>论文简述</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>敏捷生活宣言</title>
+    <url>/2020/05/22/%E6%95%8F%E6%8D%B7%E7%94%9F%E6%B4%BB%E5%AE%A3%E8%A8%80/</url>
+    <content><![CDATA[<h1 id="Mannifesto-for-Agile-Living-Style"><a href="#Mannifesto-for-Agile-Living-Style" class="headerlink" title="Mannifesto for Agile Living Style"></a>Mannifesto for Agile Living Style</h1><h2 id="——每日三省吾身"><a href="#——每日三省吾身" class="headerlink" title="——每日三省吾身"></a>——每日三省吾身</h2><p>敏捷生活精神欢迎变化、提倡定期反思、追求可持续；主张面对面沟通、崇尚简单，有助于长期保持乐观高效的生活状态。</p>
+<p>我们最重要的目标，是通过持续不断地尽早调整行为习惯使自己对生活满意。</p>
+<p>Our highest priority is to satisfy ourselves through early and continuous change of living habits.</p>
+<p>欣然面对生活中或好或坏的变化，即使在低谷期也一样。</p>
+<p>Welcome changes in life, even when we are under bad mood. No matter whether changes are “good” or not.</p>
+<p>经常性地反思如何能够优化生活，并依此调整自身的行为习惯。相隔几星期或一两个月，倾向于采取较短的周期。</p>
+<p>Reflect on how to better life frequently and adjust habits accordingly from a couple of weeks to several months , with a preference to a shorter timescale.</p>
+<p>激发自己的斗志，给自己创造需要的环境，并信任自己，从而达成目标。</p>
+<p>Make ourselves motivated, give ourselves environment we need, and trust ourselves to achieve goals.</p>
+<p>不论何时，面对面的交谈是最富有效果和效率的信息传递方式。</p>
+<p>The most efficient and effective method of of conveying information is face-to-face conversation.</p>
+<p>可见的实物是进度的首要度量标准。</p>
+<p>Visible objects are the primary measure of progress.</p>
+<p>敏捷生活倡导可持续生活。敏捷生活者应该能够长期保持稳定的生活。</p>
+<p>Agile living style promotes sustainable living style. An “agile liver” should be able to maintain a constant and stable living style.</p>
+<p>不断地关注优秀的个体和技能能够增强敏捷生活的能力。</p>
+<p>Continuous attention to excellent individuals and techniques enhances agility.</p>
+<p>以简洁为本，它是极力减少不必要工作的艺术。</p>
+<p>Simplicity is essential because it’s an art of minimizing unnecessary work.</p>
+<p>最好的生活方式来源于自我管理。</p>
+<p>The best life style comes from self-organizing individuals.</p>
+<p>保持敏捷生活的重点在于使得自己到底每一个决策都是基于敏捷的价值和原则的。</p>
+<p>The key idea of living agilely is to make each decision based on the principles and values described above.</p>
+]]></content>
+      <categories>
+        <category>生活方式</category>
+      </categories>
+      <tags>
+        <tag>自我提升</tag>
+        <tag>敏捷生活</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>stackoverflow1-pytorch如何检查是否使用GPU</title>
+    <url>/2022/05/19/stackoverflow1-pytorch%E5%A6%82%E4%BD%95%E6%A3%80%E6%9F%A5%E6%98%AF%E5%90%A6%E4%BD%BF%E7%94%A8GPU/</url>
+    <content><![CDATA[<p>&emsp;&emsp;本问题地址:<a href="https://stackoverflow.com/questions/48152674/how-to-check-if-pytorch-is-using-the-gpu/48152675#48152675" target="_blank" rel="noopener">https://stackoverflow.com/questions/48152674/how-to-check-if-pytorch-is-using-the-gpu/48152675#48152675</a></p>
+<p>&emsp;&emsp;问:我如何检查pytorch是否使用GPU？<code>nvidia-smi</code>可以检测到GPU在进程中是否有任何活动, 但我想通过在脚本中写些什么来检查。</p>
+<p>&emsp;&emsp;答1：可以使用下面这个函数：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&gt;&gt;&gt; import torch</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; torch.cuda.is_available()</span><br><span class="line">True</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; torch.cuda.device_count()</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; torch.cuda.current_device()</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; torch.cuda.device(0)</span><br><span class="line">&lt;torch.cuda.device at 0x7efce0b03be0&gt;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; torch.cuda.get_device_name(0)</span><br><span class="line">&#39;GeForce GTX 950M&#39;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; dev &#x3D; torch.device(&quot;cuda&quot;) if torch.cuda.is_available() else torch.device(&quot;cpu&quot;)</span><br></pre></td></tr></table></figure></p>
+<p>以上告诉了我们：</p>
+<ul>
+<li>cuda是可用的并且可以被一个设备使用</li>
+<li>Device 0指的是GPU <code>GeForce GTX 950m</code>, 并且目前它是由pytorch选择的。</li>
+</ul>
+<p>另：注意还可以检查显卡的cached与allocated memory</p>
+<ul>
+<li><code>torch.cuda.max_memory_cached(device=None)</code><br>Returns the maximum GPU memory managed by the caching allocator in bytes for a given device.</li>
+<li><code>torch.cuda.memory_allocated(device=None)</code><br>Returns the current GPU memory usage by tensors in bytes for a given device.</li>
+</ul>
+<p>&emsp;&emsp; 答2：在你开始运行训练循环后，如果你想在终端上手动查看你的程序是否在使用GPU资源以及使用到什么程度，那么你可以简单地使用<code>watch</code>命令，如下所示:</p>
+<p><code>watch -n 2 nvidia-smi</code><br>这将每两秒更新统计，知道用<code>ctrl c</code>终结它</p>
+]]></content>
+      <categories>
+        <category>pytorch</category>
+      </categories>
+      <tags>
+        <tag>stackoverflow翻译计划</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>stackoverflow1-pytorch如何检查是否使用GPU</title>
+    <url>/2022/05/19/stackoverflow3-pytorch%E4%B8%AD%E9%9C%80%E8%A6%81%E8%B0%83%E7%94%A8zero_grad()/</url>
+    <content><![CDATA[<p>&emsp;&emsp;本问题地址:<a href="https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch/48009142#48009142" target="_blank" rel="noopener">https://stackoverflow.com/questions/48001598/why-do-we-need-to-call-zero-grad-in-pytorch/48009142#48009142</a></p>
+<p>&emsp;&emsp;问:我如何检查pytorch是否使用GPU？<code>nvidia-smi</code>可以检测到GPU在进程中是否有任何活动, 但我想通过在脚本中写些什么来检查。</p>
+<p>&emsp;&emsp;答1：在PyTorch中，对于训练阶段的每个小批量，我们通常希望在开始反向传递(即，更新权重和偏差)之前显式地将梯度设置为零，因为PyTorch在后续的反向传递中积累梯度。当训练rnn或当我们想计算多个小批次的损失总和的梯度时，这种积累行为很方便。因此，默认操作被设置为在每次loss.backward()调用时累计(即求和)梯度。<br>正因为如此，当你开始训练循环时，理想情况下你应该将梯度归零，以便正确地进行参数更新。否则，梯度将是旧梯度(您已经使用它来更新模型参数)和新计算的梯度的组合。因此，它将指向一些其他方向，而不是预期的朝着最小(或最大，在最大化目标的情况下)的方向。<br>下面是一个简单例子<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import torch</span><br><span class="line">from torch.autograd import Variable</span><br><span class="line">import torch.optim as optim</span><br><span class="line"></span><br><span class="line">def linear_model(x, W, b):</span><br><span class="line">    return torch.matmul(x, W) + b</span><br><span class="line"></span><br><span class="line">data, targets &#x3D; ...</span><br><span class="line"></span><br><span class="line">W &#x3D; Variable(torch.randn(4, 3), requires_grad&#x3D;True)</span><br><span class="line">b &#x3D; Variable(torch.randn(3), requires_grad&#x3D;True)</span><br><span class="line"></span><br><span class="line">optimizer &#x3D; optim.Adam([W, b])</span><br><span class="line"></span><br><span class="line">for sample, target in zip(data, targets):</span><br><span class="line">    # clear out the gradients of all Variables </span><br><span class="line">    # in this optimizer (i.e. W, b)</span><br><span class="line">    optimizer.zero_grad()</span><br><span class="line">    output &#x3D; linear_model(sample, W, b)</span><br><span class="line">    loss &#x3D; (output - target) ** 2</span><br><span class="line">    loss.backward()</span><br><span class="line">    optimizer.step()</span><br></pre></td></tr></table></figure></p>
+]]></content>
+      <categories>
+        <category>pytorch</category>
+      </categories>
+      <tags>
+        <tag>stackoverflow翻译计划</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>stackoverflow2-pytorch中的view方法是如何运行的</title>
+    <url>/2022/05/19/stackoverflow2-pytorch%E4%B8%AD%E7%9A%84view%E6%96%B9%E6%B3%95%E6%98%AF%E5%A6%82%E4%BD%95%E8%BF%90%E8%A1%8C%E7%9A%84/</url>
+    <content><![CDATA[<p>&emsp;&emsp;本问题地址:<a href="https://stackoverflow.com/questions/42479902/how-does-the-view-method-work-in-pytorch/42482819#42482819" target="_blank" rel="noopener">https://stackoverflow.com/questions/42479902/how-does-the-view-method-work-in-pytorch/42482819#42482819</a></p>
+<p>&emsp;&emsp;问:我对下面代码片段中的方法view()感到困惑。<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Net(nn.Module):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        super(Net, self).__init__()</span><br><span class="line">        self.conv1 &#x3D; nn.Conv2d(3, 6, 5)</span><br><span class="line">        self.pool  &#x3D; nn.MaxPool2d(2,2)</span><br><span class="line">        self.conv2 &#x3D; nn.Conv2d(6, 16, 5)</span><br><span class="line">        self.fc1   &#x3D; nn.Linear(16*5*5, 120)</span><br><span class="line">        self.fc2   &#x3D; nn.Linear(120, 84)</span><br><span class="line">        self.fc3   &#x3D; nn.Linear(84, 10)</span><br><span class="line"></span><br><span class="line">    def forward(self, x):</span><br><span class="line">        x &#x3D; self.pool(F.relu(self.conv1(x)))</span><br><span class="line">        x &#x3D; self.pool(F.relu(self.conv2(x)))</span><br><span class="line">        x &#x3D; x.view(-1, 16*5*5)</span><br><span class="line">        x &#x3D; F.relu(self.fc1(x))</span><br><span class="line">        x &#x3D; F.relu(self.fc2(x))</span><br><span class="line">        x &#x3D; self.fc3(x)</span><br><span class="line">        return x</span><br><span class="line"></span><br><span class="line">net &#x3D; Net()</span><br></pre></td></tr></table></figure></p>
+<p>&emsp;&emsp;答1：view()函数是用来reshape向量的。 如下：<br><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import torch</span><br><span class="line">a &#x3D; torch.range(1, 16)</span><br><span class="line">a &#x3D; a.view(4, 4)</span><br></pre></td></tr></table></figure><br>要注意tensor的元素数量在reshape前后不能改变。</p>
+<h3 id="参数中的-1是什么意思"><a href="#参数中的-1是什么意思" class="headerlink" title="参数中的-1是什么意思?"></a>参数中的-1是什么意思?</h3><p>如果在任何情况下你不知道你想要多少行但确定了列数，那么你可以用-1来指定它。(注意，你可以把它扩展到更多维度的张量。只有一个轴值可以是-1)。这是告诉标准库的一种方式:“给我一个有这么多列的张量，你计算出它所需的适当的行数”。</p>
+]]></content>
+      <categories>
+        <category>pytorch</category>
+      </categories>
+      <tags>
+        <tag>stackoverflow翻译计划</tag>
+      </tags>
+  </entry>
+</search>

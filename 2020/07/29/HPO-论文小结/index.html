@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-mac-osx.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/soccer-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/soccer-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="论文小结," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Bi Wentao" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="基本概念 Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。 Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HPO论文小结">
+<meta property="og:url" content="http://woshibwt.github.io/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/index.html">
+<meta property="og:site_name" content="Bi Wentao">
+<meta property="og:description" content="基本概念 Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。 Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ApplicationsOfHpo.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO-C.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ExomiserFilters.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitA.PNG">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitB.PNG">
+<meta property="article:published_time" content="2020-07-28T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-05-17T14:23:23.427Z">
+<meta property="article:author" content="Bi Wentao">
+<meta property="article:tag" content="论文小结">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woshibwt.github.io/2020/07/29/HPO-论文小结/"/>
+
+
+
+
+
+  <title>HPO论文小结 | Bi Wentao</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/woshibwt" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Bi Wentao</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woshibwt.github.io/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bi Wentao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bi Wentao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HPO论文小结</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-29T00:00:00+08:00">
+                2020-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/HPO/" itemprop="url" rel="index">
+                    <span itemprop="name">HPO</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/07/29/HPO-论文小结/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><ul>
+<li>Genotype 基因型：在生物学中，基因型指的是生物体的基因组成，涉及单个核苷酸、更大的遗传位点或整个基因组。在目前的上下文中，基因型指的是一种基因序列变体，被评估为一种疾病的潜在因果关系，以及它的杂合、纯和或半合子状态。</li>
+<li>Phenotype 表型：在生物学上，表型是指有机体的可观察到的特征，但在医学上，这个词通常用来描述临床上相关的异常，包括体征、症状和实验室分析、影像学研究、生理检查以及行为异常的异常结果。</li>
+<li>varient 变异：基因变异描述的是与正常序列或参考序列的偏差。 例如，在某一染色体位置用一个核苷酸替换另一个核苷酸，一个或多个核苷酸的插入或缺失，数百万个核苷酸的染色体微缺失或整个染色体的三体。</li>
+<li>pathogenicity 致病性：致病性指的是一个人基因组中的基因变异导致疾病的倾向。这一术语最常用于癌症或遗传性疾病的上下文中，即当基因变异对导致疾病或导致疾病发展的基因产物的功能产生重大有害影响时。</li>
+<li>Whole-exome sequencing（wes）全外显子组测序：一种测序技术，试图选择性地富集和分析仅属于人类基因组约1.5％的，由蛋白质编码基因外显子组成的序列（称为外显子组），因为迄今为止在孟德尔疾病中发现的大多数致病性变异都位于或非常接近这些外显子。</li>
+</ul>
+<p>&emsp;</p>
+<hr>
+<h1 id="The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease"><a href="#The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease" class="headerlink" title="The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease"></a>The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/18950739/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/18950739/</a></p>
+<p>&emsp;&emsp;先来看看2008年的开山之作吧，首先是整篇report的概述:</p>
+<blockquote>
+<p>There are many thousands of hereditary diseases in humans, each of which has a specific combination of phenotypic features, but computational analysis of phenotypic data has been hampered by lack of adequate computational data structures. Therefore, we have developed a Human Phenotype Ontology (HPO) with over 8000 terms representing individual phenotypic anomalies and have annotated all clinical entries in Online Mendelian Inheritance in Man with the terms of the HPO. We show that the HPO is able to capture phenotypic similarities between diseases in a useful and highly significant fashion.  </p>
+</blockquote>
+<p>&emsp;&emsp;人类有成千上万种遗传性疾病，每一种都有特定的表型特征组合，但是由于表型数据的计算分析缺乏足够的计算数据结构而使得分析受到阻碍，由此团队开发了一个人类表型本体论（HPO），其中有超过8000个术语代表个体表型异常，并且用HPO的术语注释了<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>的所有临床条目。该团队证明了HPO能够一种有效且重要的方式捕捉疾病之间的表型相似性。</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;人类尤其擅长识别表型特征和异常，然而在人类表型的计算描述和分析方面，还有许多未解决的问题。<br>&emsp;&emsp;显然，某些遗传性疾病是由于共同的表型特征而彼此表型相似。研究发现许多遗传条件显示出重叠的特征而导致了疾病族的概念。一些研究表明，在基因组范围内，将表型与遗传、细胞网络的特征联系起来有着巨大的潜力。<br>&emsp;&emsp;尽管<a href="https://www.ncbi.nlm.nih.gov/omim" target="_blank" rel="noopener">OMIM</a>中已经详细描述了绝大多数的人类孟德尔综合症（human Mendelian syndromes）,然而，OMIM中包含的计算分析一直受到限制，因为缺少一个可控的词汇表。包括具有明确定义关系的一致性的注释，例如：</p>
+<blockquote>
+<p>For instance, the descriptions “generalized amyotrophy”, “generalized muscle atrophy”, “muscular atrophy, generalized”, and “muscle atrophy, generalized” are used to describe different diseases in OMIM and might not be easily recognized as synonyms with a purely computational approach. Also, although the clinical-synopsis entries in OMIM are grouped according to organ system, the hierarchical structure does not itself reflect that (for instance) “Hypoplastic philtrum” and “Smooth philtrum” are more closely related to one another than to “Hypoplastic nasal septum” (all three of these descriptions are in the NOSE category of OMIM’s clinical synopsis)  </p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;“本体论”是以有向无环图的形式表示概念、属性和关系的数据模型。尤其是<a href="https://baike.baidu.com/item/%E5%9F%BA%E5%9B%A0%E6%9C%AC%E4%BD%93/1795532?fr=aladdin" target="_blank" rel="noopener">基因本体</a>（GO）已经被证明对于微阵列（microray）和其他形式的高通量数据(high-throughput data)的探索性分析是非常有用的。<br>&emsp;&emsp;HPO的目的是覆盖人类单基因疾病中的所有表型异常，它从OMIM数据库获取了文本数据<strong>omim.txt</strong>。HPO使用本体论编辑器（OBO-edit）来定义基于omim.txt中概念的术语与连接，在整理术语时，有时需要人工的将几种症状集合到同一个术语，例如：</p>
+<blockquote>
+<p>For instance, the three OMIM descriptions <em>Carpal bone hypoplasia</em>, <em>Hypoplasia of carpal bones</em>, and <em>Hypoplastic carpal bones</em>were fused into the single term HP:0001498, <em>Carpal bone hypoplasia</em></p>
+</blockquote>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO的每个术语都描述了一种表型异常，术语与其父术语是“is a”关系。如下图（Figure 1）所示HPO结构允许一个术语有多个父项。从而可以探索表型异常的不同方面。HPO本身并不描述单个疾病实体。而是与它们相关的表型异常。大多数的HPO术语是用来描述<strong>器官异常</strong>，但单独的本体论用于描述<strong>遗传方式、发病和临床过程</strong>。<br>&emsp;&emsp;真路径（true-path rule）适用于HPO的术语，也就是说，如果一种疾病被注释为<em>Atrial septal defect</em>，那么这个术语的所有祖先，如<em>Abnormality of the cardiac septa</em>也适用。<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO.PNG" alt><br>&emsp;&emsp;与GO一样，在HPO中，更接近本体根的术语比远离根的术语表示更一般的概念。在整个OMIM语料库的标注中，可以通过其标注的频率来估计HPO中每个节点的信息含量。在HPO的实现中，术语的信息内容是基于OMIM数据库中4779种疾病中该术语注释的频率。显然。如果两种疾病都被注释到一个信息含量较高的术语，那么在此基础上计算出的相似度应该高于将两种疾病注释到更一般（信息含量较低）的术语时计算的相似度。<br>&emsp;&emsp;对于HPO的每一项$t$,信息量被量化为其概率的负对数：$-\log p(t)$,其中的概率被认为是其在所有4779种疾病的注释中的频率，注意上文提到：<strong>如果一种疾病被注释到HPO中的任何一个术语$t$，它也必须被注释到$t$的所有祖先</strong>, 因此，术语在本体中的位置越高，其信息内容就越少。在HPO中，一个术语可能有多个父项，因此一对术语可能有多个共同祖先的路径。将术语$t_1$和$t_2$的所有共同祖先项集合表示为$A(t_1,t_2)$,则$t_1$,$t_2$的相似度被定义为：</p>
+<script type="math/tex; mode=display">sim(t_1,t_2) = \max_{a\in A(t_1,t_2)}-\log p(a)</script><p>&emsp;&emsp;就是要找到$t_1$和$t_2$的最小共同祖先的概率  </p>
+<p>&emsp;&emsp;为了要计算两种疾病$d_1$和$d_2$之间的相似性，使用的方法$d_1$的每个特征与$d_2$最相似的特征相匹配，并取这些特征对的平均值：</p>
+<script type="math/tex; mode=display">sim(d_1 \to d_2) = avg \left[\sum_{s\in d_1} \max_{t\in d_2}sim(s,t) \right]</script><p>&emsp;&emsp;由于上式对于$d_1$与$d_2$并不是对称的，因此最终的相似性度量值被定义为：</p>
+<script type="math/tex; mode=display">sim(d_1,d_2) = \frac{1}{2} \times sim(d_1\to d_2) + \frac{1}{2} \times sim(d_2\to d_1)</script><p>&emsp;&emsp;使用这种方法来定义OMIM数据库列出的疾病之间的相似性，分析了21个生理疾病类别中的727个疾病，这些疾病之间的表型关系通过超过阈值相似评分的所有成对疾病之间的联系如下图所示：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ApplicationsOfHpo.PNG" alt><br>&emsp;&emsp;尽管生成的表型与疾病类别无关，但最终的表型网络清楚地显示了与21种类别中的许多类别相对应的簇。同样明显的是，某些簇显示出彼此之间的相互联系，这在仅基于共享疾病基因的疾病图谱中是看不到的，对随机网络的分析表明，观察到的网络连接与疾病类别之间的相关性非常显着。  </p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;接下来探索了在临床环境中使用HPO的实用性。在最好的情况下，诊断算法将允许以不同的详细程度进行搜索，比一般的特征更权衡特定特征，并且在对某个个体患者可能没有个体特征这一事实不太敏感。因此，本体论的方法在这种情况下显得特别合适。为了模拟这种搜索过程，使用OMIM中的2116个疾病，用至少6个HPO术语注释来模拟临床搜索过程，只选择与给定疾病相关的1-6个术语，然后在原始数据库中搜索相似的疾病。最理想的情况是，搜索算法会将原始疾病分配到最高级别，或者至少放在前几名。  </p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/HPO-C.PNG" alt></p>
+<p>&emsp;&emsp;即使只使用两个搜索项（术语），算法性能也非常出色，当50％的随机噪声添加到搜索项或者每项映射到一个（不太具体）的父项时，准确度会只会相对降低一些。也就是说相似度的计算对于由于搜索的表型术语集的噪声、完整性或特异性不太敏感。<br>&emsp;&emsp;相对于其他之前完成的工作,人工处理的本体论方法计算表型分析提供了许多优势</p>
+<ul>
+<li>本体的术语和结构基于医学知识，而不是文本挖掘系统</li>
+<li>与层次系统和特征向量相比，本体具有更大的灵活性和描述能力。</li>
+<li>在GO成功后，已开发了的、许多的、用于本体分析的计算算法现在可以用于人类表型数据。</li>
+</ul>
+<p>&emsp;</p>
+<p>&emsp;&emsp;HPO还会再未来数年中继续发展，继续改进OMIM中列出的疾病的注释，并将注释扩展到其他遗传性疾病。计划在注释文件中包含附加信息，包括特性的频率和严重性。人们希望HPO将为涉及人类表型分析的计算生物医学研究提供基础，通过将人类表型与蛋白质相互作用、代谢和信号转导途径等数据源直接联系起来，使人类现象与细胞的分子病理生理学相互关联。此外，HPO将为医学遗传学的临床研究提供统一的基础，为表型描述提供标准化词汇。</p>
+<p>&emsp;<br>&emsp;<br>&emsp;</p>
+<hr>
+<h1 id="Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison"><a href="#Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison" class="headerlink" title="Improved exome prioritization of disease genes through cross-species phenotype comparison"></a>Improved exome prioritization of disease genes through cross-species phenotype comparison</h1><p>地址:<a href="https://pubmed.ncbi.nlm.nih.gov/24162188/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/24162188/</a>  </p>
+<p>&emsp;&emsp;本文利用了小鼠的模型，将人类疾病和转基因小鼠之间的表型相似性进行计算来对基因变异进行评估（关于这部分生物信息学的基础知识还需要补充，因此现在简单概括文章的大意）</p>
+<h2 id="abstract"><a href="#abstract" class="headerlink" title="abstract"></a>abstract</h2><p>&emsp;&emsp;首先来看一下摘要：</p>
+<blockquote>
+<p>Numerous new disease-gene associations have been identified by whole-exome sequencing studies in the last few years.<br>However, many cases remain unsolved due to the sheer number of candidate variants remaining after common filtering strategies such as removing low quality and common variants and those deemed unlikely to be pathogenic. The observation that each of our genomes contains about 100 genuine loss-of-function variants makes identification of the causative mutation problematic when using these strategies alone. We propose using the wealth of genotype to phenotype data that already exists from model organism studies to assess the potential impact of these exome variants. Here, we introduce PHenotypic Interpretation of Variants in Exomes (PHIVE), an algorithm that integrates the calculation of phenotype similarity between human diseases and genetically modified mouse models with evaluation of the variants according to allele frequency, pathogenicity, and mode of inheritance approaches in our Exomiser tool. Large-scale validation of PHIVE analysis using 100,000 exomes containing known mutations demonstrated a substantial improvement (up to 54.1-fold) over purely variant-based (frequency and pathogenicity) methods with the correct gene recalled as the top hit in up to 83% of samples, corresponding to an area under the ROC curve of &gt;95%. We conclude that incorporation of phenotype data can play a vital role in translational bioinformatics and propose that exome sequencing projects should systematically capture clinical phenotypes to take advantage of the strategy presented here.  </p>
+</blockquote>
+<p>&emsp;&emsp;在过去的几年中，通过<a href="http://www.bgitechsolutions.com/sequencing/105" target="_blank" rel="noopener">全外显子组测序研究（whole exome sequencing studies，wes)</a>已经鉴定出许多新的疾病-基因关联。然而，许多病例依旧悬而未决，这是因为在使用诸如去除低质量与常见变体以及那些不太可能治病的变体的常规过滤策略后，仍然存在大量的候选变体。根据实验观察，我们的每个基因组包含大约100个真正的功能丧失变体，这使得单独使用这些过滤策略确定致病突变时会发生问题。我们建议利用模式生物研究中已经存在的基因型到表型的丰富数据来评估这些外显子变体的潜在影响。在这里介绍了<strong>PHIVE(PHenotypic Interpretation of Variants in Exomes)算法</strong>，该算法将人类疾病和转基因小鼠模型之间的表型相似性计算与<a href="https://www.sanger.ac.uk/tool/exomiser/" target="_blank" rel="noopener">Exomiser</a>工具中根据等位基因频率，致病性和继承方法的变体评估方法相结合。使用含有已知突变的100000个外显子对PHIVE分析进行大规模验证，结果表明，与纯基于变体的方法（频率与致病性）相比，PHIVE分析具有显著的提高（高达54.1倍），其中正确的基因被召回的成功率高达83%，对应于ROC曲线下大于95%的面积。我们得出结论：表型数据的整合在翻译生物信息学中发挥着至关重要的作用，并建议外显子组测序项目应系统地捕获临床表型以利用此处介绍的策略。<br>&emsp;&emsp;WES发现疾病基因的主要挑战之一是单个外显子组中发现的变体数量巨大，即使在过滤掉常见的变体之后，也需要额外的方法来预测哪些变体可能具有严重的功能后果，并对他们进行优先排序以进行验证。<br>&emsp;&emsp;由于单纯基于序列变异致病性的优先排序将难以区分疾病相关突变与具有有害生化效应的其他变体。从模式生物研究中已经存在大量从基因型到表型的数据，这些数据可以用来评估这些外显子变体的潜在影响,例如本文中用到的<a href="http://www.informatics.jax.org/" target="_blank" rel="noopener">小鼠基因组信息学（MGI）数据库</a> ,根据先前的研究，小鼠表型显示出与人类临床表型相匹配的大多数孟德尔疾病。</p>
+<h2 id="PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization"><a href="#PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization" class="headerlink" title="PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization"></a>PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization</h2><p>&emsp;&emsp;为了解决纯基于变量的WES数据优先级排序的问题，提出了PHIVE方法(PHenoytpic Interpretation of Variant in Exomes),这种算法首先根据稀有性、外显子中的位置、临近外显子的位置以及预期遗传方式的兼容性来筛选变异，然后根据变异评分（变异的频率和致病性）和表型相关性评分的组合，对所有剩余的基因进行排序。<strong>从本质上说，该方法利用了模型生物中可用的大量数据（eg.MGI），寻找同样具有有害外显子序列变体的表型相关基因。</strong></p>
+<p>&emsp;&emsp;如下图所示，Exomiser通过进一步考虑guo中去除脱靶、常见和同义变体来过滤整个外显子数据集，并根据预测的致病性和次要等位基因频率（变异评分 varient score）评估剩余的变体。假设的遗传模式可选地进一步过滤具有与假设的遗传模式兼容的模式中存在的变体的基因。然后根据与9043个基因突变的28176只小鼠模型的比较，这些基因会得到一个表型相关性分数，最终排名计算为各单项分数之和，以得出PHIVE分数。</p>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/ExomiserFilters.PNG" alt></p>
+<h2 id="PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations"><a href="#PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations" class="headerlink" title="PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations"></a>PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations</h2><p>&emsp;&emsp;总体而言，在常染色体隐性（AR）模型下，PHIVE方法在将平均37个筛选后的候选基因的83%的外显子中，将正确的基因列为得分最高的基因。在常染色体显性（AD）模型下，在平均379个过滤好的候选基因中，66%的外显子有着正确的基因（基因排名最高）。相比之下，单独使用基于变量的评分时，这一比例为28%（AD）或77%（AR）<br>&emsp;&emsp;下面两张表显示了变体、表型相关性、PHIVE分数在各种模拟条件下的性能<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitA.PNG" alt><br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/top-hitB.PNG" alt></p>
+<h2 id="Discussion"><a href="#Discussion" class="headerlink" title="Discussion"></a>Discussion</h2><p>&emsp;&emsp;在这项工作中，我们为wes数据设计了一种优先排序的方法，在丰富的转基因小鼠的表型数据中搜索候选基因。结果表明，PHIVE在识别正确的候选基因方面表现出优异的性能，这些候选基因的表型数据可以从相应基因突变的小鼠模型中获得。对该种方法的一个批评是：如果被破坏的基因没有一个对应的老鼠突变体，那么这种方法可能是无效的，为了应对这一问题，当没有数据时，该方法使用默认的表型得分，并运行优化模拟来选择一个值。对于没有小鼠表型基因的致病基因而言，PHIVE在对待外显体上与使用<strong>基于变异</strong>的方法在性能上是等同的。<br>&emsp;&emsp;使用来自众多其他模型系统的表型不仅可以验证这些结果，还可以潜在地补充没有小鼠表型的情况，使用来自不同模型系统的数据带来了包含不同类型的表型的优势，这些表型是不同系统中的重点，因此，Exomiser被整合为了<a href="http://monarchinitiative.org" target="_blank" rel="noopener">Monarch Initiative</a>工具套件的一部分，以便能够在此背景下使用其他模型系统数据。在Exomiser的未来版本中，通过包含蛋白质-蛋白质相互作用网络、共表达和其他模型生物数据，来寻求改善缺少小鼠表型数据的性能。本文采用的本体相似性方法在适应标注中的小错误方面是健壮的。</p>
+<h2 id="Methods"><a href="#Methods" class="headerlink" title="Methods"></a>Methods</h2><h3 id="Data-source"><a href="#Data-source" class="headerlink" title="Data source"></a>Data source</h3><p>&emsp;&emsp;关于变异的群体频率的信息来自dbSNP和<a href="https://evs.gs.washington.edu/EVS/" target="_blank" rel="noopener">Exome变体服务器</a></p>
+<h3 id="Inheritance-model-filtering"><a href="#Inheritance-model-filtering" class="headerlink" title="Inheritance model filtering"></a>Inheritance model filtering</h3><p>&emsp;&emsp;常染色体显性筛选是通过排除至少有一个杂合子变体的基因（及其变体）来完成的。(?)</p>
+<h3 id="Phenotype-ontologies"><a href="#Phenotype-ontologies" class="headerlink" title="Phenotype ontologies"></a>Phenotype ontologies</h3><p>&emsp;&emsp;表型本体论OMIM数据库中列出的人类疾病表型注释是从人类表型本体（HPO）资源中提取的。</p>
+<h3 id="Variant-annotation"><a href="#Variant-annotation" class="headerlink" title="Variant annotation"></a>Variant annotation</h3><p>&emsp;&emsp;VCF文件中的变体（使用染色体坐标定义）使用ANNOVAR的Java实现在转录水平上进行注释。(?)</p>
+<h3 id="Ranking-candidate-genes"><a href="#Ranking-candidate-genes" class="headerlink" title="Ranking candidate genes"></a>Ranking candidate genes</h3><p>&emsp;&emsp;基因是根据变异分数和表型相关性得分的组合进行排序的。用变异分数（$v_i$）和表型相关得分($r_i$d)计算基因$i$的PHIVE得分，即$g_i=(v_i+r_i)/2$</p>
+<h3 id="Variant-score"><a href="#Variant-score" class="headerlink" title="Variant score"></a>Variant score</h3><p>&emsp;&emsp;变异分数被定义为对那些既罕见又被预测为致病性的变异进行较高排名。 变体的估计频率来自dbSNP中的1000基因组计划联盟数据和Exome Server Project(ESP)。</p>
+<h3 id="Phenotypic-relevance-score"><a href="#Phenotypic-relevance-score" class="headerlink" title="Phenotypic relevance score"></a>Phenotypic relevance score</h3><p>&emsp;&emsp;基于人类疾病的语义相似性(HPO注释)和在老鼠模型中观察到的表型表现(MPO注释)来计算表型相关性分数<br>&emsp;</p>
+<hr>
+<h1 id="Human-genotype–phenotypedatabases-aims-challenges-and-opportunities"><a href="#Human-genotype–phenotypedatabases-aims-challenges-and-opportunities" class="headerlink" title="Human genotype–phenotypedatabases: aims, challenges and opportunities"></a>Human genotype–phenotypedatabases: aims, challenges and opportunities</h1><p>地址：<a href="https://pubmed.ncbi.nlm.nih.gov/26553330/" target="_blank" rel="noopener">https://pubmed.ncbi.nlm.nih.gov/26553330/</a>  </p>
+<p>&emsp;&emsp;本篇综述介绍了人类基因-表型数据库的目标，挑战与机遇。 </p>
+<blockquote>
+<p>Genotype–phenotype databases provide information about genetic variation, its consequences and its mechanisms of action for research and health care purposes. Existing databases vary greatly in type, areas of focus and modes of operation. Despite ever larger and more intricate datasets — made possible by advances in DNA sequencing, omics methods and phenotyping technologies — steady progress is being made towards integrating these databases rather than using them as separate entities. The consequential<br>shift in focus from single-gene variants towards large gene panels, exomes, whole genomes and myriad obse       rvable characteristics creates new challenges and opportunities in database design, interpretation of variant pathogenicity and modes of data representation and use.<br>基因型-表型数据库提供有关遗传变异、其后果及其作用机制的信息。用于研究和保健的目的。现有的数据库在类型、重点领域和操作模式上差异很大。尽管由于DNA测序、组学方法和表型技术的进步，数据集变得越来越大、越来越复杂，但在整合这些数据库而不是将他们作为独立实体使用方面，正在稳步取得进展。随之而来的焦点从单基因变异转向大基因面板、外显子、全基因组和无数可观察到的特征，给数据库设计、变异致病性的解释以及数据表示和使用模式带来了新的挑战和机遇。<br>&emsp; </p>
+</blockquote>
+<p>&emsp;&emsp;基因型-表型数据库的一个基本目标是提供获取足够数据和知识的途径，以便能够可靠地建立和记录遗传变异的功能和致病意义。但是基因组学技术的力量可能是一把双刃剑：尽管高通量方法有助于发现新的疾病基因和致病变异，但它们也导致了许多误导性的致病性分配，因此最好的解决方法是最大限度地提高记录在基因型-表型数据库中的数据及其注释的可靠性、有用性、和可用性。<br>&emsp;&emsp;由于人类基因组的巨大规模、复杂性和多变性，需要许多不同类型的基因型-表型数据库。相关数据库的大小和复杂性的快速增长通常与计算和数据库技术的进步相匹配。在综述中提供了一个基于相对大小的简化分类。</p>
+<ul>
+<li>Small-scale databases 小规模数据库：许多基因型-表型数据库都是小规模的工作，支持单个研究项目、特定的疾病领域、已定义的患者登记或特定的基因组（传统上，人类遗传学中的诊断策略集中在单基因或小基因集上）。</li>
+<li>已经有许多较大的基因型-表型数据库被创建，主要是“中央”数据库。一些更大的基因型-表型数据库试图全面涵盖大多数已知孟德尔疾病中单个基因的种系变异。</li>
+<li>数据库种还有一个特殊子集可以称为“集成”数据库，因为它们统一了其他资源，目标是将各种较小的数据库或互相关联的专用数据库中的内容中的内容。</li>
+</ul>
+<h2 id="key-challenges-and-common-goals"><a href="#key-challenges-and-common-goals" class="headerlink" title="key challenges and common goals"></a>key challenges and common goals</h2><h3 id="Expanding-datasets"><a href="#Expanding-datasets" class="headerlink" title="Expanding datasets"></a>Expanding datasets</h3><p> &emsp;&emsp;由于从单基因测试向NGS基因组，外显子组和基因组测序的转变，遗传和表型数据的迅速增加导致基因型-表型数据库的规模，范围和复杂性随之增加。这种增长产生了两个后果</p>
+<ul>
+<li>以前专门研究一个或几个基因的分析师现在将面临着成千上万个基因的变异</li>
+<li>使用的数据源必须具有极高的质量，以最大程度减少错误分析的风险。<h3 id="Assigning-pathogenicity"><a href="#Assigning-pathogenicity" class="headerlink" title="Assigning pathogenicity"></a>Assigning pathogenicity</h3>&emsp;&emsp;将致病性分配给遗传变异的任务并不简单，主要是因为确定因果关系涉及必须对多个证据线应用差异加权，并选择使用哪种分析工具。研究和临床诊断的通用做法试图将致病性降低到只有几个类别（例如‘definitely pathogenic’(绝对致病)，‘probably pathogenic’(可能致病)，‘uncertain’(不确定),‘probably not pathogenic or of little clinical significance’（可能没有致病性或临床意义不大),’not pathogenic or of no clinical significance’(非致病性或无临床意义)）,但是，通常无法很好地定义这些分类背后地致病性的实际概念。<br>&emsp;&emsp;基因型-表型数据库以前仅需要简单的计算技术，包括与致病性相关的非常基本的数据字段，而没有获得致病性解释过程或所采用的证据基础。在未来，这种方法将不得不改变，特别是如果希望提供真正个性化的药物，那么除了概率模型之外，还需要机制，因此输入信息和记录结果的工具的来源也更加复杂。  </li>
+</ul>
+<h2 id="Current-progress-and-trends"><a href="#Current-progress-and-trends" class="headerlink" title="Current progress and trends"></a>Current progress and trends</h2><h3 id="Database-types-and-arrangements"><a href="#Database-types-and-arrangements" class="headerlink" title="Database types and arrangements"></a>Database types and arrangements</h3><p>&emsp;&emsp;有观点认为，诸如鼓励广泛创新，以及让特定领域的专家接近数据管理和管理过程的价值等这些因素都支持建设联合数据库。但同时有另一种观点认为，就基于标准的系统间兼容性而言，只构建几个集中式存储库更具成本效益，也更实用。现实中，主要数据库和数据生成项目正在自行决定将其内容的哪些子集提交到中央储存库，而哪些不需要。</p>
+<h3 id="Data-linking-and-reporting"><a href="#Data-linking-and-reporting" class="headerlink" title="Data linking and reporting"></a>Data linking and reporting</h3><p>&emsp;&emsp;资金、能力、激励、法律限制等因素限制了数据库连接这一领域的进展，期刊和资助机构是解决这些问题的最佳人选，因为两者都可以将资源引导到为数据提交而修建的管道上，并施加压力让研究人员使用这些连接。 一些期刊现在已经开始朝这个方向发展。</p>
+<h3 id="Improving-phenotypic-information-and-pathogenicity-evidence"><a href="#Improving-phenotypic-information-and-pathogenicity-evidence" class="headerlink" title="Improving phenotypic information and pathogenicity evidence"></a>Improving phenotypic information and pathogenicity evidence</h3><p>&emsp;&emsp;相比基因型，表型维度在收集信息的规模和粒度以及标准化程度方面都是落后的，许多较老的基因型-表型数据库只包含和提供有限的表型信息，有很多工作关注着不同数据库中的表型信息和其他元数据来提高WES数据临床解释的准确性。例如，CARE4RARE37、DECIPHER38、基因组管理应用39、PheWAS Catalog40和Kaiser Permanente Research Program on Genees，Environment and Health41正在强调表型内容与基因型数据一样丰富的必要性。<br>&emsp;&emsp;除了基因型和表型数据，在少数情况下，数据库开始包括用于推断变异致病性的实际证据，以及用于处理和解释这些证据的方法。</p>
+<h3 id="Alternative-modes-of-data-provision"><a href="#Alternative-modes-of-data-provision" class="headerlink" title="Alternative modes of data provision"></a>Alternative modes of data provision</h3><p>&emsp;&emsp;为了应对大多数数据既多又复杂，广泛分散在不同存储库或不同设计的项目中，隐私问题对哪些用户在哪些情况下可以访问哪些特定记录施加了限制和不确定性，一种方法是将数据转换为其他表示形式，并以各种方式增强它，以应对对象识别的风险。另一种方法是使许多分散的数据集合能够被联合利用。</p>
+<h3 id="A-focus-on-data-discovery"><a href="#A-focus-on-data-discovery" class="headerlink" title="A focus on data discovery"></a>A focus on data discovery</h3><p>&emsp;&emsp;一种使数据库更有用的新策略改变了传统的模式，即数据提供是由经过批准的用户成功搜索数据库而自动遵循的。换言之，搜索数据库本身就成为一个目标，使人们能够发现感兴趣的数据的存在，而不管这些数据随后是否或如何被访问</p>
+<h2 id="Emerging-community-efforts"><a href="#Emerging-community-efforts" class="headerlink" title="Emerging community efforts"></a>Emerging community efforts</h2><p>&emsp;&emsp;近年来，大规模的研究正在生成大量个体的基因型和表型数据，数据收集工作已经加强，数据库创造者收集文献、临床和研究数据集，国际协调和标准化工作正在进行。</p>
+<h2 id="Future-perspective"><a href="#Future-perspective" class="headerlink" title="Future perspective"></a>Future perspective</h2><p>&emsp;&emsp;基因型-表型数据整理领域正在迅速成熟，但还有以下几个待发展的特别重要的领域</p>
+<ul>
+<li>Metadata</li>
+<li>Data formatting and annotation</li>
+<li>Data discovery</li>
+<li>Consent agreements</li>
+<li>Data analysis and reporting</li>
+<li>Identifiers</li>
+<li>APIs and ontologies</li>
+<li>Long-term sustainability</li>
+</ul>
+<h2 id="conclusion"><a href="#conclusion" class="headerlink" title="conclusion"></a>conclusion</h2><p>&emsp;&emsp;这次检讨描述了一些随着数据集增长产生的需要和要求，这些都应该被认为是真正的医学进步所必需的，但这并不是全部。 为了最大限度地利用数据，必须开发算法和应用程序来共享和集成从数据中获得的知识，以利于研究和患者护理。 因此，下一代基因型-表型数据库可能包括高度聚合和集成的数据，允许人类探索其复杂性的图形表示，以及揭示预测性的、个性化的因果关系数学模型的算法。 因此，这些数据库将把患者或研究对象的深入临床和分子发现与尽可能多的相关现有数据和知识相结合，从而能够做出可靠和有用的诊断和发现。</p>
+
+      
+    </div>
+    
+    
+    
+	<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 感谢您的阅读-------------</div>
+    
+</div>
+
+  
+	</div>
+   <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/">HPO论文小结</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
+  <p><span>发布时间:</span>2020年07月29日 - 00:07</p>
+  <p><span>最后更新:</span>2022年05月17日 - 22:05</p>
+  <p><span>原始链接:</span><a href="/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/" title="HPO论文小结">http://woshibwt.github.io/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+
+      
+  </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/" rel="tag"><i class="fa fa-tag"></i> 论文小结</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/15/CS224N%E7%AC%94%E8%AE%B0-%E5%85%AB-%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91%EF%BC%8CSeq2Seq%E4%B8%8EAttention/" rel="next" title="CS224N笔记-八-机器翻译，seq2seq与Attention">
+                <i class="fa fa-chevron-left"></i> CS224N笔记-八-机器翻译，seq2seq与Attention
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/" rel="prev" title="CS224N笔记-十-Question-Answering">
+                CS224N笔记-十-Question-Answering <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/">
+              <img class="site-author-image" itemprop="image"
+                src="/images/header.jpg"
+                alt="Bi Wentao" />
+			</a>
+            
+              <p class="site-author-name" itemprop="name">Bi Wentao</p>
+              <p class="site-description motion-element" itemprop="description">“emmm.....”</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/swift/" title="Swift 4" target="_blank">Swift 4</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/documentation/objectivec" title="Objective-C" target="_blank">Objective-C</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+			
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Human-Phenotype-Ontology-A-Tool-for-Annotating-and-Analyzing-Human-Hereditary-Disease"><span class="nav-number">2.</span> <span class="nav-text">The Human Phenotype Ontology: A Tool for Annotating and Analyzing Human Hereditary Disease</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Improved-exome-prioritization-of-disease-genes-through-cross-species-phenotype-comparison"><span class="nav-number">3.</span> <span class="nav-text">Improved exome prioritization of disease genes through cross-species phenotype comparison</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#abstract"><span class="nav-number">3.1.</span> <span class="nav-text">abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHIVE-An-algorithm-for-cross-species-phenotype-analysis-in-whole-exome-candidate-gene-prioritization"><span class="nav-number">3.2.</span> <span class="nav-text">PHIVE: An algorithm for cross-species phenotype analysis in whole-exome candidate gene prioritization</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHIVE-improves-identification-of-correct-disease-gene-in-simulations-on-28-516-known-disease-causing-mutations"><span class="nav-number">3.3.</span> <span class="nav-text">PHIVE improves identification of correct disease gene in simulations on 28,516 known disease-causing mutations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Discussion"><span class="nav-number">3.4.</span> <span class="nav-text">Discussion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Methods"><span class="nav-number">3.5.</span> <span class="nav-text">Methods</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-source"><span class="nav-number">3.5.1.</span> <span class="nav-text">Data source</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inheritance-model-filtering"><span class="nav-number">3.5.2.</span> <span class="nav-text">Inheritance model filtering</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phenotype-ontologies"><span class="nav-number">3.5.3.</span> <span class="nav-text">Phenotype ontologies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Variant-annotation"><span class="nav-number">3.5.4.</span> <span class="nav-text">Variant annotation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ranking-candidate-genes"><span class="nav-number">3.5.5.</span> <span class="nav-text">Ranking candidate genes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Variant-score"><span class="nav-number">3.5.6.</span> <span class="nav-text">Variant score</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Phenotypic-relevance-score"><span class="nav-number">3.5.7.</span> <span class="nav-text">Phenotypic relevance score</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Human-genotype–phenotypedatabases-aims-challenges-and-opportunities"><span class="nav-number">4.</span> <span class="nav-text">Human genotype–phenotypedatabases: aims, challenges and opportunities</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#key-challenges-and-common-goals"><span class="nav-number">4.1.</span> <span class="nav-text">key challenges and common goals</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Expanding-datasets"><span class="nav-number">4.1.1.</span> <span class="nav-text">Expanding datasets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Assigning-pathogenicity"><span class="nav-number">4.1.2.</span> <span class="nav-text">Assigning pathogenicity</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Current-progress-and-trends"><span class="nav-number">4.2.</span> <span class="nav-text">Current progress and trends</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Database-types-and-arrangements"><span class="nav-number">4.2.1.</span> <span class="nav-text">Database types and arrangements</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Data-linking-and-reporting"><span class="nav-number">4.2.2.</span> <span class="nav-text">Data linking and reporting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Improving-phenotypic-information-and-pathogenicity-evidence"><span class="nav-number">4.2.3.</span> <span class="nav-text">Improving phenotypic information and pathogenicity evidence</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Alternative-modes-of-data-provision"><span class="nav-number">4.2.4.</span> <span class="nav-text">Alternative modes of data provision</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-focus-on-data-discovery"><span class="nav-number">4.2.5.</span> <span class="nav-text">A focus on data discovery</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Emerging-community-efforts"><span class="nav-number">4.3.</span> <span class="nav-text">Emerging community efforts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Future-perspective"><span class="nav-number">4.4.</span> <span class="nav-text">Future perspective</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusion"><span class="nav-number">4.5.</span> <span class="nav-text">conclusion</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; 2020 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Bi Wentao</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://comment-5atsimliz7.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://woshibwt.github.io/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/';
+          this.page.identifier = '2020/07/29/HPO-论文小结/';
+          this.page.title = 'HPO论文小结';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://comment-5atsimliz7.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+    <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

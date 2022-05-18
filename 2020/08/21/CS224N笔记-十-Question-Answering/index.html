@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-mac-osx.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/soccer-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/soccer-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="nlp 机器学习," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Bi Wentao" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="&amp;emsp;&amp;emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。&amp;emsp;&amp;emsp;通常可以将问答系统看作两部分：  从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval) 从文件或段落中找到相关的答案（reading co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS224N笔记-十-Question-Answering">
+<meta property="og:url" content="http://woshibwt.github.io/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/index.html">
+<meta property="og:site_name" content="Bi Wentao">
+<meta property="og:description" content="&amp;emsp;&amp;emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。&amp;emsp;&amp;emsp;通常可以将问答系统看作两部分：  从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval) 从文件或段落中找到相关的答案（reading co">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM2.jpg">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/stanfordpp.jpg">
+<meta property="og:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BiDAF.jpg">
+<meta property="article:published_time" content="2020-08-21T09:37:00.000Z">
+<meta property="article:modified_time" content="2022-05-17T14:23:23.420Z">
+<meta property="article:author" content="Bi Wentao">
+<meta property="article:tag" content="nlp 机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://woshibwt.github.io/2020/08/21/CS224N笔记-十-Question-Answering/"/>
+
+
+
+
+
+  <title>CS224N笔记-十-Question-Answering | Bi Wentao</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"><!-- hexo-inject:begin --><!-- hexo-inject:end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/woshibwt" target="_blank" rel="noopener" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#fff; color:#151513; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Bi Wentao</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://woshibwt.github.io/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Bi Wentao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/header.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Bi Wentao">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CS224N笔记-十-Question-Answering</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-21T17:37:00+08:00">
+                2020-08-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CS224N/" itemprop="url" rel="index">
+                    <span itemprop="name">CS224N</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count"
+                        data-disqus-identifier="2020/08/21/CS224N笔记-十-Question-Answering/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&emsp;&emsp;生活中有很多地方需要运用问答系统（Question）,例如在google上键入“谁是澳大利亚历史上第三任首相？”，谷歌就会将答案显示在页面上。这就相当于完成一次提问-回答过程。<br>&emsp;&emsp;通常可以将问答系统看作两部分：</p>
+<ul>
+<li>从海量的文件中寻找可能包含问题答案相关的文件(imformation retrieval)</li>
+<li>从文件或段落中找到相关的答案（reading comprehension）,这是这一讲的<strong>重点</strong><h2 id="Stanford-Question-Answering-Dataset-SQuAD"><a href="#Stanford-Question-Answering-Dataset-SQuAD" class="headerlink" title="Stanford Question Answering Dataset(SQuAD)"></a>Stanford Question Answering Dataset(SQuAD)</h2>&emsp;&emsp;reading comprehension需要的数据包括：</li>
+<li>Passage(文字段落)</li>
+<li>Question(问题)</li>
+<li>Answer(回答)</li>
+</ul>
+<p>&emsp;&emsp;SQuAD数据集中每个问题都有人类提供的三个标准答案，为了评估问答模型，有两个衡量尺度</p>
+<ul>
+<li>Exact Match(精准匹配)：即模型回答与任意一个标准答案匹配即计数为1,否则为零  </li>
+<li>F1，即将模型答案与标准答案当作词袋，计算<script type="math/tex; mode=display">precison=\frac{TP}{TP+FP}</script><script type="math/tex; mode=display">recall=\frac{TP}{TP+FN}</script>并计算它们的调和平均数<script type="math/tex; mode=display">F1 = \frac{2PR}{P+R}</script>(TP:真正例，FP:假正例，FN：假负例，TN：真负例)  </li>
+</ul>
+<p>&emsp;&emsp;通常F1 score被认为是更可靠的衡量尺度<br>&emsp;&emsp;SQuAD 1.0版本中所有问题的答案都包含在段落中,而2.0版本中引入了一些段落中找不到答案的问题。对于这类问题，当模型输出没有答案时得分为1，否则为0 .</p>
+<h3 id="SQuAD的局限性："><a href="#SQuAD的局限性：" class="headerlink" title="SQuAD的局限性："></a>SQuAD的局限性：</h3><ul>
+<li>答案直接截取自段落中的文字，没有是非判断，计数等问题。</li>
+<li>问题是根据段落构造的</li>
+<li>几乎没有跨句子之间的理解和推断</li>
+</ul>
+<h2 id="Stanford-Attentive-Reader"><a href="#Stanford-Attentive-Reader" class="headerlink" title="Stanford Attentive Reader"></a>Stanford Attentive Reader</h2><p>&emsp;&emsp;这就是Manning组的关于QA的模型Stanford Attentive Reader</p>
+<h3 id="part-1-encoding"><a href="#part-1-encoding" class="headerlink" title="part 1:encoding"></a>part 1:encoding</h3><h4 id="step-1-word-embedding"><a href="#step-1-word-embedding" class="headerlink" title="step 1 :word embedding"></a>step 1 :word embedding</h4><p>&emsp;&emsp;将所有的单词(包括question中的以及passage中的)都通过一个embedding矩阵$E \in \mathbb{R}^{d \times \lvert V \rvert}$,用$d$维的词向量来表示，得到：</p>
+<script type="math/tex; mode=display">p : \mathbf{p_1,\cdots,p_m}\in \mathbb{R}^d</script><script type="math/tex; mode=display">q : \mathbf{q_1,\cdots,q_l}\in \mathbb{R}^d</script><h4 id="step-2-Bidirectional-LSTM"><a href="#step-2-Bidirectional-LSTM" class="headerlink" title="step 2 :Bidirectional LSTM"></a>step 2 :Bidirectional LSTM</h4><p>&emsp;&emsp;先利用Bidirectional LSTM对于question提取特征向量：<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM.jpg" alt></p>
+<p>&emsp;&emsp;再对Passage中的每个单词用Bidirectional LSTM提取其特征向量，并对每个单词对应的特征向量与问题的特征向量进行Attention才做，分别得到推测答案起始位置与中止位置的attention score<br><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/Bidrectional-LSTM2.jpg" alt></p>
+<h4 id="Stanford-Attensive-Reader"><a href="#Stanford-Attensive-Reader" class="headerlink" title="Stanford Attensive Reader++"></a>Stanford Attensive Reader++</h4><p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/stanfordpp.jpg" alt><br>&emsp;&emsp;整个模型的所有参数都是端到端训练的，训练的目标是提高预测开始位置与中止位置的准确度。<br>&emsp;&emsp;损失函数为</p>
+<script type="math/tex; mode=display">L=-\sum \log P^{start}(a_{start}) - \sum \log P^{end} (a_{end})</script><p>&emsp;&emsp;在模型的基础上进行了改进</p>
+<ul>
+<li>对于question部分，不仅仅是LSTM输出，而且利用了类似self-attention(自注意力)的weighted sum来表示，并且将BiLSTM加至三层。</li>
+<li><p>对于passage的encoding，除了利用Glove得到的word embedding之外，还加入了一些语言学的特征，如POS（part of speech)和NER(named entity recognition) tag以及term frequency。<br>另外还加入了比较简单的特征如段落中单词是否出现在问题中的binary feature，对于这种match，又分为三种即exact match, uncased match(不区分大小写), lemma match(如drive和driving)。更进一步，还引入了aligned question embedding, 与exact match相比，这可以看做是对于相似却不完全相同的单词（如car与vehicle)的soft alignment：$f<em>{align}(p_i) = \sum a</em>{i,j}E(q<em>j)$,其中$a</em>{i,j}$代表了段落中单词$p_i$与问题中单词$q_j$的相似度，且：</p>
+<script type="math/tex; mode=display">a_{i,j} = \frac{\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_j)))}{\sum_{j'}\exp(\alpha(\boldsymbol{E}(p_i)\cdot\alpha(\boldsymbol{E}(q_{j'})))}</script><p>$\boldsymbol{E}(p_i)$:获得word的embedding形式，$\alpha(\boldsymbol{E}(p_i))$：将之前的embedding放入单个隐藏层。</p>
+<h2 id="BiDAF"><a href="#BiDAF" class="headerlink" title="BiDAF"></a>BiDAF</h2><p>&emsp;&emsp;另一个比较重要的QA模型是<strong>BiDAF(Bi-Directional Attention Flow)</strong>,其模型如下：</p>
+</li>
+</ul>
+<p><img src="https://bwtpicturehouse.oss-cn-shanghai.aliyuncs.com/img/BiDAF.jpg" alt><br>&emsp;&emsp;核心思想：Attention应当是双向的，既有从Context(即passage)到Query(即Question)的attention,又有从Query到Context的attention<br>&emsp;&emsp;首先计算相似度矩阵(similarity matrix)</p>
+<script type="math/tex; mode=display">S_{ij} = w_{sim}^T[c_i;q_j;c_i\circ q_j] \in \mathbb{R}</script><p>&emsp;&emsp;其中$c_i,q_j$分别代表context vector与query vector</p>
+<p>&emsp;&emsp;对于Context $\to$ Query 的Attention，我们想要知道对于每个context word,哪些query word比较重要，因此得到attention score及weighted vector:</p>
+<script type="math/tex; mode=display">\begin{aligned}
+\alpha^i &= softmax(\boldsymbol{S}_i,:) \in \mathbb{R}^M  \quad \forall i \in \{1,\cdots,N\} \\ 
+\mathbb{a}_i &= \boldsymbol{\sum _{j=1}^M} \alpha_{j}^{i}\mathbb{q}_j \in \mathbb{R}^{2h}  \quad \forall i \in \{1,\cdots,N\} \\ 
+
+
+\end{aligned}</script><p>&emsp;&emsp;其中$N$是context的大小，$M$是query的大小。<br>ps . 相似矩阵的处理看这里：<a href="https://blog.csdn.net/zllljf/article/details/78786395" target="_blank" rel="noopener">戳这里</a></p>
+<p>&emsp;<br>&emsp;&emsp;而对于query$\to$Context Attention,我们想知道对于query，哪些context words与任意一个query words相似度较高，我们得到对于query来说最关键的context words的加权求和：</p>
+<script type="math/tex; mode=display">
+\begin{aligned}
+\boldsymbol{m_i} &= \max_{j} \boldsymbol{S_{ij}} \in \mathbb{R} \quad \forall i \in \{1,\cdots,N\} \\
+\beta &= softmax(\boldsymbol{m}) \in \mathbb{R}^N \\
+c' &= \sum_{i=1}^N \beta_i\boldsymbol{c_i} \in \mathbb{R}^{2h}
+\end{aligned}</script><p>&emsp;&emsp;$m<em>i$从$S</em>{ij}$每一行($i$)中找出相似度最高的项组成向量</p>
+<p>&emsp;</p>
+<p>&emsp;&emsp;由此得到了Attention Flow Layer的输出:</p>
+<script type="math/tex; mode=display">b_i = \boldsymbol{[c_i;a_i;c_i \circ a_i;c_i \circ c']} \in \mathbb{R}^{8h}</script><p>&emsp;&emsp;再对其进行多层LSTM与Softmax得到相应的输出。</p>
+
+      
+    </div>
+    
+    
+    
+	<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束 感谢您的阅读-------------</div>
+    
+</div>
+
+  
+	</div>
+   <div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/">CS224N笔记-十-Question-Answering</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 Bi Wentao 的个人博客">Bi Wentao</a></p>
+  <p><span>发布时间:</span>2020年08月21日 - 17:08</p>
+  <p><span>最后更新:</span>2022年05月17日 - 22:05</p>
+  <p><span>原始链接:</span><a href="/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/" title="CS224N笔记-十-Question-Answering">http://woshibwt.github.io/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/</a>
+    <span class="copy-path"  title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://woshibwt.github.io/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/"  aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+    $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+    });
+    });  
+</script>
+
+
+      
+  </div>
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nlp-%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"><i class="fa fa-tag"></i> nlp 机器学习</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/07/29/HPO-%E8%AE%BA%E6%96%87%E5%B0%8F%E7%BB%93/" rel="next" title="HPO论文小结">
+                <i class="fa fa-chevron-left"></i> HPO论文小结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/06/%E7%AC%AC%E4%B8%80%E6%AC%A1%E7%BB%84%E4%BC%9A/" rel="prev" title="第一次组会知识点总结">
+                第一次组会知识点总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript" target="_blank" rel="noopener">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/">
+              <img class="site-author-image" itemprop="image"
+                src="/images/header.jpg"
+                alt="Bi Wentao" />
+			</a>
+            
+              <p class="site-author-name" itemprop="name">Bi Wentao</p>
+              <p class="site-description motion-element" itemprop="description">“emmm.....”</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7C%20archive">
+              
+                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                推荐阅读
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/swift/" title="Swift 4" target="_blank">Swift 4</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://developer.apple.com/documentation/objectivec" title="Objective-C" target="_blank">Objective-C</a>
+                  </li>
+                
+              </ul>
+            </div>
+          
+			
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Stanford-Question-Answering-Dataset-SQuAD"><span class="nav-number">1.</span> <span class="nav-text">Stanford Question Answering Dataset(SQuAD)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SQuAD的局限性："><span class="nav-number">1.1.</span> <span class="nav-text">SQuAD的局限性：</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stanford-Attentive-Reader"><span class="nav-number">2.</span> <span class="nav-text">Stanford Attentive Reader</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#part-1-encoding"><span class="nav-number">2.1.</span> <span class="nav-text">part 1:encoding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#step-1-word-embedding"><span class="nav-number">2.1.1.</span> <span class="nav-text">step 1 :word embedding</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#step-2-Bidirectional-LSTM"><span class="nav-number">2.1.2.</span> <span class="nav-text">step 2 :Bidirectional LSTM</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Stanford-Attensive-Reader"><span class="nav-number">2.1.3.</span> <span class="nav-text">Stanford Attensive Reader++</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BiDAF"><span class="nav-number">3.</span> <span class="nav-text">BiDAF</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; 2020 &mdash; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Bi Wentao</span>
+
+  
+</div>
+
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+    
+      <script id="dsq-count-scr" src="https://comment-5atsimliz7.disqus.com/count.js" async></script>
+    
+
+    
+      <script type="text/javascript">
+        var disqus_config = function () {
+          this.page.url = 'http://woshibwt.github.io/2020/08/21/CS224N%E7%AC%94%E8%AE%B0-%E5%8D%81-Question-Answering/';
+          this.page.identifier = '2020/08/21/CS224N笔记-十-Question-Answering/';
+          this.page.title = 'CS224N笔记-十-Question-Answering';
+        };
+        var d = document, s = d.createElement('script');
+        s.src = 'https://comment-5atsimliz7.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      </script>
+    
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+    <!-- 代码块复制功能 -->
+  <script type="text/javascript" src="/js/src/clipboard.min.js"></script>  
+  <script type="text/javascript" src="/js/src/clipboard-use.js"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>
